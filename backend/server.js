@@ -65,9 +65,7 @@ app.get("/api/health", (req, res) => {
   res.json({ success: true, message: "Portfolio API is running 🚀" });
 });
 
-app.get('/', (req, res) => {
-  res.redirect('/api/health');
-});
+
 
 // ── Error handlers ──────────────────────────────────────
 app.use(notFound);
