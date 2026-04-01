@@ -217,4 +217,8 @@
   .hero-terminal {
     max-width: 480px;
   }
+
+  .hero-name{
+    font-size: 40px;
+  }
 }
