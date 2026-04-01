@@ -26,6 +26,7 @@ connectDB();
 const allowedOrigins = [
   "http://localhost:5175", 
   "https://newportfolio-231g.onrender.com",
+  "https://newportfolio-sand-five.vercel.app"
 ];
 
 app.use(cors({
