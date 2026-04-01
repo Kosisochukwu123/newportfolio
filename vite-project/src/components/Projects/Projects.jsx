@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ProjectFAQ from "./ProjectFAQ";
+import ProjectFAQ from "../ProjectFAQ/ProjectFAQ";
 import "./Projects.css";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
