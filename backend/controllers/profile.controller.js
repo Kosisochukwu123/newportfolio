@@ -1,7 +1,6 @@
 const Profile = require("../models/Profile.model");
-const { cloudinary } = require("../config/cloudinary");
+const { cloudinary, uploadToCloudinary } = require("../config/cloudinary");
 
-// Always work with a single profile document
 const getOrCreateProfile = async () => {
   let profile = await Profile.findOne();
   if (!profile) profile = await Profile.create({});
@@ -51,8 +50,11 @@ const uploadAvatar = async (req, res) => {
     await cloudinary.uploader.destroy(profile.avatarPublicId).catch(() => {});
   }
 
-  profile.avatarUrl = req.file.path;
-  profile.avatarPublicId = req.file.filename;
+  // Upload temp file → Cloudinary
+  const { url, publicId } = await uploadToCloudinary(req.file.path, "portfolio/avatar");
+
+  profile.avatarUrl = url;
+  profile.avatarPublicId = publicId;
   await profile.save();
 
   res.json({ success: true, avatarUrl: profile.avatarUrl, data: profile });
