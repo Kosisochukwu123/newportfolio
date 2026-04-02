@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import "./Navbar.css";
 
-const links = [ "Projects", "Skills", "About", "Contact"];
+const links = ["Projects", "Skills", "About", "Contact"];
+
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profile, setProfile] = useState({ name: "Name" });
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -13,12 +16,21 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    fetch(`${API}/profile`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success) setProfile(d.data);
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
       <div className="navbar-inner">
         <a href="#" className="nav-logo">
           <span className="logo-bracket">&lt;</span>
-          <span className="logo-name">YourName</span>
+          <span className="logo-name">{profile.name}</span>
           <span className="logo-bracket"> /&gt;</span>
         </a>
 
