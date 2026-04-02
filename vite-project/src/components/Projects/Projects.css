@@ -22,11 +22,9 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 2rem;
-  transition:
-    border-color 0.3s,
-    box-shadow 0.3s;
+  transition: border-color 0.3s, box-shadow 0.3s;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .project-card::before {
@@ -39,12 +37,14 @@
   background: linear-gradient(90deg, transparent, var(--accent), transparent);
   opacity: 0;
   transition: opacity 0.3s;
+  border-radius: var(--radius) var(--radius) 0 0;
+  pointer-events: none;
 }
 
 .project-card:hover,
 .project-card.expanded {
   border-color: rgba(232, 255, 71, 0.2);
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
 }
 
 .project-card.expanded::before {
@@ -93,7 +93,7 @@
   font-weight: 800;
   color: var(--border);
   font-family: var(--font-mono);
-  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.08);
+  -webkit-text-stroke: 1px rgba(255,255,255,0.08);
 }
 
 /* Info */
@@ -173,6 +173,8 @@
 .project-faq-wrapper {
   overflow: hidden;
   transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  /* ensure padding inside so content isn't flush against card edge */
+  padding: 0 0.25rem;
 }
 
 @media (max-width: 860px) {
