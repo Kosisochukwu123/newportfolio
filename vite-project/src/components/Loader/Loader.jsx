@@ -23,7 +23,7 @@ export default function Loader({ onComplete }) {
         const step = Math.max(1, remaining * 0.07);
         return Math.min(100, p + step);
       });
-    }, 40);
+    }, 100);
     return () => clearInterval(interval);
   }, []);
 
