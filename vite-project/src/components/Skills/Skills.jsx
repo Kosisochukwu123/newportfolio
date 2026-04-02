@@ -34,7 +34,7 @@ export default function Skills() {
   return (
     <section id="skills" className="skills-section">
       <div className="container">
-        <p className="section-label">02. Skills</p>
+        <p className="section-label">01. Skills</p>
         <h2 className="section-title">
           The stack I build <span className="accent">with</span>
         </h2>

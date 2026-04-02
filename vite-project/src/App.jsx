@@ -65,9 +65,9 @@ export default function App() {
         <Navbar />
         <main>
           <Hero />
-          <About />
           <Skills />
           <Projects />
+          <About />
           <Contact />
         </main>
         <footer className="footer">
