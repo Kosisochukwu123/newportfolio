@@ -21,7 +21,7 @@ export default function Projects() {
     return (
       <section id="projects" className="projects-section">
         <div className="container">
-          <p className="section-label">03. Projects</p>
+          <p className="section-label">01. Projects</p>
           <p style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)", fontSize: "0.82rem" }}>
             Loading projects...
           </p>
@@ -33,7 +33,7 @@ export default function Projects() {
   return (
     <section id="projects" className="projects-section">
       <div className="container">
-        <p className="section-label">03. Projects</p>
+        <p className="section-label">01. Projects</p>
         <h2 className="section-title">
           Things I've <span className="accent">built</span>
         </h2>

@@ -26,7 +26,7 @@ export default function About() {
   return (
     <section id="about" className="about-section">
       <div className="container">
-        <p className="section-label">01. About</p>
+        <p className="section-label">03. About</p>
         <div className="about-grid">
           <div className="about-text">
             <h2 className="section-title">

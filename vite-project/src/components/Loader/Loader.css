@@ -1,0 +1,114 @@
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: loaderFadeOut 0.6s ease forwards;
+  animation-play-state: paused;
+}
+
+.loader-overlay.exiting {
+  animation-play-state: running;
+}
+
+@keyframes loaderFadeOut {
+  0%   { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.03); pointer-events: none; }
+}
+
+.loader-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: min(420px, 90vw);
+  gap: 1.5rem;
+}
+
+/* Logo */
+.loader-logo {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.loader-bracket { color: var(--accent); }
+.loader-slash   { color: var(--text-muted); margin: 0 1px; }
+
+/* Terminal lines */
+.loader-terminal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.loader-line {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  transition: opacity 0.3s;
+}
+
+.loader-line-done   { opacity: 0.35; }
+.loader-line-active { opacity: 1; color: var(--text); }
+
+.loader-prompt {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.loader-cursor {
+  color: var(--accent);
+  animation: blink 1s step-end infinite;
+  margin-left: 2px;
+}
+
+.loader-check {
+  color: #28c840;
+  margin-left: 4px;
+  font-size: 0.9rem;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Progress bar */
+.loader-bar-track {
+  width: 100%;
+  height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.loader-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.04s linear;
+  box-shadow: 0 0 10px rgba(232, 255, 71, 0.5);
+}
+
+/* Percentage */
+.loader-percent {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text);
+  letter-spacing: -0.04em;
+  align-self: flex-end;
+}
+
+.loader-percent span {
+  font-size: 1.5rem;
+  color: var(--accent);
+  font-weight: 600;
+}
