@@ -15,7 +15,7 @@ export default function ProjectFAQ({ faqs }) {
         {faqs.map((item, i) => (
           <div className={`faq-item ${open === i ? "faq-open" : ""}`} key={i}>
             <button className="faq-trigger" onClick={() => toggle(i)}>
-              <span className="faq-q">{item.q}</span>
+              <span className="faq-q">{item.question}</span>
               <span className="faq-chevron">{open === i ? "−" : "+"}</span>
             </button>
             <div
@@ -24,7 +24,7 @@ export default function ProjectFAQ({ faqs }) {
                 maxHeight: open === i ? "300px" : "0",
               }}
             >
-              <p className="faq-answer">{item.a}</p>
+              <p className="faq-answer">{item.answer}</p>
             </div>
           </div>
         ))}
