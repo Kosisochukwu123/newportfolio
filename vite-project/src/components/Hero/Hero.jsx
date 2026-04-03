@@ -5,7 +5,7 @@ const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export default function Hero() {
   const [profile, setProfile] = useState({
-    name: "Your Name",
+    name: "Loading...",
     tagline: "Full Stack MERN Developer",
     heroBio:
       "I architect and build fast, scalable web applications from database schemas to pixel-perfect UIs. Specialising in the MongoDB · Express · React · Node stack — turning complex problems into clean, maintainable code.",
