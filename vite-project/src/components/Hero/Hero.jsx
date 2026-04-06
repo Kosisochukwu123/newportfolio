@@ -1,28 +1,12 @@
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import "./Hero.css";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-export default function Hero() {
-  const [profile, setProfile] = useState({
-    name: "Loading...",
-    tagline: "Full Stack MERN Developer",
-    heroBio:
-      "I architect and build fast, scalable web applications from database schemas to pixel-perfect UIs. Specialising in the MongoDB · Express · React · Node stack — turning complex problems into clean, maintainable code.",
-    terminalLines: [
-      "MongoDB, Express.js, React.js, Node.js,",
-      "REST APIs, JWT Auth, Redux, Tailwind,",
-      "Docker, AWS, Git",
-    ],
-    availableForWork: true,
-  });
+export default function Hero({profile}) {
 
-  useEffect(() => {
-    fetch(`${API}/profile`)
-      .then((r) => r.json())
-      .then((d) => { if (d.success) setProfile(d.data); })
-      .catch(() => {});
-  }, []);
+
+
 
   const nameParts = profile.name.trim().split(" ");
   const firstName = nameParts.slice(0, -1).join(" ") || profile.name;

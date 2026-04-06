@@ -8,10 +8,34 @@ import Contact from "./components/Contact/Contact";
 import Loader from "./components/Loader/Loader";
 import "./styles/globals.css";
 
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
 export default function App() {
-  const [mousePos, setMousePos]   = useState({ x: 0, y: 0 });
-  const [loading, setLoading]     = useState(true);
-  const [visible, setVisible]     = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [loading, setLoading] = useState(true);
+  const [visible, setVisible] = useState(false);
+  const [profile, setProfile] = useState({
+
+    name: "Loading...",
+    tagline: "Full Stack MERN Developer",
+    heroBio:
+      "I architect and build fast, scalable web applications from database schemas to pixel-perfect UIs. Specialising in the MongoDB · Express · React · Node stack — turning complex problems into clean, maintainable code.",
+    terminalLines: [
+      "MongoDB, Express.js, React.js, Node.js,",
+      "REST APIs, JWT Auth, Redux, Tailwind,",
+      "Docker, AWS, Git",
+    ],
+    availableForWork: true,
+  });
+
+  useEffect(() => {
+    fetch(`${API}/profile`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success) setProfile(d.data);
+      })
+      .catch(() => {});
+  }, []);
 
   // Only show loader on very first visit per session
   const hasLoaded = sessionStorage.getItem("portfolio_loaded");
@@ -23,7 +47,6 @@ export default function App() {
       return;
     }
     // Preload API data in background while loader plays
-    const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
     Promise.allSettled([
       fetch(`${API}/profile`),
       fetch(`${API}/projects`),
@@ -44,17 +67,19 @@ export default function App() {
     setTimeout(() => setVisible(true), 100);
   };
 
+  const isNameLoaded = profile.name && profile.name.startsWith("O");
+
   return (
     <div className="app">
       {/* Loader — only on first visit */}
-      {loading && !hasLoaded && (
-        <Loader onComplete={handleLoaderComplete} />
-      )}
+      {loading && !hasLoaded && isNameLoaded &&
+      
+      <Loader onComplete={handleLoaderComplete} />}
 
       {/* Main content — fades in after loader */}
       <div
         style={{
-          opacity:    visible ? 1 : 0,
+          opacity: visible ? 1 : 0,
           transition: "opacity 0.5s ease",
         }}
       >
@@ -64,14 +89,17 @@ export default function App() {
         />
         <Navbar />
         <main>
-          <Hero />
+          <Hero profile={profile} />
           <Skills />
           <Projects />
           <About />
           <Contact />
         </main>
         <footer className="footer">
-          <p>© {new Date().getFullYear()} · Built with MongoDB · Express · React · Node.js</p>
+          <p>
+            © {new Date().getFullYear()} · Built with MongoDB · Express · React
+            · Node.js
+          </p>
         </footer>
       </div>
     </div>
