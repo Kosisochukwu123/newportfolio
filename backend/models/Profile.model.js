@@ -2,53 +2,128 @@ const mongoose = require("mongoose");
 
 const socialSchema = new mongoose.Schema(
   {
-    label: { type: String, required: true },
-    url: { type: String, required: true },
+    label: {
+      type: String,
+      required: true,
+    },
+    url: {
+      type: String,
+      required: true,
+    },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const profileSchema = new mongoose.Schema(
   {
-    // ── Hero ──────────────────────────────────────────────
-    name: { type: String, default: "Your Name" },
-    tagline: { type: String, default: "Full Stack MERN Developer" },
+    // HERO
+    name: {
+      type: String,
+      default: "Your Company",
+    },
+
+    tagline: {
+      type: String,
+      default: "Building modern digital experiences",
+    },
+
     heroBio: {
       type: String,
       default:
-        "I architect and build fast, scalable web applications from database schemas to pixel-perfect UIs.",
+        "We design and build scalable web products, platforms, and digital experiences for businesses and startups.",
     },
+
     terminalLines: {
       type: [String],
-      default: ["MongoDB, Express.js, React.js, Node.js", "REST APIs, JWT Auth, Redux, Tailwind"],
-    },
-    availableForWork: { type: Boolean, default: true },
-
-    // ── About ─────────────────────────────────────────────
-    aboutBio: {
-      type: [String], // array of paragraphs
       default: [
-        "I'm a Full Stack MERN Developer with a passion for building complete web experiences.",
-        "I care deeply about clean code, developer experience, and shipping products that are fast, accessible, and a joy to use.",
+        "Web Applications",
+        "UI/UX Design",
+        "Cloud Infrastructure",
+        "MERN Stack Solutions",
       ],
     },
-    yearsExperience: { type: String, default: "3+" },
-    projectsShipped: { type: String, default: "20+" },
-    avatarUrl: { type: String, default: "" },
-    avatarPublicId: { type: String, default: "" },
 
-    // ── Contact ───────────────────────────────────────────
-    email: { type: String, default: "yourname@email.com" },
-    location: { type: String, default: "Your City, Country" },
-    timezone: { type: String, default: "WAT / UTC+1" },
-    socials: { type: [socialSchema], default: [] },
+    availableForWork: {
+      type: Boolean,
+      default: true,
+    },
 
-    // ── Meta ──────────────────────────────────────────────
-    resumeUrl: { type: String, default: "" },
-    metaTitle: { type: String, default: "Your Name — MERN Developer" },
-    metaDescription: { type: String, default: "Full Stack MERN Developer portfolio" },
+    // ABOUT
+    aboutBio: {
+      type: [String],
+      default: [
+        "We are a digital product studio focused on creating modern, scalable solutions.",
+        "Our team specializes in building high-performance applications and meaningful user experiences.",
+        "We combine strategy, design, and engineering to deliver products that solve real problems.",
+      ],
+    },
+
+    yearsExperience: {
+      type: String,
+      default: "5+",
+    },
+
+    projectsShipped: {
+      type: String,
+      default: "100+",
+    },
+
+    clientsServed: {
+      type: String,
+      default: "50+",
+    },
+
+    avatarUrl: {
+      type: String,
+      default: "",
+    },
+
+    avatarPublicId: {
+      type: String,
+      default: "",
+    },
+
+    // CONTACT
+    email: {
+      type: String,
+      default: "contact@company.com",
+    },
+
+    location: {
+      type: String,
+      default: "Global",
+    },
+
+    timezone: {
+      type: String,
+      default: "UTC",
+    },
+
+    socials: {
+      type: [socialSchema],
+      default: [],
+    },
+
+    // META
+    resumeUrl: {
+      type: String,
+      default: "",
+    },
+
+    metaTitle: {
+      type: String,
+      default: "Your Company",
+    },
+
+    metaDescription: {
+      type: String,
+      default: "Modern digital products and web solutions",
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  },
 );
 
-module.exports = mongoose.model("Profile", profileSchema);
+module.exports =
+  mongoose.models.Profile || mongoose.model("Profile", profileSchema);

@@ -3,12 +3,9 @@ import "./Navbar.css";
 
 const links = ["Projects", "Skills", "About", "Contact"];
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-
-export default function Navbar() {
+export default function Navbar({ profile }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [profile, setProfile] = useState({ name: "Name" });
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -16,35 +13,27 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    fetch(`${API}/profile`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.success) setProfile(d.data);
-      })
-      .catch(() => {});
-  }, []);
-
   return (
     <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
       <div className="navbar-inner">
         <a href="#" className="nav-logo">
           <span className="logo-bracket">&lt;</span>
-          <span className="logo-name">{profile.name}</span>
+          <span className="logo-name">{profile?.name || "Company"}</span>
           <span className="logo-bracket"> /&gt;</span>
         </a>
 
         <ul className={`nav-links ${menuOpen ? "open" : ""}`}>
-          {links.map((l) => (
+          {links.map((l, i) => (
             <li key={l}>
               <a
                 href={`#${l.toLowerCase()}`}
                 onClick={() => setMenuOpen(false)}
               >
-                <span className="nav-num">0{links.indexOf(l) + 1}.</span> {l}
+                <span className="nav-num">0{i + 1}.</span> {l}
               </a>
             </li>
           ))}
+
           <li>
             <a
               href="/resume.pdf"
@@ -60,7 +49,6 @@ export default function Navbar() {
         <button
           className={`hamburger ${menuOpen ? "active" : ""}`}
           onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
         >
           <span />
           <span />

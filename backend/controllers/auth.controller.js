@@ -1,20 +1,21 @@
 const Admin = require("../models/Admin.model");
+const bcrypt = require("bcryptjs");
 const { generateToken } = require("../utils/generateToken");
 
-// POST /api/auth/login
+// LOGIN
 const login = async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    res.status(400);
-    throw new Error("Email and password are required");
-  }
-
   const admin = await Admin.findOne({ email }).select("+password");
 
-  if (!admin || !(await admin.comparePassword(password))) {
-    res.status(401);
-    throw new Error("Invalid email or password");
+  if (!admin) {
+    return res.status(401).json({ message: "Invalid credentials" });
+  }
+
+  const isMatch = await bcrypt.compare(password, admin.password);
+
+  if (!isMatch) {
+    return res.status(401).json({ message: "Invalid credentials" });
   }
 
   res.json({
@@ -24,39 +25,33 @@ const login = async (req, res) => {
   });
 };
 
-// POST /api/auth/change-password  (protected)
+// CHANGE PASSWORD
 const changePassword = async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
-  if (!currentPassword || !newPassword) {
-    res.status(400);
-    throw new Error("Both currentPassword and newPassword are required");
-  }
-
-  if (newPassword.length < 8) {
-    res.status(422);
-    throw new Error("New password must be at least 8 characters");
-  }
-
   const admin = await Admin.findById(req.admin._id).select("+password");
 
-  if (!(await admin.comparePassword(currentPassword))) {
-    res.status(401);
-    throw new Error("Current password is incorrect");
+  const isMatch = await bcrypt.compare(currentPassword, admin.password);
+
+  if (!isMatch) {
+    return res.status(401).json({ message: "Wrong current password" });
   }
 
   admin.password = newPassword;
   await admin.save();
 
-  res.json({ success: true, message: "Password updated successfully" });
+  res.json({ message: "Password updated" });
 };
 
-// GET /api/auth/me  (protected)
+// ME
 const getMe = async (req, res) => {
   res.json({
-    success: true,
-    admin: { id: req.admin._id, email: req.admin.email },
+    admin: req.admin,
   });
 };
 
-module.exports = { login, changePassword, getMe };
+module.exports = {
+  login,
+  changePassword,
+  getMe,
+};

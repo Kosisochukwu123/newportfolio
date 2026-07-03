@@ -5,114 +5,136 @@ import "./Projects.css";
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export default function Projects() {
-  const [projects, setProjects]       = useState([]);
-  const [loading, setLoading]         = useState(true);
-  const [activeProject, setActive]    = useState(null);
+  const [cases, setCases] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [active, setActive] = useState(null);
 
   useEffect(() => {
     fetch(`${API}/projects`)
       .then((r) => r.json())
-      .then((d) => { if (d.success) setProjects(d.data); })
+      .then((d) => {
+        if (d.success) setCases(d.data);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) {
     return (
-      <section id="projects" className="projects-section">
+      <section id="cases" className="projects-section">
         <div className="container">
-          <p className="section-label">02. Projects</p>
-          <p style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)", fontSize: "0.82rem" }}>
-            Loading projects...
-          </p>
+          <p className="section-label">02. Case Studies</p>
+          <p className="section-loading">Loading case studies...</p>
         </div>
       </section>
     );
   }
 
   return (
-    <section id="projects" className="projects-section">
+    <section id="cases" className="projects-section">
       <div className="container">
-        <p className="section-label">02. Projects</p>
+        <p className="section-label">02. Case Studies</p>
+
         <h2 className="section-title">
-          Things I've <span className="accent">built</span>
+          Real <span className="accent">business impact</span>
         </h2>
+
         <p className="projects-intro">
-          A selection of full-stack projects — each built end-to-end, deployed
-          to production, and documented below.
+          A selection of production systems focused on scalability, performance,
+          and user experience.
         </p>
 
+        {/* STACK WRAPPER */}
         <div className="project-list">
-          {projects.map((project, idx) => (
+          {cases.map((item, idx) => (
             <article
-              key={project._id}
-              className={`project-card ${activeProject === project._id ? "expanded" : ""}`}
+              key={item._id}
+              className={`project-card ${
+                active === item._id ? "expanded" : ""
+              }`}
             >
               <div className="project-top">
+                {/* IMAGE */}
                 <div className="project-visual">
-                  {project.imageUrl ? (
-                    <img src={project.imageUrl} alt={project.title} className="project-img" />
+                  {item.imageUrl ? (
+                    <img
+                      src={item.imageUrl}
+                      alt={item.title}
+                      className="project-img"
+                    />
                   ) : (
                     <div className="project-img-placeholder">
-                      <span className="placeholder-num">0{idx + 1}</span>
+                      <span className="placeholder-num">
+                        {String(idx + 1).padStart(2, "0")}
+                      </span>
                     </div>
                   )}
                 </div>
 
+                {/* INFO */}
                 <div className="project-info">
                   <div className="project-meta">
-                    <span className="project-year">{project.year}</span>
-                    <span className="project-num">{String(idx + 1).padStart(2, "0")}</span>
+                    <span className="project-year">{item.year}</span>
+                    <span className="project-num">
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
                   </div>
-                  <h3 className="project-title">{project.title}</h3>
-                  <p className="project-subtitle">{project.subtitle}</p>
-                  <p className="project-desc">{project.description}</p>
 
+                  <h3 className="project-title">{item.title}</h3>
+
+                  <p className="project-subtitle">{item.subtitle}</p>
+
+                  <p className="project-desc">{item.description}</p>
+
+                  {/* TAGS */}
                   <div className="project-tags">
-                    {(project.tags || []).map((t) => (
-                      <span className="tag" key={t}>{t}</span>
+                    {(item.tags || []).map((t) => (
+                      <span className="tag" key={t}>
+                        {t}
+                      </span>
                     ))}
                   </div>
 
+                  {/* BUTTONS */}
                   <div className="project-links">
-                    {project.liveUrl && (
-                      <a href={project.liveUrl} target="_blank" rel="noreferrer" className="btn btn-primary">
-                        Live ↗
-                      </a>
-                    )}
-                    {project.githubUrl && (
-                      <a href={project.githubUrl} target="_blank" rel="noreferrer" className="btn btn-outline">
-                        GitHub
-                      </a>
-                    )}
-                    {project.faqs?.length > 0 && (
-                      <button
-                        className="btn btn-ghost"
-                        onClick={() => setActive(activeProject === project._id ? null : project._id)}
+                    {item.liveUrl && (
+                      <a
+                        href={item.liveUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn btn-primary"
                       >
-                        {activeProject === project._id ? "Hide details ↑" : "How I built it ↓"}
-                      </button>
+                        View Project ↗
+                      </a>
                     )}
+
+                    <button
+                      className="btn btn-outline"
+                      onClick={() =>
+                        setActive(active === item._id ? null : item._id)
+                      }
+                    >
+                      {active === item._id
+                        ? "Hide details ↑"
+                        : "View case study ↓"}
+                    </button>
                   </div>
                 </div>
               </div>
 
-              {project.faqs?.length > 0 && (
+              {/* FAQ */}
+              {item.faqs?.length > 0 && (
                 <div
                   className="project-faq-wrapper"
-                  style={{ maxHeight: activeProject === project._id ? "1200px" : "0" }}
+                  style={{
+                    maxHeight: active === item._id ? "1200px" : "0",
+                  }}
                 >
-                  <ProjectFAQ faqs={project.faqs} />
+                  <ProjectFAQ faqs={item.faqs} />
                 </div>
               )}
             </article>
           ))}
-
-          {projects.length === 0 && (
-            <p style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)", fontSize: "0.85rem" }}>
-              No projects published yet.
-            </p>
-          )}
         </div>
       </div>
     </section>

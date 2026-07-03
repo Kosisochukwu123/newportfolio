@@ -18,7 +18,7 @@ const adminSchema = new mongoose.Schema(
       select: false, // never return password in queries
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Hash password before saving
@@ -33,4 +33,4 @@ adminSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-module.exports = mongoose.model("Admin", adminSchema);
+module.exports = mongoose.models.Admin || mongoose.model("Admin", adminSchema);

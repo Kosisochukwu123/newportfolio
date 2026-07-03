@@ -3,26 +3,22 @@ import "./Skills.css";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-const GROUPS = ["Frontend", "Backend", "Database", "DevOps & Tools"];
-
-const FALLBACK = [
-  { name: "React.js",      group: "Frontend" },
-  { name: "Redux Toolkit", group: "Frontend" },
-  { name: "Next.js",       group: "Frontend" },
-  { name: "Node.js",       group: "Backend" },
-  { name: "Express.js",    group: "Backend" },
-  { name: "MongoDB",       group: "Database" },
-  { name: "Mongoose",      group: "Database" },
-  { name: "Docker",        group: "DevOps & Tools" },
+const GROUPS = [
+  "Business Solutions",
+  "Design",
+  "Development",
+  "Infrastructure",
 ];
 
 export default function Skills() {
-  const [skills, setSkills] = useState(FALLBACK);
+  const [skills, setSkills] = useState([]);
 
   useEffect(() => {
     fetch(`${API}/skills`)
       .then((r) => r.json())
-      .then((d) => { if (d.success && d.data.length) setSkills(d.data); })
+      .then((d) => {
+        if (d.success) setSkills(d.data);
+      })
       .catch(() => {});
   }, []);
 
@@ -34,23 +30,23 @@ export default function Skills() {
   return (
     <section id="skills" className="skills-section">
       <div className="container">
-        <p className="section-label">01. Skills</p>
-        <h2 className="section-title">
-          The stack I build <span className="accent">with</span>
-        </h2>
+        <p className="skills-label">Capabilities</p>
+        <h2 className="skills-title">Crafted systems, not just code</h2>
+
         <div className="skills-grid">
-          {GROUPS.map((group) =>
-            grouped[group]?.length > 0 ? (
-              <div className="skill-group" key={group}>
-                <h3 className="skill-group-label">{group}</h3>
-                <div className="skill-list">
-                  {grouped[group].map((s) => (
-                    <span className="skill-pill" key={s._id || s.name}>{s.name}</span>
-                  ))}
-                </div>
+          {GROUPS.map((group) => (
+            <div className="skill-card" key={group}>
+              <h3 className="skill-title">{group}</h3>
+
+              <div className="skill-items">
+                {grouped[group]?.map((skill) => (
+                  <span className="skill-item" key={skill._id}>
+                    {skill.name}
+                  </span>
+                ))}
               </div>
-            ) : null
-          )}
+            </div>
+          ))}
         </div>
       </div>
     </section>

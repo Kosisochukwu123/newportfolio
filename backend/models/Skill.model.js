@@ -2,15 +2,31 @@ const mongoose = require("mongoose");
 
 const skillSchema = new mongoose.Schema(
   {
-    name: { type: String, required: [true, "Skill name is required"], trim: true },
+    name: {
+      type: String,
+      required: [true, "Skill name is required"],
+      trim: true,
+    },
+
     group: {
       type: String,
       required: true,
-      enum: ["Frontend", "Backend", "Database", "DevOps & Tools"],
+      enum: [
+        "Development",
+        "Design",
+        "Infrastructure",
+        "Business Solutions",
+      ],
     },
-    order: { type: Number, default: 0 },
+
+    order: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Skill", skillSchema);
+module.exports =
+  mongoose.models.Skill ||
+  mongoose.model("Skill", skillSchema);

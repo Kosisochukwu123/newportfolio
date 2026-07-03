@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar/Navbar";
 import Hero from "./components/Hero/Hero";
 import About from "./components/About/About";
@@ -14,93 +14,60 @@ export default function App() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [loading, setLoading] = useState(true);
   const [visible, setVisible] = useState(false);
-  const [profile, setProfile] = useState({
 
+  const [profile, setProfile] = useState({
     name: "Loading...",
-    tagline: "Full Stack MERN Developer",
-    heroBio:
-      "I architect and build fast, scalable web applications from database schemas to pixel-perfect UIs. Specialising in the MongoDB · Express · React · Node stack — turning complex problems into clean, maintainable code.",
-    terminalLines: [
-      "MongoDB, Express.js, React.js, Node.js,",
-      "REST APIs, JWT Auth, Redux, Tailwind,",
-      "Docker, AWS, Git",
-    ],
+    tagline: "",
+    heroBio: "",
+    terminalLines: [],
     availableForWork: true,
   });
 
+  const [projects, setProjects] = useState([]);
+  const [skills, setSkills] = useState([]);
+
+  // 🔥 FETCH ALL DATA ONCE
   useEffect(() => {
-    fetch(`${API}/profile`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.success) setProfile(d.data);
+    Promise.all([
+      fetch(`${API}/profile`).then((r) => r.json()),
+      fetch(`${API}/projects`).then((r) => r.json()),
+      fetch(`${API}/skills`).then((r) => r.json()),
+    ])
+      .then(([profileRes, projectRes, skillsRes]) => {
+        if (profileRes.success) setProfile(profileRes.data);
+        if (projectRes.success) setProjects(projectRes.data);
+        if (skillsRes.success) setSkills(skillsRes.data);
       })
-      .catch(() => {});
+      .finally(() => {
+        setLoading(false);
+        setTimeout(() => setVisible(true), 150);
+      });
   }, []);
 
-  // Only show loader on very first visit per session
-  const hasLoaded = sessionStorage.getItem("portfolio_loaded");
-
-  useEffect(() => {
-    if (hasLoaded) {
-      setLoading(false);
-      setVisible(true);
-      return;
-    }
-    // Preload API data in background while loader plays
-    Promise.allSettled([
-      fetch(`${API}/profile`),
-      fetch(`${API}/projects`),
-      fetch(`${API}/skills`),
-    ]);
-  }, []);
-
+  // cursor effect
   useEffect(() => {
     const move = (e) => setMousePos({ x: e.clientX, y: e.clientY });
     window.addEventListener("mousemove", move);
     return () => window.removeEventListener("mousemove", move);
   }, []);
 
-  const handleLoaderComplete = () => {
-    sessionStorage.setItem("portfolio_loaded", "1");
-    setLoading(false);
-    // Small delay so content fades in after loader fades out
-    setTimeout(() => setVisible(true), 100);
-  };
-
-  const isNameLoaded = profile.name && profile.name.startsWith("O");
-
   return (
     <div className="app">
-      {/* Loader — only on first visit */}
-      {loading && !hasLoaded && isNameLoaded &&
-      
-      <Loader onComplete={handleLoaderComplete} />}
+      {loading && <Loader />}
 
-      {/* Main content — fades in after loader */}
-      <div
-        style={{
-          opacity: visible ? 1 : 0,
-          transition: "opacity 0.5s ease",
-        }}
-      >
+      <div style={{ opacity: visible ? 1 : 0, transition: "0.5s" }}>
         <div
           className="cursor-glow"
           style={{ left: mousePos.x, top: mousePos.y }}
         />
-        <Navbar />
-        <main>
-          <Hero profile={profile} />
-          <Skills />
-          <Projects />
-          <About />
-          <Contact />
-        </main>
-        <footer className="footer">
-          <p>
-            © {new Date().getFullYear()} · Built with MongoDB · Express · React
-            · Node.js
-          </p>
-        </footer>
+
+        {/* GLOBAL DATA PASSED DOWN */}
+        <Navbar profile={profile} />
+        <Hero profile={profile} />
+        <Skills skills={skills} />
+        <Projects projects={projects} />
+        <About profile={profile} />
+        <Contact profile={profile} />
       </div>
     </div>
   );

@@ -24,21 +24,24 @@ const app = express();
 connectDB();
 
 const allowedOrigins = [
-  "http://localhost:5175", 
+  "http://localhost:5175",
+  "http://localhost:5173",
   "https://newportfolio-231g.onrender.com",
-  "https://newportfolio-sand-five.vercel.app"
+  "https://newportfolio-sand-five.vercel.app",
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  }),
+);
 
 // ── Rate limiting ───────────────────────────────────────
 const limiter = rateLimit({
@@ -52,10 +55,13 @@ const limiter = rateLimit({
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100000,
-  message: { success: false, message: "Too many auth attempts, try again later." },
+  message: {
+    success: false,
+    message: "Too many auth attempts, try again later.",
+  },
 });
 
-app.use(limiter);
+// app.use(limiter);
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -73,8 +79,6 @@ app.get("/api/health", (req, res) => {
   res.json({ success: true, message: "Portfolio API is running 🚀" });
 });
 
-
-
 // ── Error handlers ──────────────────────────────────────
 app.use(notFound);
 app.use(errorHandler);
@@ -82,6 +86,8 @@ app.use(errorHandler);
 // ── Start ────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`\n🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  console.log(
+    `\n🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`,
+  );
   console.log(`   http://localhost:${PORT}/api/health\n`);
 });
