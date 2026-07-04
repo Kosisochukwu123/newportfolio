@@ -4,9 +4,10 @@ import Hero from "./components/Hero/Hero";
 import About from "./components/About/About";
 import Skills from "./components/Skills/Skills";
 import Projects from "./components/Projects/Projects";
-import Collaborations from "./components/Collaborations/Collaborations"
+import Collaborations from "./components/Collaborations/Collaborations";
 import Contact from "./components/Contact/Contact";
 import Loader from "./components/Loader/Loader";
+import ChatBot from "./components/ChatBot/ChatBot";
 import "./styles/globals.css";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -54,7 +55,7 @@ export default function App() {
 
   return (
     <div className="app">
-      {loading && <Loader />}
+      {loading && <Loader onComplete={() => setLoading(false)} />}
 
       <div style={{ opacity: visible ? 1 : 0, transition: "0.5s" }}>
         <div
@@ -70,6 +71,7 @@ export default function App() {
         <Projects projects={projects} />
         <About profile={profile} />
         <Contact profile={profile} />
+        <ChatBot />
       </div>
     </div>
   );

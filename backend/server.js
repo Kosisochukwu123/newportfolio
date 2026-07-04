@@ -17,6 +17,7 @@ const projectRoutes = require("./routes/project.routes");
 const skillRoutes = require("./routes/skill.routes");
 const contactRoutes = require("./routes/contact.routes");
 const uploadRoutes = require("./routes/upload.routes");
+const chatRoutes = require("./routes/chat.routes");
 
 // ── App setup ───────────────────────────────────────────
 const app = express();
@@ -73,7 +74,7 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/upload", uploadRoutes);
-
+app.use("/api/chat", chatRoutes);
 // ── Health check ────────────────────────────────────────
 app.get("/api/health", (req, res) => {
   res.json({ success: true, message: "Portfolio API is running 🚀" });

@@ -1,60 +1,144 @@
 import { useState, useEffect } from "react";
 import "./Navbar.css";
 
-const links = ["Projects", "Skills", "About", "Contact"];
+const links = [
+  { name: "Projects", id: "cases" },
+  { name: "Skills", id: "skills" },
+  { name: "About", id: "about" },
+  { name: "Contact", id: "contact" },
+];
 
-export default function Navbar({ profile }) {
+export default function Navbar({ profile = {} }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+
+      const sections = links.map((l) =>
+        document.getElementById(l.id)
+      );
+
+      sections.forEach((section) => {
+        if (!section) return;
+
+        const top = section.offsetTop - 150;
+        const height = section.offsetHeight;
+
+        if (
+          window.scrollY >= top &&
+          window.scrollY < top + height
+        ) {
+          setActiveSection(section.id);
+        }
+      });
+    };
+
+    window.addEventListener(
+      "scroll",
+      handleScroll
+    );
+
+    return () =>
+      window.removeEventListener(
+        "scroll",
+        handleScroll
+      );
   }, []);
 
   return (
-    <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
-      <div className="navbar-inner">
-        <a href="#" className="nav-logo">
-          <span className="logo-bracket">&lt;</span>
-          <span className="logo-name">{profile?.name || "Company"}</span>
-          <span className="logo-bracket"> /&gt;</span>
-        </a>
+    <>
+      <nav
+        className={`navbar ${
+          scrolled ? "scrolled" : ""
+        }`}
+      >
+        <div className="navbar-inner">
 
-        <ul className={`nav-links ${menuOpen ? "open" : ""}`}>
-          {links.map((l, i) => (
-            <li key={l}>
+          {/* Logo */}
+
+          <a
+            href="#hero"
+            className="nav-logo"
+          >
+            <div className="logo-box">
+              ■
+            </div>
+
+            <span className="logo-name">
+              {profile?.name ||
+                "Your Company"}
+            </span>
+          </a>
+
+          {/* Nav */}
+
+          <ul
+            className={`nav-links ${
+              menuOpen ? "open" : ""
+            }`}
+          >
+            {links.map((l, i) => (
+              <li key={l.name}>
+                <a
+                  href={`#${l.id}`}
+                  className={
+                    activeSection === l.id
+                      ? "active"
+                      : ""
+                  }
+                  onClick={() =>
+                    setMenuOpen(false)
+                  }
+                >
+                  <span className="nav-num">
+                    0{i + 1}.
+                  </span>
+
+                  {l.name}
+                </a>
+              </li>
+            ))}
+
+            <li>
               <a
-                href={`#${l.toLowerCase()}`}
-                onClick={() => setMenuOpen(false)}
+                href="#contact"
+                className="btn btn-primary nav-cta"
               >
-                <span className="nav-num">0{i + 1}.</span> {l}
+                Let's Talk
               </a>
             </li>
-          ))}
+          </ul>
 
-          <li>
-            <a
-              href="/resume.pdf"
-              target="_blank"
-              rel="noreferrer"
-              className="btn btn-outline nav-resume"
-            >
-              Resume
-            </a>
-          </li>
-        </ul>
+          {/* Hamburger */}
 
-        <button
-          className={`hamburger ${menuOpen ? "active" : ""}`}
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          <span />
-          <span />
-          <span />
-        </button>
-      </div>
-    </nav>
+          <button
+            className={`hamburger ${
+              menuOpen
+                ? "active"
+                : ""
+            }`}
+            onClick={() =>
+              setMenuOpen(!menuOpen)
+            }
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+        </div>
+      </nav>
+
+      {menuOpen && (
+        <div
+          className="menu-overlay"
+          onClick={() =>
+            setMenuOpen(false)
+          }
+        />
+      )}
+    </>
   );
 }
