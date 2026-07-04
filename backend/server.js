@@ -29,6 +29,8 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://newportfolio-231g.onrender.com",
   "https://newportfolio-sand-five.vercel.app",
+  "https://ghstudios.online",
+  "https://www.ghstudios.online",
 ];
 
 app.use(
