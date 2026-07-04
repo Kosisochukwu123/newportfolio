@@ -1,0 +1,220 @@
+/* Drop-in styles for Collaborations.jsx — no Tailwind required.
+   Tokens mirror Projects.css so the sections feel like one system. */
+.cl-root {
+  --cl-bg: #0b0b0c;
+  --cl-fg: #f5f5f4;
+  --cl-muted: #8a8a89;
+  --cl-border: rgba(255, 255, 255, 0.12);
+  --cl-accent: #d4ff3a;
+  --cl-cell: rgba(255, 255, 255, 0.02);
+  --cl-cell-hover: rgba(212, 255, 58, 0.06);
+  position: relative;
+  background: var(--cl-bg);
+  color: var(--cl-fg);
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  padding: 64px 16px;
+  border-top: 1px solid var(--cl-border);
+}
+@media (min-width: 640px) {
+  .cl-root {
+    padding: 96px 24px;
+  }
+}
+@media (min-width: 1024px) {
+  .cl-root {
+    padding: 128px 64px;
+  }
+}
+.cl-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+/* Header */
+.cl-head {
+  max-width: 720px;
+  margin-bottom: 40px;
+}
+@media (min-width: 768px) {
+  .cl-head {
+    margin-bottom: 64px;
+  }
+}
+.cl-eyebrow {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--cl-muted);
+  margin: 0 0 16px 0;
+}
+@media (min-width: 640px) {
+  .cl-eyebrow {
+    font-size: 12px;
+  }
+}
+.cl-title {
+  font-size: clamp(28px, 5vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+}
+.cl-accent {
+  color: var(--cl-accent);
+}
+.cl-lede {
+  color: var(--cl-muted);
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 44ch;
+  margin: 0;
+}
+@media (min-width: 640px) {
+  .cl-lede {
+    font-size: 16px;
+  }
+}
+/* Grid */
+.cl-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: 1px solid var(--cl-border);
+  border-radius: 20px;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      1200px 300px at 50% -10%,
+      rgba(212, 255, 58, 0.06),
+      transparent 60%
+    ),
+    var(--cl-cell);
+}
+@media (min-width: 640px) {
+  .cl-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .cl-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.cl-cell {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-right: 1px solid var(--cl-border);
+  border-bottom: 1px solid var(--cl-border);
+  transition: background 300ms ease;
+}
+/* Kill trailing borders per row/col */
+@media (min-width: 1024px) {
+  .cl-cell:nth-child(4n) {
+    border-right: none;
+  }
+  .cl-cell:nth-last-child(-n + 4) {
+    border-bottom: none;
+  }
+}
+@media (min-width: 640px) and (max-width: 1023.98px) {
+  .cl-cell:nth-child(3n) {
+    border-right: none;
+  }
+  .cl-cell:nth-last-child(-n + 3) {
+    border-bottom: none;
+  }
+}
+@media (max-width: 639.98px) {
+  .cl-cell:nth-child(2n) {
+    border-right: none;
+  }
+  .cl-cell:nth-last-child(-n + 2) {
+    border-bottom: none;
+  }
+}
+.cl-cell:hover {
+  background: var(--cl-cell-hover);
+}
+.cl-link {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--cl-fg);
+  padding: 20px;
+  filter: grayscale(1);
+  opacity: 0.7;
+  transition:
+    opacity 250ms ease,
+    filter 250ms ease,
+    transform 300ms ease;
+}
+.cl-link:hover,
+.cl-link:focus-visible {
+  opacity: 1;
+  filter: grayscale(0);
+  transform: translateY(-2px);
+  outline: none;
+}
+.cl-logo,
+.cl-logo svg,
+.cl-img {
+  max-height: 40px;
+  max-width: 70%;
+  width: auto;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+.cl-wordmark {
+  font-size: clamp(16px, 2.2vw, 22px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+/* Footer note */
+.cl-foot {
+  margin: 32px 0 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--cl-muted);
+}
+.cl-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--cl-accent);
+  box-shadow: 0 0 0 4px rgba(212, 255, 58, 0.12);
+  animation: cl-pulse 2.4s ease-in-out infinite;
+}
+@keyframes cl-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cl-link,
+  .cl-dot {
+    transition: none;
+    animation: none;
+  }
+}

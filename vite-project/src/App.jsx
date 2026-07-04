@@ -4,6 +4,7 @@ import Hero from "./components/Hero/Hero";
 import About from "./components/About/About";
 import Skills from "./components/Skills/Skills";
 import Projects from "./components/Projects/Projects";
+import Collaborations from "./components/Collaborations/Collaborations"
 import Contact from "./components/Contact/Contact";
 import Loader from "./components/Loader/Loader";
 import "./styles/globals.css";
@@ -65,6 +66,7 @@ export default function App() {
         <Navbar profile={profile} />
         <Hero profile={profile} />
         <Skills skills={skills} />
+        <Collaborations />
         <Projects projects={projects} />
         <About profile={profile} />
         <Contact profile={profile} />
