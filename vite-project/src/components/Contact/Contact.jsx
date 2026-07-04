@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import "./Contact.css";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+// const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API = import.meta.env.VITE_API_URL || "/api";
 
 export default function Contact() {
   const [profile, setProfile] = useState({

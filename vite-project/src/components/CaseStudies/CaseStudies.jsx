@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import ProjectFAQ from "../ProjectFAQ/ProjectFAQ";
 import "./CaseStudies.css";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+// const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API = import.meta.env.VITE_API_URL || "/api";
 
 export default function CaseStudies() {
   const [cases, setCases] = useState([]);
