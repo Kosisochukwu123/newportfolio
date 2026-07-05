@@ -5,15 +5,29 @@ const navItems = [
   { icon: "◈", label: "Profile",    path: "/admin/profile" },
   { icon: "◻", label: "Projects",   path: "/admin/projects" },
   { icon: "◈", label: "Skills",     path: "/admin/skills" },
+  { icon: "◐", label: "Team",       path: "/admin/team" },
   { icon: "◉", label: "Messages",   path: "/admin/messages" },
   { icon: "⚙", label: "Settings",   path: "/admin/settings" },
 ];
 
-export default function Sidebar({ currentPath }) {
+// Same pattern used by ProjectsPage.jsx — navigates without a full
+// browser reload, so the React app (and AuthContext) never remounts.
+function navigate(path) {
+  window.history.pushState({}, "", path);
+  window.dispatchEvent(new PopStateEvent("popstate"));
+}
+
+export default function Sidebar({ currentPath, open, onNavigate }) {
   const { admin, logout } = useAuth();
 
+  const handleLinkClick = (e, path) => {
+    e.preventDefault();
+    navigate(path);
+    onNavigate?.(); // closes the mobile drawer after picking a page
+  };
+
   return (
-    <aside className="admin-sidebar">
+    <aside className={`admin-sidebar ${open ? "open" : ""}`}>
       <div className="sidebar-logo">
         <div className="sidebar-logo-text">▸ PORTFOLIO CMS</div>
         <div className="sidebar-logo-sub">Content Manager</div>
@@ -26,6 +40,7 @@ export default function Sidebar({ currentPath }) {
             key={item.path}
             href={item.path}
             className={`sidebar-link ${currentPath === item.path ? "active" : ""}`}
+            onClick={(e) => handleLinkClick(e, item.path)}
           >
             <span className="sidebar-link-icon">{item.icon}</span>
             {item.label}
@@ -35,6 +50,8 @@ export default function Sidebar({ currentPath }) {
         <div className="sidebar-section-label" style={{ marginTop: "0.5rem" }}>
           Site
         </div>
+        {/* This one stays a real navigation — it opens the public site
+            in a new tab, so a full page load is exactly what we want. */}
         <a
           href="/"
           target="_blank"

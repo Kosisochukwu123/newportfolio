@@ -11,9 +11,10 @@ import Team from "./components/Team/Team";
 import TeamJoin from "./components/Team/TeamJoin";
 import Loader from "./components/Loader/Loader";
 import ChatBot from "./components/ChatBot/ChatBot";
+import WhitePage from "./components/WhitePage/WhitePage";
+import Footer from "./components/Footer/Footer"; // Import Footer
 import "./styles/globals.css";
 
-// const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 const API = import.meta.env.VITE_API_URL || "/api";
 
 function HomeSections({ profile, projects, skills }) {
@@ -23,15 +24,13 @@ function HomeSections({ profile, projects, skills }) {
       <Skills skills={skills} />
       <Collaborations />
       <Projects projects={projects} />
+      <WhitePage />
+      <Footer /> {/* Footer added here */}
       <About profile={profile} />
     </>
   );
 }
 
-// React Router's client-side navigation doesn't auto-scroll to hash
-// fragments the way a full page load does. This handles nav links like
-// `/#cases` — including when clicked from a different page (e.g. from
-// /contact back to a homepage section).
 function ScrollToHash() {
   const location = useLocation();
 
@@ -40,7 +39,6 @@ function ScrollToHash() {
 
     const id = location.hash.slice(1);
 
-    // Delay slightly so the target route's content has mounted first.
     const timeout = setTimeout(() => {
       const el = document.getElementById(id);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -68,7 +66,6 @@ export default function App() {
   const [projects, setProjects] = useState([]);
   const [skills, setSkills] = useState([]);
 
-  // 🔥 FETCH ALL DATA ONCE
   useEffect(() => {
     Promise.all([
       fetch(`${API}/profile`).then((r) => r.json()),
@@ -86,7 +83,6 @@ export default function App() {
       });
   }, []);
 
-  // cursor effect
   useEffect(() => {
     const move = (e) => setMousePos({ x: e.clientX, y: e.clientY });
     window.addEventListener("mousemove", move);
@@ -103,7 +99,6 @@ export default function App() {
           style={{ left: mousePos.x, top: mousePos.y }}
         />
 
-        {/* GLOBAL DATA PASSED DOWN */}
         <Navbar profile={profile} />
         <ScrollToHash />
 

@@ -1,0 +1,213 @@
+/* ============================================
+   White Page - Atmospheric Light Style
+   ============================================ */
+
+.wp-root {
+  position: relative;
+  background: #0b0b0c;
+  transition: background 0.3s ease, opacity 0.3s ease;
+  margin-top: -1px;
+}
+
+.wp-sticky {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- Central Glow Ring ---------- */
+.wp-ring {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  will-change: transform, opacity;
+  z-index: 3;
+}
+
+@media (max-width: 640px) {
+  .wp-ring {
+    width: 250px;
+    height: 250px;
+  }
+}
+
+.wp-ring-secondary {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+  will-change: transform, opacity;
+  z-index: 2;
+}
+
+@media (max-width: 640px) {
+  .wp-ring-secondary {
+    width: 350px;
+    height: 350px;
+  }
+}
+
+/* ---------- Light Beams ---------- */
+.wp-beams {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.wp-beam {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center bottom;
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0)
+  );
+  margin-left: -2px;
+  border-radius: 2px;
+  animation: wp-beam-pulse ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes wp-beam-pulse {
+  0% {
+    opacity: 0.3;
+    transform: rotate(var(--angle, 0deg)) scaleY(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(var(--angle, 0deg)) scaleY(1.2);
+  }
+}
+
+/* ---------- Floating Orbs ---------- */
+.wp-orbs {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.wp-orb-float {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.1)
+  );
+  filter: blur(5px);
+  animation: wp-orb-float-alt ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes wp-orb-float-alt {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translate(20px, -30px) scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+/* ---------- Sparkles ---------- */
+.wp-sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.wp-sparkle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 255, 255, 0)
+  );
+  animation: wp-sparkle-twinkle ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes wp-sparkle-twinkle {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1) rotate(180deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* ---------- Light Pillars ---------- */
+.wp-pillars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.5s ease;
+}
+
+.wp-pillar {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.3)
+  );
+  border-radius: 1px;
+  will-change: transform, opacity;
+}
+
+/* ---------- Overlay ---------- */
+.wp-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+  z-index: 5;
+  transition: opacity 0.5s ease;
+}
+
+/* ---------- Reduced Motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .wp-beam {
+    animation: none;
+  }
+  .wp-orb-float {
+    animation: none;
+  }
+  .wp-sparkle {
+    animation: none;
+  }
+}

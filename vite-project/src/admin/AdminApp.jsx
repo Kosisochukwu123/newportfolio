@@ -9,6 +9,7 @@ import ProjectEditor from "./pages/ProjectEditor";
 import SkillsPage from "./pages/SkillsPage";
 import MessagesPage from "./pages/MessagesPage";
 import SettingsPage from "./pages/SettingsPage";
+import TeamAdmin from "./pages/TeamAdmin";
 import "./admin.css";
 
 // Simple client-side router — no react-router needed
@@ -33,6 +34,7 @@ function usePage() {
   if (path.startsWith("/admin/projects/")) return "project-edit";
   if (path === "/admin/projects") return "projects";
   if (path === "/admin/skills") return "skills";
+  if (path === "/admin/team") return "team";
   if (path === "/admin/messages") return "messages";
   if (path === "/admin/settings") return "settings";
 
@@ -46,6 +48,7 @@ const pageTitles = {
   "project-new": "New Project",
   "project-edit": "Edit Project",
   skills: "Skills",
+  team: "Team",
   messages: "Messages",
   settings: "Settings",
 };
@@ -67,6 +70,9 @@ function PageContent({ page }) {
     case "skills":
       return <SkillsPage />;
 
+    case "team":
+      return <TeamAdmin />;
+
     case "messages":
       return <MessagesPage />;
 
@@ -84,10 +90,12 @@ export default function AdminApp() {
   const page = usePage();
 
   const [path, setPath] = useState(window.location.pathname);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const update = () => {
       setPath(window.location.pathname);
+      setSidebarOpen(false); // close mobile drawer on any navigation
     };
 
     window.addEventListener("popstate", update);
@@ -132,11 +140,33 @@ export default function AdminApp() {
   return (
     <div className="admin-app">
       <div className="admin-layout">
-        <Sidebar currentPath={path} />
+        <Sidebar
+          currentPath={path}
+          open={sidebarOpen}
+          onNavigate={() => setSidebarOpen(false)}
+        />
+
+        {sidebarOpen && (
+          <div
+            className="admin-menu-overlay"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
 
         <div className="admin-main">
           <header className="admin-topbar">
-            <span className="topbar-title">{pageTitles[page]}</span>
+            <div className="topbar-left">
+              <button
+                className={`admin-hamburger ${sidebarOpen ? "active" : ""}`}
+                onClick={() => setSidebarOpen((o) => !o)}
+                aria-label="Toggle menu"
+              >
+                <span />
+                <span />
+                <span />
+              </button>
+              <span className="topbar-title">{pageTitles[page]}</span>
+            </div>
 
             <div className="topbar-actions">
               <a
