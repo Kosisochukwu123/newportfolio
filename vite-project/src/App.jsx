@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import Hero from "./components/Hero/Hero";
 import About from "./components/About/About";
@@ -7,6 +7,8 @@ import Skills from "./components/Skills/Skills";
 import Projects from "./components/Projects/Projects";
 import Collaborations from "./components/Collaborations/Collaborations";
 import Contact from "./components/Contact/Contact";
+import Team from "./components/Team/Team";
+import TeamJoin from "./components/Team/TeamJoin";
 import Loader from "./components/Loader/Loader";
 import ChatBot from "./components/ChatBot/ChatBot";
 import "./styles/globals.css";
@@ -24,6 +26,30 @@ function HomeSections({ profile, projects, skills }) {
       <About profile={profile} />
     </>
   );
+}
+
+// React Router's client-side navigation doesn't auto-scroll to hash
+// fragments the way a full page load does. This handles nav links like
+// `/#cases` — including when clicked from a different page (e.g. from
+// /contact back to a homepage section).
+function ScrollToHash() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!location.hash) return;
+
+    const id = location.hash.slice(1);
+
+    // Delay slightly so the target route's content has mounted first.
+    const timeout = setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+
+    return () => clearTimeout(timeout);
+  }, [location]);
+
+  return null;
 }
 
 export default function App() {
@@ -79,6 +105,7 @@ export default function App() {
 
         {/* GLOBAL DATA PASSED DOWN */}
         <Navbar profile={profile} />
+        <ScrollToHash />
 
         <Routes>
           <Route
@@ -88,6 +115,8 @@ export default function App() {
             }
           />
           <Route path="/contact" element={<Contact profile={profile} />} />
+          <Route path="/team" element={<Team />} />
+          <Route path="/join/:token" element={<TeamJoin />} />
         </Routes>
 
         <ChatBot />

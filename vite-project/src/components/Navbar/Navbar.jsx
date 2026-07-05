@@ -78,11 +78,22 @@ export default function Navbar({ profile = {} }) {
 
             <li>
               <Link
+                to="/team"
+                className={location.pathname === "/team" ? "active" : ""}
+                onClick={() => setMenuOpen(false)}
+              >
+                <span className="nav-num">0{sectionLinks.length + 1}.</span>
+                Team
+              </Link>
+            </li>
+
+            <li>
+              <Link
                 to="/contact"
                 className={isContactPage ? "active" : ""}
                 onClick={() => setMenuOpen(false)}
               >
-                <span className="nav-num">0{sectionLinks.length + 1}.</span>
+                <span className="nav-num">0{sectionLinks.length + 2}.</span>
                 Contact
               </Link>
             </li>
