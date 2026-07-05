@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import Hero from "./components/Hero/Hero";
 import About from "./components/About/About";
@@ -12,6 +13,18 @@ import "./styles/globals.css";
 
 // const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 const API = import.meta.env.VITE_API_URL || "/api";
+
+function HomeSections({ profile, projects, skills }) {
+  return (
+    <>
+      <Hero profile={profile} />
+      <Skills skills={skills} />
+      <Collaborations />
+      <Projects projects={projects} />
+      <About profile={profile} />
+    </>
+  );
+}
 
 export default function App() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -66,12 +79,17 @@ export default function App() {
 
         {/* GLOBAL DATA PASSED DOWN */}
         <Navbar profile={profile} />
-        <Hero profile={profile} />
-        <Skills skills={skills} />
-        <Collaborations />
-        <Projects projects={projects} />
-        <About profile={profile} />
-        <Contact profile={profile} />
+
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <HomeSections profile={profile} projects={projects} skills={skills} />
+            }
+          />
+          <Route path="/contact" element={<Contact profile={profile} />} />
+        </Routes>
+
         <ChatBot />
       </div>
     </div>

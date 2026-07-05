@@ -31,20 +31,31 @@ const allowedOrigins = [
   "https://newportfolio-sand-five.vercel.app",
   "https://ghstudios.online",
   "https://www.ghstudios.online",
+
+
+  // ADD BOTH VERCEL POSSIBILITIES
+  "https://gh-studios.vercel.app",
+  "https://ghstudios.vercel.app",
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
       }
+
+      console.log("❌ Blocked CORS origin:", origin);
+
+      return callback(null, false); // IMPORTANT: do NOT throw error
     },
     credentials: true,
   }),
 );
+
+app.options("*", cors());
 
 // ── Rate limiting ───────────────────────────────────────
 const limiter = rateLimit({

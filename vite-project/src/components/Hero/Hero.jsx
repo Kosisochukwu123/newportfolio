@@ -1,20 +1,17 @@
 import "./Hero.css";
 
-export default function Hero({ company = {} }) {
+export default function Hero({ profile = {} }) {
   return (
     <section className="hero" id="hero">
-      
       {/* 🎬 VIDEO BACKGROUND */}
       <div className="hero-video-wrapper">
         <video className="hero-video" autoPlay muted loop playsInline>
           <source src="/hero-video.mp4" type="video/mp4" />
         </video>
 
-        {/* dark overlay for readability */}
         <div className="hero-overlay" />
       </div>
 
-      {/* optional existing background grid (you can keep or remove) */}
       <div className="hero-grid-bg" aria-hidden />
 
       <div className="container hero-inner">
@@ -25,12 +22,16 @@ export default function Hero({ company = {} }) {
           </p>
 
           <h1 className="hero-name">
-            {company.name || "Your Company"}.
+            {profile.name || "Your Name"}.
           </h1>
 
-          <h2 className="hero-title">{company.tagline || ""}</h2>
+          <h2 className="hero-title">
+            {profile.tagline || ""}
+          </h2>
 
-          <p className="hero-bio">{company.heroBio || ""}</p>
+          <p className="hero-bio">
+            {profile.heroBio || ""}
+          </p>
 
           <div className="hero-cta">
             <a href="#cases" className="btn btn-primary">
@@ -43,22 +44,22 @@ export default function Hero({ company = {} }) {
         </div>
 
         {/* RIGHT SIDE */}
-        <div
-          className="hero-terminal fade-up"
-          style={{ animationDelay: "0.2s" }}
-        >
+        <div className="hero-terminal fade-up" style={{ animationDelay: "0.2s" }}>
           <div className="terminal-header">
             <span className="dot red" />
             <span className="dot yellow" />
             <span className="dot green" />
-            <span className="terminal-title">~/company</span>
+            <span className="terminal-title">~/profile</span>
           </div>
 
           <div className="terminal-body">
             <p>
-              <span className="t-prompt">$</span> who_we_are
+              <span className="t-prompt">$</span> who_are_we
             </p>
-            <p className="t-output">digital-product-studio</p>
+
+            <p className="t-output">
+              {profile.name || "Digital Agency"}
+            </p>
 
             <p className="t-spacer" />
 
@@ -66,14 +67,13 @@ export default function Hero({ company = {} }) {
               <span className="t-prompt">$</span> services --list
             </p>
 
-            {(
-              company.services || [
-                "Web Development",
-                "UI/UX Design",
-                "Backend Systems",
-                "API Development",
-              ]
-            ).map((service, i) => (
+            {(profile.services || [
+              "Web Development",
+              "UI/UX Design",
+              "Backend Systems",
+              "Cyber Security",
+              "Videography & Motion Graphics",
+            ]).map((service, i) => (
               <p className="t-output" key={i}>
                 {service}
               </p>
@@ -85,12 +85,8 @@ export default function Hero({ company = {} }) {
               <span className="t-prompt">$</span> availability
             </p>
 
-            <p
-              className={`t-output ${
-                company.availableForWork ? "t-green" : ""
-              }`}
-            >
-              {company.availableForWork
+            <p className={`t-output ${profile.availableForWork ? "t-green" : ""}`}>
+              {profile.availableForWork
                 ? "✓ Accepting new projects"
                 : "✗ Currently at capacity"}
             </p>

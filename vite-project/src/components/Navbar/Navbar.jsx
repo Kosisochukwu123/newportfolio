@@ -1,14 +1,19 @@
 import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import "./Navbar.css";
 
-const links = [
+// In-page scroll sections — these only exist on the homepage ("/")
+const sectionLinks = [
   { name: "Projects", id: "cases" },
   { name: "Skills", id: "skills" },
   { name: "About", id: "about" },
-  { name: "Contact", id: "contact" },
 ];
 
 export default function Navbar({ profile = {} }) {
+  const location = useLocation();
+  const isHome = location.pathname === "/";
+  const isContactPage = location.pathname === "/contact";
+
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
@@ -17,9 +22,11 @@ export default function Navbar({ profile = {} }) {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
 
-      const sections = links.map((l) =>
-        document.getElementById(l.id)
-      );
+      // Scroll-spy only makes sense on the homepage, where the
+      // sections actually exist in the DOM.
+      if (!isHome) return;
+
+      const sections = sectionLinks.map((l) => document.getElementById(l.id));
 
       sections.forEach((section) => {
         if (!section) return;
@@ -27,102 +34,74 @@ export default function Navbar({ profile = {} }) {
         const top = section.offsetTop - 150;
         const height = section.offsetHeight;
 
-        if (
-          window.scrollY >= top &&
-          window.scrollY < top + height
-        ) {
+        if (window.scrollY >= top && window.scrollY < top + height) {
           setActiveSection(section.id);
         }
       });
     };
 
-    window.addEventListener(
-      "scroll",
-      handleScroll
-    );
+    window.addEventListener("scroll", handleScroll);
 
-    return () =>
-      window.removeEventListener(
-        "scroll",
-        handleScroll
-      );
-  }, []);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isHome]);
 
   return (
     <>
-      <nav
-        className={`navbar ${
-          scrolled ? "scrolled" : ""
-        }`}
-      >
+      <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="navbar-inner">
-
           {/* Logo */}
-
-          <a
-            href="#hero"
-            className="nav-logo"
-          >
+          <Link to="/" className="nav-logo">
             <div className="logo-box">
-              ■
+              <img
+                src="/GHStudios-logo-preview.png"
+                alt="GH Studios Logo"
+                className="logo-img"
+              />
             </div>
-
-            <span className="logo-name">
-              {profile?.name ||
-                "Your Company"}
-            </span>
-          </a>
+            <span className="logo-name" />
+          </Link>
 
           {/* Nav */}
-
-          <ul
-            className={`nav-links ${
-              menuOpen ? "open" : ""
-            }`}
-          >
-            {links.map((l, i) => (
+          <ul className={`nav-links ${menuOpen ? "open" : ""}`}>
+            {sectionLinks.map((l, i) => (
               <li key={l.name}>
-                <a
-                  href={`#${l.id}`}
-                  className={
-                    activeSection === l.id
-                      ? "active"
-                      : ""
-                  }
-                  onClick={() =>
-                    setMenuOpen(false)
-                  }
+                <Link
+                  to={`/#${l.id}`}
+                  className={isHome && activeSection === l.id ? "active" : ""}
+                  onClick={() => setMenuOpen(false)}
                 >
-                  <span className="nav-num">
-                    0{i + 1}.
-                  </span>
-
+                  <span className="nav-num">0{i + 1}.</span>
                   {l.name}
-                </a>
+                </Link>
               </li>
             ))}
 
             <li>
-              <a
-                href="#contact"
+              <Link
+                to="/contact"
+                className={isContactPage ? "active" : ""}
+                onClick={() => setMenuOpen(false)}
+              >
+                <span className="nav-num">0{sectionLinks.length + 1}.</span>
+                Contact
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                to="/contact"
                 className="btn btn-primary nav-cta"
+                onClick={() => setMenuOpen(false)}
               >
                 Let's Talk
-              </a>
+              </Link>
             </li>
           </ul>
 
           {/* Hamburger */}
-
           <button
-            className={`hamburger ${
-              menuOpen
-                ? "active"
-                : ""
-            }`}
-            onClick={() =>
-              setMenuOpen(!menuOpen)
-            }
+            className={`hamburger ${menuOpen ? "active" : ""}`}
+            onClick={() => setMenuOpen(!menuOpen)}
           >
             <span />
             <span />
@@ -132,12 +111,7 @@ export default function Navbar({ profile = {} }) {
       </nav>
 
       {menuOpen && (
-        <div
-          className="menu-overlay"
-          onClick={() =>
-            setMenuOpen(false)
-          }
-        />
+        <div className="menu-overlay" onClick={() => setMenuOpen(false)} />
       )}
     </>
   );

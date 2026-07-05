@@ -5,7 +5,7 @@
   right: 0;
   z-index: 1000;
 
-  padding: 1.2rem 1.2rem !important;
+  padding: 1.2rem 3rem;
 
   transition: 0.4s ease;
 }
@@ -45,22 +45,23 @@
 }
 
 .logo-box {
-  width: 30px;
-  height: 30px;
+  width: 60px;
+  height: 40px;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
 
   border-radius: 8px;
 
-  background: var(--accent);
+  overflow: hidden; /* keeps image inside rounded corners */
+}
 
-  font-size: 0.8rem;
-  font-weight: 800;
+.logo-img {
+  width: 100%;
+  height: 100%;
 
-  color: black;
+  object-fit: contain; /* scales image without distortion */
 }
 
 .logo-name {
@@ -184,6 +185,9 @@
 }
 
 @media (max-width: 768px) {
+  .navbar {
+    padding: 1.2rem 1.2rem !important;
+  }
   .hamburger {
     display: flex;
     z-index: 1001;
