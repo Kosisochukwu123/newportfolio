@@ -29,6 +29,8 @@ router.put("/admin/:id/approve", protect, approveMember);
 router.put("/admin/:id/reject", protect, rejectMember);
 router.delete("/admin/:id", protect, deleteMember);
 
+// console.log(__dirname);
+
 module.exports = router;
 
 // In your main server file (app.js / server.js), mount this alongside
