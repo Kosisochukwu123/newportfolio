@@ -14,8 +14,8 @@ const {
 
 // ⚠️ Adjust these two import paths to match your actual project structure —
 // they should be the same middleware your projects/auth routes already use.
-const { protect } = require("../middleware/auth");
-const upload = require("../middleware/upload"); // multer instance, e.g. upload.single("photo")
+const { protect } = require("../middleware/authMiddleware");
+const upload = require("../middleware/uploadMiddleware"); // multer instance, e.g. upload.single("photo")
 
 // ── Public ──
 router.get("/", getPublicTeam);
