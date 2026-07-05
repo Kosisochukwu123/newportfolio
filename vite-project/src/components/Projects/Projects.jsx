@@ -173,8 +173,7 @@ export default function Projects() {
           return (
             <article
               key={item._id}
-              className="pj-card"
-              style={{
+              className="pj-card"  style={{
                 transform: `translate3d(0,${translateY},0) scale(${scale})`,
                 opacity,
                 zIndex: 10 + idx,
@@ -231,10 +230,15 @@ export default function Projects() {
                   </div>
                 </div>
               </div>
+              
             </article>
           );
         })}
       </div>
+
     </section>
+
+
+
   );
 }
