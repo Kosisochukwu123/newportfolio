@@ -186,3 +186,42 @@ section {
 .fade-up {
   animation: fadeUp 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
+
+/* ── Luxurious custom scrollbar ── */
+/* scroll-behavior: smooth removed — Lenis (src/utils/smoothScroll.js)
+   now owns all scroll animation. Having both active causes the native
+   smooth-scroll and Lenis's JS-driven glide to fight each other. */
+
+* {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: var(--accent, #e8ff47) rgba(255, 255, 255, 0.03);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    var(--accent, #e8ff47),
+    rgba(232, 255, 71, 0.35)
+  );
+  border-radius: 10px;
+  border: 2px solid #0b0b0c; /* matches page bg, creates a "floating" inset look */
+  background-clip: padding-box;
+  transition: filter 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  filter: brightness(1.15);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}

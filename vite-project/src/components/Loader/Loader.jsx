@@ -1,111 +1,45 @@
 import { useEffect, useState } from "react";
 import "./Loader.css";
 
-export default function Loader({ onComplete = () => {} }) {
+// `dataReady` should reflect whether your real API calls have actually
+// resolved — NOT a fixed timer. This is what fixes the "pops to black"
+// bug: the loader can visually creep up to 92% on its own for a calm,
+// alive feel, but it will never cross the finish line (and therefore
+// never call onComplete/unmount) until the real content is ready.
+export default function Loader({ dataReady = false, onComplete = () => {} }) {
   const [progress, setProgress] = useState(0);
-  const [phase, setPhase] = useState(0);
   const [exiting, setExiting] = useState(false);
 
-  const lines = [
-    "Initializing systems...",
-    "Connecting cloud services...",
-    "Loading business solutions...",
-    "Preparing user experience...",
-    "Ready for launch.",
-  ];
-
-  // progress animation
   useEffect(() => {
     const interval = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-
-        const remaining = 100 - prev;
-
-        // smoother progress
-        const step = Math.max(1, Math.ceil(remaining * 0.06));
-
-        return Math.min(prev + step, 100);
+        const ceiling = dataReady ? 100 : 92;
+        if (prev >= ceiling) return prev;
+        const remaining = ceiling - prev;
+        const step = Math.max(0.4, remaining * 0.05);
+        return Math.min(prev + step, ceiling);
       });
-    }, 80);
+    }, 45);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [dataReady]);
 
-  // terminal lines
   useEffect(() => {
-    if (phase >= lines.length - 1) return;
-
-    const timer = setTimeout(() => {
-      setPhase((prev) => prev + 1);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [phase]);
-
-  // only leave after EVERYTHING is complete
-  useEffect(() => {
-    const finishedLines = phase === lines.length - 1;
-
-    const finishedProgress = progress === 100;
-
-    if (!finishedLines || !finishedProgress) return;
+    if (progress < 100) return;
 
     setExiting(true);
-
-    const timer = setTimeout(() => {
-      onComplete?.();
-    }, 700);
-
+    const timer = setTimeout(() => onComplete?.(), 650);
     return () => clearTimeout(timer);
-  }, [progress, phase, onComplete]);
+  }, [progress, onComplete]);
 
   return (
     <div className={`loader-overlay ${exiting ? "exiting" : ""}`}>
       <div className="loader-inner">
-        <div className="loader-logo">
-          <span className="loader-accent">■</span>
-          <span>YourCompany</span>
+        <div className="loader-mark">
+          <span className="loader-mark-accent">G</span>H
         </div>
-
-        <div className="loader-terminal">
-          {lines.slice(0, phase + 1).map((line, i) => (
-            <div
-              key={i}
-              className={`loader-line ${
-                i === phase ? "loader-line-active" : "loader-line-done"
-              }`}
-            >
-              <span className="loader-prompt">$</span>
-
-              <span>{line}</span>
-
-              {i === phase && progress < 100 && (
-                <span className="loader-cursor">▋</span>
-              )}
-
-              {i === phase && progress >= 100 && (
-                <span className="loader-check">✓</span>
-              )}
-            </div>
-          ))}
-        </div>
-
-        <div className="loader-bar-track">
-          <div
-            className="loader-bar-fill"
-            style={{
-              width: `${progress}%`,
-            }}
-          />
-        </div>
-
-        <div className="loader-percent">
-          {progress}
-          <span>%</span>
+        <div className="loader-track">
+          <div className="loader-fill" style={{ width: `${progress}%` }} />
         </div>
       </div>
     </div>
