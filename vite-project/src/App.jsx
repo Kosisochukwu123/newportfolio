@@ -31,8 +31,8 @@ function HomeSections({ profile, projects, skills, testimonials }) {
       <Collaborations />
       <Projects projects={projects} />
       <LightTransition caption="entering next chapter" />
-      <Testimonials testimonials={testimonials} />
       <About profile={profile} />
+      <Testimonials testimonials={testimonials} />
       <Footer company={profile} />
     </>
   );

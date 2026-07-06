@@ -13,8 +13,9 @@ export default function TestimonialsAdmin() {
   const [saving, setSaving] = useState(false);
   const fileRef = useRef();
 
-  const load = () =>
+  const load = () => {
     api.get("/testimonials/admin/all").then((d) => setItems(d.data)).finally(() => setLoading(false));
+  };
 
   useEffect(load, []);
 
