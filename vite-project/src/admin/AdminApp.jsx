@@ -10,6 +10,7 @@ import SkillsPage from "./pages/SkillsPage";
 import MessagesPage from "./pages/MessagesPage";
 import SettingsPage from "./pages/SettingsPage";
 import TeamAdmin from "./pages/TeamAdmin";
+import TestimonialsAdmin from "./pages/TestimonialsAdmin";
 import "./admin.css";
 
 // Simple client-side router — no react-router needed
@@ -35,6 +36,7 @@ function usePage() {
   if (path === "/admin/projects") return "projects";
   if (path === "/admin/skills") return "skills";
   if (path === "/admin/team") return "team";
+  if (path === "/admin/testimonials") return "testimonials";
   if (path === "/admin/messages") return "messages";
   if (path === "/admin/settings") return "settings";
 
@@ -49,6 +51,7 @@ const pageTitles = {
   "project-edit": "Edit Project",
   skills: "Skills",
   team: "Team",
+  testimonials: "Testimonials",
   messages: "Messages",
   settings: "Settings",
 };
@@ -72,6 +75,9 @@ function PageContent({ page }) {
 
     case "team":
       return <TeamAdmin />;
+
+    case "testimonials":
+      return <TestimonialsAdmin />;
 
     case "messages":
       return <MessagesPage />;

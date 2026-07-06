@@ -3,12 +3,12 @@ import { api } from "../utils/api";
 import { useToast } from "../hooks/useToast";
 import Toast from "../components/Toast";
 
-const GROUPS = ["Frontend", "Backend", "Database", "DevOps & Tools"];
+const GROUPS = ["Business Solutions", "Design", "Development", "Infrastructure"];
 
 export default function SkillsPage() {
   const { show, toast } = useToast();
   const [skills, setSkills]   = useState([]);
-  const [newSkill, setNewSkill] = useState({ name: "", group: "Frontend" });
+  const [newSkill, setNewSkill] = useState({ name: "", group: "Business Solutions" });
   const [adding, setAdding]   = useState(false);
 
   const load = () => api.get("/skills").then((d) => setSkills(d.data));
@@ -24,7 +24,7 @@ export default function SkillsPage() {
     setAdding(true);
     try {
       await api.post("/skills", { ...newSkill, order: skills.filter(s => s.group === newSkill.group).length });
-      setNewSkill({ name: "", group: "Frontend" });
+      setNewSkill({ name: "", group: "Business Solutions" });
       await load();
       show("Skill added");
     } catch (e) { show(e.message, "error"); }

@@ -1,0 +1,100 @@
+
+.lt-root {
+  --p: 0;
+  position: relative;
+  width: 100%;
+  height: 180vh; /* scroll runway */
+  background: #0b0b0c;
+  margin-top: -16rem !important;
+}
+.lt-sticky {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0b0b0c;
+  isolation: isolate;
+}
+/* The core expanding orb. Uses transform:scale — GPU-cheap. */
+.lt-orb {
+  position: absolute;
+  width: 40vmin;
+  height: 40vmin;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    #ffffff 0%,
+    rgba(255, 255, 255, 0.85) 25%,
+    rgba(255, 255, 255, 0.35) 55%,
+    rgba(255, 255, 255, 0) 75%
+  );
+  transform: translate3d(0, 0, 0) scale(calc(0.2 + var(--p) * 12));
+  opacity: calc(0.15 + var(--p) * 0.85);
+  will-change: transform, opacity;
+}
+/* Soft halo behind the orb — one extra layer, no blur filter. */
+.lt-halo {
+  position: absolute;
+  inset: -30%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(255, 255, 255, 0.15) 30%,
+    rgba(255, 255, 255, 0) 60%
+  );
+  opacity: calc(var(--p) * 0.9);
+  transform: scale(calc(0.6 + var(--p) * 2.5));
+  will-change: transform, opacity;
+}
+/* Streaks — pure gradients, transformed once per frame via --p. */
+.lt-streaks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: calc(var(--p) * (1 - var(--p)) * 4); /* peaks mid-transition */
+  mix-blend-mode: screen;
+}
+.lt-streak {
+  position: absolute;
+  left: -20%;
+  width: 140%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.7) 50%,
+    transparent
+  );
+}
+.lt-streak.s1 { top: 28%; transform: rotate(-6deg); }
+.lt-streak.s2 { top: 48%; transform: rotate(3deg); opacity: 0.7; }
+.lt-streak.s3 { top: 68%; transform: rotate(-2deg); opacity: 0.5; }
+.lt-streak.s4 { top: 82%; transform: rotate(4deg); opacity: 0.4; }
+/* Final white wash — takes over after the orb fills the screen. */
+.lt-wash {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  opacity: calc((var(--p) - 0.7) * 3.5);
+  pointer-events: none;
+}
+/* Caption fades in early, out at the end. */
+.lt-caption {
+  position: relative;
+  z-index: 2;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: #ffffff;
+  opacity: calc((0.5 - var(--p)) * 2);
+  mix-blend-mode: difference;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lt-orb, .lt-halo { transition: none; }
+  .lt-root { height: 100vh; }
+}

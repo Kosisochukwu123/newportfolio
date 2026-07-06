@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { usePageReady } from "../../utils/pageReady";
 import "./Contact.css";
 
 // const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -24,6 +25,8 @@ const HOW_FOUND_OPTIONS = [
 ];
 
 export default function Contact() {
+  const notifyReady = usePageReady();
+
   const [profile, setProfile] = useState({
     email: "yourname@email.com",
     location: "Your City, Country",
@@ -62,7 +65,8 @@ export default function Contact() {
     fetch(`${API}/profile`)
       .then((r) => r.json())
       .then((d) => { if (d.success) setProfile(d.data); })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => notifyReady());
   }, []);
 
   const handleSubmit = async (e) => {
@@ -119,7 +123,7 @@ export default function Contact() {
             {/* Contact form */}
             <div className="contact-form-card">
               <div className="contact-form-logo">
-                <img src="./GHStudios-logo-preview.png" alt="GH Studios" />
+                <img src="./public/GHStudios-logo.png" alt="GH Studios" />
               </div>
 
               <form className="contact-form" onSubmit={handleSubmit}>

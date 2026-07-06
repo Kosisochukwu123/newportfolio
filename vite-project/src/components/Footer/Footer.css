@@ -1,24 +1,359 @@
-.footer {
-  height: 100vh;
-  width: 100%;
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+.footer{
+
+    background:white;
+
+    color:#111;
+
+    position:relative;
+
+    overflow:hidden;
+
+    padding:8rem 0 3rem;
 }
 
-.footer-content {
-  text-align: center;
-  padding: 20px;
+
+.footer-container{
+
+    width:min(1400px,90%);
+    margin:auto;
 }
 
-.footer-text {
-  color: #1a1a1c;
-  font-size: 14px;
-  font-weight: 400;
-  letter-spacing: 0.05em;
-  opacity: 0.6;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+/* top section */
+
+.footer-top{
+
+    display:grid;
+    grid-template-columns:1.5fr 1fr;
+
+    gap:5rem;
+
+    margin-bottom:6rem;
+}
+
+
+@media(max-width:900px){
+
+.footer-top{
+
+    grid-template-columns:1fr;
+}
+
+}
+
+
+.footer-label{
+
+    font-family:var(--font-mono);
+
+    font-size:.75rem;
+
+    letter-spacing:.2em;
+
+    text-transform:uppercase;
+
+    color:#777;
+
+    margin-bottom:1rem;
+}
+
+
+.footer-heading{
+
+    font-size:clamp(3rem,6vw,6rem);
+
+    line-height:1;
+
+    margin-bottom:1.5rem;
+
+    font-family:var(--font-display);
+
+    font-weight:800;
+}
+
+
+.footer-accent{
+
+    color:var(--accent);
+}
+
+
+.footer-description{
+
+    max-width:600px;
+
+    line-height:1.9;
+
+    color:#555;
+
+    margin-bottom:2rem;
+}
+
+
+.footer-buttons{
+
+    display:flex;
+
+    gap:1rem;
+
+    flex-wrap:wrap;
+}
+
+
+
+.footer-btn{
+
+    padding:1rem 1.6rem;
+
+    text-decoration:none;
+
+    border-radius:100px;
+
+    font-size:.85rem;
+
+    transition:.3s;
+
+    font-family:var(--font-mono);
+}
+
+
+.footer-primary{
+
+    background:#111;
+    color:white;
+}
+
+
+.footer-primary:hover{
+
+    transform:translateY(-4px);
+}
+
+
+.footer-outline{
+
+    border:1px solid #ddd;
+    color:#111;
+}
+
+
+.footer-outline:hover{
+
+    background:#111;
+    color:white;
+}
+
+
+
+/* right */
+
+.footer-right{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:2rem;
+}
+
+
+.footer-block h4{
+
+    margin-bottom:1.2rem;
+
+    font-size:.9rem;
+}
+
+
+.footer-block a,
+.footer-block p{
+
+    display:block;
+
+    color:#666;
+
+    text-decoration:none;
+
+    margin-bottom:.8rem;
+
+    transition:.3s;
+}
+
+
+.footer-block a:hover{
+
+    transform:translateX(5px);
+
+    color:#000;
+}
+
+
+
+/* newsletter */
+
+.footer-newsletter{
+
+    margin:5rem 0;
+
+    padding:2rem;
+
+    border:1px solid rgba(0,0,0,.08);
+
+    border-radius:24px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:2rem;
+
+    background:#fafafa;
+}
+
+
+@media(max-width:768px){
+
+.footer-newsletter{
+
+    flex-direction:column;
+    align-items:flex-start;
+}
+
+}
+
+
+.newsletter-form{
+
+    display:flex;
+
+    width:100%;
+
+    max-width:500px;
+
+    border:1px solid #ddd;
+
+    border-radius:100px;
+
+    overflow:hidden;
+
+    background:white;
+}
+
+
+.newsletter-form input{
+
+    flex:1;
+
+    border:none;
+
+    outline:none;
+
+    padding:1rem;
+
+    font-size:.9rem;
+}
+
+
+.newsletter-form button{
+
+    border:none;
+
+    width:70px;
+
+    background:#111;
+
+    color:white;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+
+.newsletter-form button:hover{
+
+    width:90px;
+}
+
+
+
+/* giant company name */
+
+.footer-brand{
+
+    font-size:clamp(5rem,16vw,15rem);
+
+    font-weight:900;
+
+    font-family:var(--font-display);
+
+    opacity:.05;
+
+    white-space:nowrap;
+
+    line-height:1;
+
+    user-select:none;
+
+    margin-top:5rem;
+}
+
+
+
+/* bottom */
+
+.footer-bottom{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-top:2rem;
+
+    border-top:1px solid rgba(0,0,0,.08);
+
+    padding-top:2rem;
+}
+
+
+@media(max-width:768px){
+
+.footer-bottom{
+
+    flex-direction:column;
+
+    gap:1rem;
+}
+
+}
+
+
+.footer-socials{
+
+    display:flex;
+
+    gap:1.5rem;
+}
+
+
+.footer-socials a{
+
+    color:#555;
+
+    text-decoration:none;
+
+    font-family:var(--font-mono);
+
+    transition:.3s;
+}
+
+
+.footer-socials a:hover{
+
+    color:#000;
+    transform:translateY(-3px);
 }

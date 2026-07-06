@@ -1,5 +1,8 @@
 .about-section {
-  background: var(--bg);
+  background: #ffffff;
+  color: #0b0b0c;
+  margin-top: -7rem !important;
+  /* border: 2px solid rgba(0, 0, 0, 0.08); */
 }
 
 .about-grid {
@@ -10,7 +13,7 @@
 }
 
 .about-text p {
-  color: var(--text-muted);
+  color: #4a4a4a;
   margin-bottom: 1rem;
   line-height: 1.8;
   font-size: 0.95rem;
@@ -25,7 +28,7 @@
   gap: 2.5rem;
   margin-top: 2.5rem;
   padding-top: 2rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .stat {
@@ -37,7 +40,7 @@
 .stat-num {
   font-size: 2rem;
   font-weight: 800;
-  color: var(--accent);
+  color: #0b0b0c;
   line-height: 1;
 }
 
@@ -58,8 +61,8 @@
 .about-img-placeholder {
   width: 100%;
   aspect-ratio: 4/5;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
+  background: #f5f5f5;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: var(--radius);
   display: flex;
   align-items: center;
@@ -81,7 +84,7 @@
 .about-img-border {
   position: absolute;
   inset: 0;
-  border: 1px solid var(--accent);
+  border: 1px solid #d4ff3a;
   border-radius: var(--radius);
   transform: translate(12px, 12px);
   z-index: 0;

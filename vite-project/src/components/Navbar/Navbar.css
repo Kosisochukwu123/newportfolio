@@ -134,6 +134,94 @@
   padding: 0.7rem 1.3rem !important;
 }
 
+/* ── Pages dropdown ── */
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-family: inherit;
+  color: var(--text-muted);
+  padding: 0;
+  transition: color 0.3s;
+}
+
+.nav-dropdown-trigger:hover,
+.nav-dropdown-trigger.active {
+  color: var(--text);
+}
+
+.nav-dropdown-trigger.active {
+  color: var(--accent);
+}
+
+.nav-caret {
+  font-size: 0.65rem;
+  transition: transform 0.25s ease;
+  display: inline-block;
+}
+
+.nav-caret.open {
+  transform: rotate(180deg);
+}
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 14px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+  min-width: 160px;
+  list-style: none;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.5rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.nav-dropdown-menu.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.nav-dropdown-menu li {
+  display: block;
+}
+
+.nav-dropdown-menu a {
+  display: block;
+  padding: 0.55rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  transition: background 0.2s, color 0.2s;
+}
+
+.nav-dropdown-menu a::after {
+  display: none; /* no underline animation inside the dropdown */
+}
+
+.nav-dropdown-menu a:hover {
+  background: var(--bg-elevated);
+  color: var(--text);
+}
+
+.nav-dropdown-menu a.active {
+  color: var(--accent);
+  background: var(--bg-elevated);
+}
+
 /* hamburger */
 
 .hamburger {
@@ -210,14 +298,69 @@
 
     justify-content: center;
 
-    align-items: flex-start;
+    align-items: stretch;
+
+    overflow-y: auto;
 
     transition: 0.5s;
 
     z-index: 999;
   }
 
+  .nav-links li,
+  .nav-links a,
+  .nav-cta,
+  .nav-dropdown-trigger {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .nav-cta {
+    text-align: center;
+  }
+
   .nav-links.open {
     right: 0;
+  }
+
+  /* On mobile the nav is already a vertical stacked panel, so the
+     dropdown expands inline instead of floating as an absolute panel. */
+  .nav-dropdown {
+    width: 100%;
+  }
+
+  .nav-dropdown-trigger {
+    width: 100%;
+    padding: 0.4rem 0;
+  }
+
+  .nav-dropdown-menu {
+    position: static;
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
+    box-shadow: none;
+    border: none;
+    background: transparent;
+    padding: 0 0 0 1.5rem;
+    width: 100%;
+    box-sizing: border-box;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .nav-dropdown-menu.open {
+    max-height: 200px;
+    margin-top: 0.4rem;
+    transform: none;
+  }
+
+  .nav-dropdown-menu a {
+    color: var(--text) !important;
+  }
+
+  .nav-dropdown-menu a.active {
+    color: var(--accent) !important;
   }
 }

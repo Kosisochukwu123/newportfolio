@@ -10,8 +10,12 @@ import Contact from "./components/Contact/Contact";
 import Team from "./components/Team/Team";
 import TeamJoin from "./components/Team/TeamJoin";
 import Loader from "./components/Loader/Loader";
+import GatedPage from "./utils/pageReady";
 import ScrollProgress from "./components/ScrollProgress/ScrollProgress";
 import ChatBot from "./components/ChatBot/ChatBot";
+import Footer from "./components/Footer/Footer";
+import LightTransition from "./components/LightTransaction/LightTransition";
+import Testimonials from "./components/Testimonials/Testimonials";
 import { fetchWithCache } from "./utils/cache";
 import { initSmoothScroll, getLenis } from "./utils/smoothScroll";
 import "./styles/globals.css";
@@ -19,14 +23,17 @@ import "./styles/globals.css";
 // const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 const API = import.meta.env.VITE_API_URL || "/api";
 
-function HomeSections({ profile, projects, skills }) {
+function HomeSections({ profile, projects, skills, testimonials }) {
   return (
     <>
       <Hero profile={profile} />
       <Skills skills={skills} />
       <Collaborations />
       <Projects projects={projects} />
+      <LightTransition caption="entering next chapter" />
+      <Testimonials testimonials={testimonials} />
       <About profile={profile} />
+      <Footer company={profile} />
     </>
   );
 }
@@ -79,6 +86,7 @@ export default function App() {
 
   const [projects, setProjects] = useState([]);
   const [skills, setSkills] = useState([]);
+  const [testimonials, setTestimonials] = useState([]);
 
   // Home renders immediately and fetches in the background — the Loader
   // sits on top (opaque) hiding this in-progress state, so by the time
@@ -90,11 +98,13 @@ export default function App() {
       fetchWithCache("profile", () => fetch(`${API}/profile`).then((r) => r.json())),
       fetchWithCache("projects", () => fetch(`${API}/projects`).then((r) => r.json())),
       fetchWithCache("skills", () => fetch(`${API}/skills`).then((r) => r.json())),
+      fetchWithCache("testimonials", () => fetch(`${API}/testimonials`).then((r) => r.json())),
     ])
-      .then(([profileRes, projectRes, skillsRes]) => {
+      .then(([profileRes, projectRes, skillsRes, testimonialsRes]) => {
         if (profileRes.success) setProfile(profileRes.data);
         if (projectRes.success) setProjects(projectRes.data);
         if (skillsRes.success) setSkills(skillsRes.data);
+        if (testimonialsRes.success) setTestimonials(testimonialsRes.data);
       })
       .finally(() => setDataReady(true));
   }, []);
@@ -123,10 +133,31 @@ export default function App() {
       <Routes>
         <Route
           path="/"
-          element={<HomeSections profile={profile} projects={projects} skills={skills} />}
+          element={
+            <HomeSections
+              profile={profile}
+              projects={projects}
+              skills={skills}
+              testimonials={testimonials}
+            />
+          }
         />
-        <Route path="/contact" element={<Contact profile={profile} />} />
-        <Route path="/team" element={<Team />} />
+        <Route
+          path="/contact"
+          element={
+            <GatedPage key="contact">
+              <Contact profile={profile} />
+            </GatedPage>
+          }
+        />
+        <Route
+          path="/team"
+          element={
+            <GatedPage key="team">
+              <Team />
+            </GatedPage>
+          }
+        />
         <Route path="/join/:token" element={<TeamJoin />} />
       </Routes>
 

@@ -10,6 +10,7 @@ export default function Hero({ profile = {} }) {
         </video>
 
         <div className="hero-overlay" />
+        <div className="hero-fade-bottom" />
       </div>
 
       <div className="hero-grid-bg" aria-hidden />

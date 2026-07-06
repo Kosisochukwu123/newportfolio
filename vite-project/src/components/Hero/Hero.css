@@ -34,6 +34,31 @@
   background: rgba(0, 0, 0, 0.6);
 }
 
+/* Fades the bottom of the video into the page background color so
+   there's no hard line where the video ends and the next section
+   begins. Sits above the video, above the flat overlay, but still
+   below the actual hero content (z-index 2). */
+.hero-fade-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 260px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #0b0b0f 95%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+@media (max-width: 900px) {
+  .hero-fade-bottom {
+    height: 160px;
+  }
+}
+
 /* ensure content sits above video */
 .hero-inner,
 .scroll-hint {

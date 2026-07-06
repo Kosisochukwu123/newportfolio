@@ -6,6 +6,8 @@
 // - TTL-based expiry: no invalidation messaging needed — entries just
 //   naturally go stale and refetch after `ttl` ms.
 
+console.log("[cache.js] module loaded"); // proves this file is actually running
+
 const memoryCache = new Map();
 const DEFAULT_TTL = 5 * 60 * 1000; // 5 minutes
 
@@ -35,8 +37,19 @@ function readSession(key) {
 
 export function getCached(key) {
   const fromMemory = readMemory(key);
-  if (fromMemory !== undefined) return fromMemory;
-  return readSession(key);
+  if (fromMemory !== undefined) {
+    console.log(`[cache] HIT (memory): ${key}`);
+    return fromMemory;
+  }
+
+  const fromSession = readSession(key);
+  if (fromSession !== undefined) {
+    console.log(`[cache] HIT (sessionStorage): ${key}`);
+    return fromSession;
+  }
+
+  console.log(`[cache] MISS: ${key} — will fetch from network`);
+  return undefined;
 }
 
 export function setCached(key, value, ttl = DEFAULT_TTL) {
@@ -44,8 +57,9 @@ export function setCached(key, value, ttl = DEFAULT_TTL) {
   memoryCache.set(key, entry);
   try {
     sessionStorage.setItem(key, JSON.stringify(entry));
+    console.log(`[cache] SET: ${key} (expires in ${Math.round(ttl / 1000)}s)`);
   } catch {
-    // storage full or blocked — memory cache still works for this tab
+    console.log(`[cache] SET failed (sessionStorage blocked?): ${key}`);
   }
 }
 
