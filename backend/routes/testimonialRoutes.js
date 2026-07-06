@@ -7,7 +7,7 @@ const {
   createTestimonial,
   updateTestimonial,
   deleteTestimonial,
-} = require("../controllers/testimonialController");
+} = require("../controllers/testimonialcontroller");
 
 const { protect } = require("../middleware/authMiddleware");
 const upload = require("../middleware/uploadMiddleware");
