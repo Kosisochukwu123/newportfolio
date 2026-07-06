@@ -16,7 +16,7 @@ import ChatBot from "./components/ChatBot/ChatBot";
 import Footer from "./components/Footer/Footer";
 import LightTransition from "./components/LightTransaction/LightTransition";
 import Testimonials from "./components/Testimonials/Testimonials";
-import { fetchWithCache } from "./utils/cache";
+import { fetchWithCache } from "./utils/Cache";
 import { initSmoothScroll, getLenis } from "./utils/smoothScroll";
 import "./styles/globals.css";
 
