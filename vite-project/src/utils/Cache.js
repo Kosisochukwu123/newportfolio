@@ -59,7 +59,7 @@ export function setCached(key, value, ttl = DEFAULT_TTL) {
     sessionStorage.setItem(key, JSON.stringify(entry));
     console.log(`[cache] SET: ${key} (expires in ${Math.round(ttl / 1000)}s)`);
   } catch {
-    console.log(`[cache] SET failed (sessionStorage blocked?): ${key}`);
+    console.log(`[cache] SET failed (sessionStorage blockedd?): ${key}`);
   }
 }
 
