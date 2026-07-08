@@ -37,7 +37,7 @@ export default function Loader({ dataReady = false, onComplete = () => {} }) {
       <div className="loader-inner">
         <div className="loader-mark">
           <img 
-            src="/public/GHStudios-logo-preview.png" // Replace with your actual image filename
+            src="/GHStudios-logo-preview.png" // Replace with your actual image filename
             alt="Logo" 
             className="loader-logo"
           />
