@@ -71,6 +71,12 @@ export default function TeamJoin() {
       );
       if (form.photoFile) fd.append("photo", form.photoFile);
 
+
+//       console.log("Submitting photo:", form.photoFile);
+// console.log("FormData name:", form.name);
+// console.log("FormData role:", form.role);
+
+
       const res = await fetch(`${API}/team/invite/${token}`, {
         method: "POST",
         body: fd,
