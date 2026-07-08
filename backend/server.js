@@ -2,6 +2,7 @@ require("dotenv").config();
 require("express-async-errors");
 
 const express = require("express");
+const path = require("path");
 const helmet = require("helmet");
 const cors = require("cors");
 const morgan = require("morgan");
@@ -92,6 +93,10 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/team", teamRoutes);
 app.use("/api/testimonials", testimonialRoutes);
+
+// Serve uploaded images (team photos, testimonial photos, etc.)
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 // ── Health check ────────────────────────────────────────
 app.get("/api/health", (req, res) => {
   res.json({ success: true, message: "Portfolio API is running 🚀" });
