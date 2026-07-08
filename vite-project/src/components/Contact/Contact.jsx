@@ -123,7 +123,7 @@ export default function Contact() {
             {/* Contact form */}
             <div className="contact-form-card">
               <div className="contact-form-logo">
-                <img src="./public/GHStudios-logo.png" alt="GH Studios" />
+                <img src="/public/GHStudios-logo.png" alt="GH Studios" />
               </div>
 
               <form className="contact-form" onSubmit={handleSubmit}>

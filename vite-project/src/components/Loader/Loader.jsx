@@ -36,7 +36,11 @@ export default function Loader({ dataReady = false, onComplete = () => {} }) {
     <div className={`loader-overlay ${exiting ? "exiting" : ""}`}>
       <div className="loader-inner">
         <div className="loader-mark">
-          <span className="loader-mark-accent">G</span>H
+          <img 
+            src="/public/GHStudios-logo-preview.png" // Replace with your actual image filename
+            alt="Logo" 
+            className="loader-logo"
+          />
         </div>
         <div className="loader-track">
           <div className="loader-fill" style={{ width: `${progress}%` }} />

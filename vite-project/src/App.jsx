@@ -18,6 +18,7 @@ import LightTransition from "./components/LightTransaction/LightTransition";
 import Testimonials from "./components/Testimonials/Testimonials";
 import { fetchWithCache } from "./utils/Cache";
 import { initSmoothScroll, getLenis } from "./utils/smoothScroll";
+import ScrollRestoration from "./components/AdvancedScrollRestoration"; // Import the advanced scroll restoration
 import "./styles/globals.css";
 
 // const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -128,6 +129,11 @@ export default function App() {
 
       {/* GLOBAL DATA PASSED DOWN */}
       <Navbar profile={profile} />
+      
+      {/* Advanced Scroll Restoration - Place it here */}
+      <ScrollRestoration />
+      
+      {/* Hash scrolling - Keep this for anchor links */}
       <ScrollToHash />
 
       <Routes>
@@ -161,7 +167,7 @@ export default function App() {
         <Route path="/join/:token" element={<TeamJoin />} />
       </Routes>
 
-      <ChatBot />
+      {/* <ChatBot /> */}
 
       {!appReady && (
         <Loader dataReady={dataReady} onComplete={() => setAppReady(true)} />

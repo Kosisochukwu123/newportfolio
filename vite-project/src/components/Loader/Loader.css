@@ -24,16 +24,20 @@
   animation: loader-breathe 2.6s ease-in-out infinite;
 }
 
+/* New styles for the logo image */
 .loader-mark {
-  font-family: var(--font-display, "Syne", sans-serif);
-  font-size: 1.4rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--text-muted, #8a8a89);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Remove the text styles since we're using an image */
 }
 
-.loader-mark-accent {
-  color: var(--accent, #e8ff47);
+.loader-logo {
+  width: auto;
+  height: 80px; /* Adjust this value based on your logo */
+  max-width: 200px; /* Prevents logo from getting too wide */
+  object-fit: contain;
+  display: block;
 }
 
 .loader-track {
@@ -57,5 +61,40 @@
   }
   50% {
     opacity: 1;
+  }
+}
+
+/* Responsive adjustments for different screen sizes */
+@media (max-width: 768px) {
+  .loader-logo {
+    height: 60px;
+    max-width: 150px;
+  }
+  
+  .loader-track {
+    width: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .loader-logo {
+    height: 40px;
+    max-width: 120px;
+  }
+  
+  .loader-track {
+    width: 80px;
+  }
+}
+
+/* For larger screens */
+@media (min-width: 1200px) {
+  .loader-logo {
+    height: 100px;
+    max-width: 300px;
+  }
+  
+  .loader-track {
+    width: 180px;
   }
 }
