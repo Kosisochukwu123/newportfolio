@@ -20,7 +20,16 @@ const upload = require("../middleware/uploadMiddleware"); // multer instance, e.
 // ── Public ──
 router.get("/", getPublicTeam);
 router.get("/invite/:token", getInviteByToken);
-router.post("/invite/:token", upload.single("photo"), submitInvite);
+// router.post("/invite/:token", upload.single("photo"), submitInvite);
+router.post(
+  "/invite/:token",
+  (req, res, next) => {
+    console.log("✅ Invite route reached");
+    next();
+  },
+  upload.single("photo"),
+  submitInvite
+);
 
 // ── Admin (protected) ──
 router.get("/admin/all", protect, getAllForAdmin);

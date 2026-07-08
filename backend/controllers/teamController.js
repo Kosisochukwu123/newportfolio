@@ -1,5 +1,7 @@
 const crypto = require("crypto");
 const TeamMember = require("../models/TeamMember");
+const fs = require("fs");
+const path = require("path");
 
 // ── PUBLIC ──────────────────────────────────────────────
 
@@ -44,14 +46,23 @@ exports.getInviteByToken = async (req, res) => {
 };
 
 // POST /api/team/invite/:token — friend submits the form (multipart/form-data)
+
 exports.submitInvite = async (req, res) => {
+  console.log("========== MULTER DEBUG ==========");
+  console.log("BODY:", req.body);
+  console.log("FILE:", req.file);
+  console.log("=================================");
+
   try {
-    const invite = await TeamMember.findOne({ inviteToken: req.params.token });
+    const invite = await TeamMember.findOne({
+      inviteToken: req.params.token,
+    });
 
     if (!invite) {
-      return res
-        .status(404)
-        .json({ success: false, message: "This invite link isn't valid." });
+      return res.status(404).json({
+        success: false,
+        message: "This invite link isn't valid.",
+      });
     }
 
     if (invite.status !== "invited") {
@@ -62,7 +73,9 @@ exports.submitInvite = async (req, res) => {
     }
 
     const { name, role, bio } = req.body;
+
     let socials = [];
+
     try {
       socials = JSON.parse(req.body.socials || "[]");
     } catch {
@@ -70,15 +83,34 @@ exports.submitInvite = async (req, res) => {
     }
 
     if (!name?.trim() || !role?.trim()) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Name and role are required." });
+      return res.status(400).json({
+        success: false,
+        message: "Name and role are required.",
+      });
     }
 
-    // NOTE: adjust this to match however your existing project image
-    // upload builds a URL (Cloudinary secure_url, S3 key, local /uploads
-    // path, etc.) — mirror whatever your project controller does.
+    // Build photo URL
     const photoUrl = req.file ? `/uploads/${req.file.filename}` : "";
+
+    // Debug upload
+    if (req.file) {
+      console.log("Filename:", req.file.filename);
+      console.log("Destination:", req.file.destination);
+      console.log("Saved path:", req.file.path);
+      console.log("Exists:", fs.existsSync(req.file.path));
+
+      const expectedPath = path.join(
+        __dirname,
+        "..",
+        "uploads",
+        req.file.filename,
+      );
+
+      console.log("Expected path:", expectedPath);
+      console.log("Exists at expected path:", fs.existsSync(expectedPath));
+    } else {
+      console.log("❌ req.file is undefined");
+    }
 
     invite.name = name.trim();
     invite.role = role.trim();
@@ -90,9 +122,19 @@ exports.submitInvite = async (req, res) => {
 
     await invite.save();
 
-    res.json({ success: true, data: invite });
+    console.log("Saved photoUrl:", invite.photoUrl);
+
+    return res.json({
+      success: true,
+      data: invite,
+    });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    console.error(err);
+
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
 };
 

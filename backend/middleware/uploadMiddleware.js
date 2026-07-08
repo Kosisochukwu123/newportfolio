@@ -10,14 +10,34 @@ if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }
 
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, UPLOAD_DIR);
+//   },
+//   filename: (req, file, cb) => {
+//     const unique = crypto.randomBytes(8).toString("hex");
+//     const ext = path.extname(file.originalname).toLowerCase();
+//     cb(null, `${Date.now()}-${unique}${ext}`);
+//   },
+// });
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    console.log("Saving to:", UPLOAD_DIR);
     cb(null, UPLOAD_DIR);
   },
+
   filename: (req, file, cb) => {
+    console.log("Incoming file:", file.originalname);
+
     const unique = crypto.randomBytes(8).toString("hex");
     const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, `${Date.now()}-${unique}${ext}`);
+
+    const filename = `${Date.now()}-${unique}${ext}`;
+
+    console.log("Generated filename:", filename);
+
+    cb(null, filename);
   },
 });
 
