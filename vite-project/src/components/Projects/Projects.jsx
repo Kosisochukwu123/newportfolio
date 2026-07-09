@@ -78,8 +78,8 @@ export default function Projects() {
       }
 
       el.style.transform = `translate3d(0,${translateY},0) scale(${scale})`;
-      el.style.opacity = opacity;
-      // el.style.filter = local > 0 ? `blur(${(local * 4).toFixed(2)}px)` : "none";
+      el.style.opacity = 1;
+      el.style.filter = local > 0 ? `blur(${(local * 4).toFixed(2)}px)` : "none";
       el.style.pointerEvents = opacity > 0.6 ? "auto" : "none";
     }
   };
