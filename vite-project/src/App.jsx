@@ -127,9 +127,9 @@ export default function App() {
   }, []);
 
   // Momentum/inertia scroll — the "heavy glide" feel
-  // useEffect(() => {
-  //   initSmoothScroll();
-  // }, []);
+  useEffect(() => {
+    initSmoothScroll();
+  }, []);
 
   return (
     <div className="app">

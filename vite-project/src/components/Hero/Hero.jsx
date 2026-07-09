@@ -160,7 +160,7 @@ export default function Hero({ profile = {} }) {
           </div>
 
           {/* Stats counter */}
-          <div className="hero-stats">
+          {/* <div className="hero-stats">
             {[
               { num: profile.projectsShipped || "20+", label: "Projects" },
               { num: profile.clientsServed || "10+", label: "Clients" },
@@ -171,7 +171,7 @@ export default function Hero({ profile = {} }) {
                 <span className="hero-stat-label">{s.label}</span>
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
 
         {/* RIGHT SIDE */}

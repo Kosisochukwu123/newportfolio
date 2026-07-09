@@ -35,7 +35,7 @@
   width: 170px;
   aspect-ratio: 1 / 2;
   border-radius: 26px;
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
+  /* box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12); */
   z-index: 1;
   overflow: hidden;
 }
@@ -50,6 +50,7 @@
   background: rgba(0, 0, 0, 0.35);
   border-radius: 8px;
   z-index: 2;
+
 }
 
 .phone-screen {
