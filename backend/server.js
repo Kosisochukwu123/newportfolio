@@ -94,6 +94,19 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/team", teamRoutes);
 app.use("/api/testimonials", testimonialRoutes);
 
+
+const fs = require("fs");
+
+app.use("/uploads", (req, res, next) => {
+  const filePath = path.join(__dirname, "uploads", path.basename(req.path));
+
+  console.log("Looking for:", filePath);
+  console.log("Exists:", fs.existsSync(filePath));
+
+  next();
+});
+
+
 // Serve uploaded images (team photos, testimonial photos, etc.)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
