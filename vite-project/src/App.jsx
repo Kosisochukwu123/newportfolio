@@ -148,7 +148,7 @@ export default function App() {
       <AdvancedScrollRestoration />
       
       {/* Hash scrolling - Keep this for anchor links */}
-      {/* <ScrollToHash /> */}
+      <ScrollToHash />
 
       <Routes>
         <Route
