@@ -1,23 +1,26 @@
 .navbar {
+  --scroll-progress: 0; /* 0 = top of page, 1 = fully scrolled (set via JS) */
+
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
 
-  padding: 1.2rem 3rem;
+  /* Continuously interpolate padding from large (top) to compact
+     (scrolled) instead of jumping between two fixed values. */
+  padding: calc(1.2rem - 0.3rem * var(--scroll-progress)) 3rem;
 
-  transition: 0.4s ease;
+  transition: background-color 0.35s ease, border-color 0.35s ease;
 }
 
-.navbar.scrolled {
-  background: rgba(10, 10, 10, 0.8);
-
-  backdrop-filter: blur(20px);
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-
-  padding: 0.9rem 3rem;
+/* Glassmorphism build-up, tied to the same progress variable so blur
+   and background opacity ramp in together as you scroll, rather than
+   snapping on at a single breakpoint. */
+.navbar {
+  background: rgba(10, 10, 10, calc(0.8 * var(--scroll-progress)));
+  backdrop-filter: blur(calc(20px * var(--scroll-progress)));
+  border-bottom: 1px solid rgba(255, 255, 255, calc(0.05 * var(--scroll-progress)));
 }
 
 .navbar-inner {
@@ -55,6 +58,11 @@
   border-radius: 8px;
 
   overflow: hidden; /* keeps image inside rounded corners */
+
+  /* Logo scales down smoothly as you scroll, Apple-style. */
+  transform: scale(calc(1 - 0.18 * var(--scroll-progress)));
+  transform-origin: left center;
+  transition: transform 0.1s linear;
 }
 
 .logo-img {
@@ -281,6 +289,12 @@
     z-index: 1001;
   }
 
+  /* Progressive shrink is a desktop nicety — on mobile the layout is
+     already compact, so keep the logo at a stable, readable size. */
+  .logo-box {
+    transform: none !important;
+  }
+
   .nav-links {
     position: fixed;
 
@@ -362,5 +376,12 @@
 
   .nav-dropdown-menu a.active {
     color: var(--accent) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar,
+  .logo-box {
+    transition: none !important;
   }
 }

@@ -8,6 +8,7 @@
   background: var(--bg, #0b0b0c);
   transition: opacity 0.65s ease, filter 0.65s ease;
   opacity: 1;
+  overflow: hidden;
 }
 
 .loader-overlay.exiting {
@@ -16,43 +17,97 @@
   pointer-events: none;
 }
 
+/* White flash burst on exit — sits above everything else in the
+   overlay, briefly floods white, then fades along with the rest of
+   the overlay as it unmounts. */
+.loader-flash {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  z-index: 2;
+  opacity: 0;
+  animation: loaderFlash 0.65s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes loaderFlash {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-flash {
+    animation: none;
+    opacity: 0;
+  }
+}
+
 .loader-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.25rem;
   animation: loader-breathe 2.6s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
 }
 
-/* New styles for the logo image */
+/* Logo */
 .loader-mark {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Remove the text styles since we're using an image */
 }
 
 .loader-logo {
   width: auto;
-  height: 80px; /* Adjust this value based on your logo */
-  max-width: 200px; /* Prevents logo from getting too wide */
+  height: 80px;
+  max-width: 200px;
   object-fit: contain;
   display: block;
 }
 
-.loader-track {
-  width: 140px;
-  height: 2px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.08);
-  overflow: hidden;
+/* Segmented block progress bar — visually distinct blocks that fill
+   in one at a time as progress crosses each 10% threshold. */
+.loader-track-blocks {
+  display: flex;
+  gap: 5px;
+  width: auto;
 }
 
-.loader-fill {
-  height: 100%;
-  background: var(--accent, #e8ff47);
+.loader-block {
+  width: 14px;
+  height: 4px;
   border-radius: 2px;
-  transition: width 0.2s linear;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.loader-block.filled {
+  background: var(--accent, #e8ff47);
+  transform: scaleY(1.4);
+}
+
+@media (max-width: 480px) {
+  .loader-block {
+    width: 10px;
+  }
+}
+
+/* Status text — cycles through loading phrases */
+.loader-status {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--text-muted, #8a8a89);
+  min-height: 1.2em;
 }
 
 @keyframes loader-breathe {
@@ -70,20 +125,12 @@
     height: 60px;
     max-width: 150px;
   }
-  
-  .loader-track {
-    width: 100px;
-  }
 }
 
 @media (max-width: 480px) {
   .loader-logo {
     height: 40px;
     max-width: 120px;
-  }
-  
-  .loader-track {
-    width: 80px;
   }
 }
 
@@ -92,9 +139,5 @@
   .loader-logo {
     height: 100px;
     max-width: 300px;
-  }
-  
-  .loader-track {
-    width: 180px;
   }
 }

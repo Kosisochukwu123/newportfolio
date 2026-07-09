@@ -28,23 +28,17 @@ function HomeSections({ profile, projects, skills, testimonials }) {
   return (
     <>
       <Hero profile={profile} />
-
       <Skills skills={skills} />
-
       <Collaborations />
-
       <Projects projects={projects} />
-
       <LightTransition caption="entering next chapter" />
-
       <About profile={profile} />
-
       <Testimonials testimonials={testimonials} />
 
       {/* <Contact profile={profile} /> */}
-
       <Footer company={profile} />
-    </>
+
+   </>
   );
 }
 
@@ -133,9 +127,9 @@ export default function App() {
   }, []);
 
   // Momentum/inertia scroll — the "heavy glide" feel
-  useEffect(() => {
-    initSmoothScroll();
-  }, []);
+  // useEffect(() => {
+  //   initSmoothScroll();
+  // }, []);
 
   return (
     <div className="app">

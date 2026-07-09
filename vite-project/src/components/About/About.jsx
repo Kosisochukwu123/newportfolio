@@ -53,7 +53,7 @@ export default function About() {
           if (entry.isIntersecting) entry.target.classList.add("in-view");
         });
       },
-      { threshold: 0.2, rootMargin: "0px 0px -60px 0px" }
+      { threshold: 0.2, rootMargin: "0px 0px -60px 0px" },
     );
 
     if (textRef.current) observer.observe(textRef.current);
@@ -63,8 +63,12 @@ export default function About() {
     return () => observer.disconnect();
   }, []);
 
-  const capabilities = company.services?.length ? company.services : DEFAULT_CAPABILITIES;
-  const milestones = company.milestones?.length ? company.milestones : DEFAULT_MILESTONES;
+  const capabilities = company.services?.length
+    ? company.services
+    : DEFAULT_CAPABILITIES;
+  const milestones = company.milestones?.length
+    ? company.milestones
+    : DEFAULT_MILESTONES;
 
   return (
     <section id="about" className="about-section">
@@ -75,7 +79,8 @@ export default function About() {
           {/* TEXT SIDE */}
           <div className="about-text reveal" ref={textRef}>
             <h2 className="section-title">
-              Building digital products that <span className="accent">scale</span>
+              Building digital products that{" "}
+              <span className="accent">scale</span>
             </h2>
 
             {(company.aboutBio || []).slice(0, 1).map((para, i) => (
@@ -99,9 +104,18 @@ export default function About() {
 
             <div className="about-stats">
               {[
-                { num: company.yearsExperience || "3+", label: "Years Experience" },
-                { num: company.projectsShipped || "20+", label: "Projects Delivered" },
-                { num: company.clientsServed || "10+", label: "Clients Served" },
+                {
+                  num: company.yearsExperience || "3+",
+                  label: "Years Experience",
+                },
+                {
+                  num: company.projectsShipped || "20+",
+                  label: "Projects Delivered",
+                },
+                {
+                  num: company.clientsServed || "10+",
+                  label: "Clients Served",
+                },
               ].map((s) => (
                 <div className="stat" key={s.label}>
                   <span className="stat-num">{s.num}</span>
@@ -116,11 +130,10 @@ export default function About() {
             <div className="about-img-wrapper">
               <div className="about-img-dots" aria-hidden="true" />
               <div className="about-img-placeholder">
-                {company.avatarUrl ? (
-                  <img src={company.avatarUrl} alt={company.name} />
-                ) : (
-                  <span>Company Identity</span>
-                )}
+                <img
+                  src={company.avatarUrl || "/about.jpg"}
+                  alt={company.name}
+                />
               </div>
               <div className="about-img-border" />
             </div>
@@ -139,7 +152,9 @@ export default function About() {
               <div className="timeline-dot" />
               <span className="timeline-year">{m.year}</span>
               <span className="timeline-label">{m.label}</span>
-              {i < milestones.length - 1 && <div className="timeline-connector" aria-hidden="true" />}
+              {i < milestones.length - 1 && (
+                <div className="timeline-connector" aria-hidden="true" />
+              )}
             </div>
           ))}
         </div>

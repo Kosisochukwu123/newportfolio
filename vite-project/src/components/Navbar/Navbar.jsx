@@ -16,6 +16,11 @@ const pageLinks = [
   { name: "Contact", path: "/contact" },
 ];
 
+// Scroll distance (px) over which the navbar fully transitions from
+// transparent/large to glass/compact — this is what makes the effect
+// continuous (Apple-style) rather than a single on/off breakpoint.
+const SCROLL_RANGE = 140;
+
 export default function Navbar({ profile = {} }) {
   const location = useLocation();
   const isHome = location.pathname === "/";
@@ -27,12 +32,21 @@ export default function Navbar({ profile = {} }) {
   const [activeSection, setActiveSection] = useState("");
 
   const dropdownRef = useRef(null);
+  const navRef = useRef(null);
 
   useEffect(() => {
     let raf = 0;
 
     const compute = () => {
-      setScrolled(window.scrollY > 50);
+      const y = window.scrollY;
+      setScrolled(y > 50);
+
+      // Continuous 0..1 progress drives the glass/compact transition
+      // smoothly via a CSS variable, instead of an abrupt class swap.
+      const progress = Math.min(1, y / SCROLL_RANGE);
+      if (navRef.current) {
+        navRef.current.style.setProperty("--scroll-progress", progress.toFixed(3));
+      }
 
       // Scroll-spy only makes sense on the homepage, where the
       // sections actually exist in the DOM.
@@ -43,7 +57,7 @@ export default function Navbar({ profile = {} }) {
       // overlapping/gappy fixed-window checks that caused the active
       // link to jump or stick between sections.
       const NAV_OFFSET = 150;
-      const scrollPos = window.scrollY + NAV_OFFSET;
+      const scrollPos = y + NAV_OFFSET;
 
       let current = sectionLinks[0]?.id ?? "";
 
@@ -92,7 +106,7 @@ export default function Navbar({ profile = {} }) {
 
   return (
     <>
-      <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
+      <nav ref={navRef} className={`navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="navbar-inner">
           {/* Logo */}
           <Link to="/" className="nav-logo" onClick={closeMenus}>
