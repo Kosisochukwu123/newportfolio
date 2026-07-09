@@ -1,60 +1,24 @@
-// src/components/AdvancedScrollRestoration.jsx
-import { useEffect, useRef } from "react";
-import { useLocation, useNavigationType } from "react-router-dom";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { getLenis } from "../utils/smoothScroll";
 
 export default function AdvancedScrollRestoration() {
-  const { pathname, key } = useLocation();
-  const navigationType = useNavigationType();
-  const scrollPositions = useRef({});
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    // Save current scroll position before leaving
-    const saveCurrentPosition = () => {
-      scrollPositions.current[key] = window.scrollY;
-    };
+    // Don't interfere with hash scrolling
+    if (window.location.hash) return;
 
-    // Restore or reset scroll position
-    const handleScrollRestoration = () => {
-      // If hash exists, scroll to element
-      const hash = window.location.hash;
-      if (hash) {
-        const element = document.getElementById(hash.replace("#", ""));
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth" });
-          return;
-        }
-      }
+    const lenis = getLenis();
 
-      // If going back/forward, restore position
-      if (navigationType === "POP") {
-        const savedPosition = scrollPositions.current[key];
-        if (savedPosition !== undefined) {
-          window.scrollTo({
-            top: savedPosition,
-            behavior: "auto",
-          });
-          return;
-        }
-      }
-
-      // New navigation: scroll to top
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
+    if (lenis) {
+      lenis.scrollTo(0, {
+        immediate: true,
       });
-    };
-
-    // Save before unload
-    window.addEventListener("beforeunload", saveCurrentPosition);
-    
-    // Execute scroll restoration
-    handleScrollRestoration();
-
-    return () => {
-      window.removeEventListener("beforeunload", saveCurrentPosition);
-      saveCurrentPosition();
-    };
-  }, [pathname, key, navigationType]);
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, [pathname]);
 
   return null;
 }

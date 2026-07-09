@@ -187,7 +187,6 @@
 @media (max-width: 860px) {
   .testimonials-stage {
     display: block;
-    margin-top: 2rem;
     min-height: 0;
   }
 

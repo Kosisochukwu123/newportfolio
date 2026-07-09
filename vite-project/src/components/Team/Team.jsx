@@ -50,8 +50,6 @@ export default function Team() {
         {!loading && !error && members.length > 0 && (
           <div className="team-grid">
             {members.map((m) => {
-              console.log("Team member:", m);
-              console.log("Photo URL:", m.photoUrl);
               return (
                 <div className="team-card" key={m._id}>
                   <div className="team-image-wrapper">

@@ -22,7 +22,7 @@
 
 .about-text p {
   color: #4a4a4a;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   line-height: 1.8;
   font-size: 0.95rem;
 }
@@ -31,30 +31,65 @@
   color: var(--accent);
 }
 
-/* ── Capability pills ── */
-.about-capabilities {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  margin-top: 1.75rem;
+/* ── Who We Are checklist card ── */
+.who-we-are-card {
+  background: #fafafa;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius);
+  padding: 1.5rem 1.75rem;
+  margin: 1.5rem 0;
 }
 
-.capability-pill {
+.who-we-are-label {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
-  padding: 0.45rem 0.9rem;
-  border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  color: #333333;
-  background: #fafafa;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.who-we-are-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem 1.5rem;
+}
+
+.who-we-are-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  color: #222222;
+  font-weight: 500;
+}
+
+.check-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #0b0b0c;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 500px) {
+  .who-we-are-list {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ── Stats — oversized, confident numbers ── */
 .about-stats {
   display: flex;
   gap: 2.5rem;
-  margin-top: 2.5rem;
+  margin-top: 2rem;
   padding-top: 2rem;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
   flex-wrap: wrap;
@@ -88,8 +123,6 @@
   max-width: 320px;
 }
 
-/* Subtle decorative dot texture behind the photo — a restrained nod
-   to the "grain/texture" trend, kept quiet rather than loud */
 .about-img-dots {
   position: absolute;
   top: -24px;
@@ -134,6 +167,89 @@
   transform: translate(12px, 12px);
   z-index: 0;
   opacity: 0.5;
+}
+
+/* ── Milestone timeline ── */
+.about-timeline {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0;
+  margin-top: 5rem;
+  padding-top: 3rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.timeline-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  max-width: 220px;
+  padding: 0 1rem;
+}
+
+.timeline-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-bottom: 1rem;
+  box-shadow: 0 0 0 5px rgba(212, 255, 58, 0.15);
+}
+
+.timeline-year {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0b0b0c;
+  margin-bottom: 0.3rem;
+}
+
+.timeline-label {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: #666666;
+  line-height: 1.5;
+}
+
+.timeline-connector {
+  position: absolute;
+  top: 7px;
+  left: 50%;
+  width: 100%;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.12);
+  z-index: -1;
+}
+
+@media (max-width: 700px) {
+  .about-timeline {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2rem;
+  }
+  .timeline-item {
+    flex-direction: row;
+    text-align: left;
+    max-width: none;
+    width: 100%;
+    padding: 0;
+    gap: 1rem;
+  }
+  .timeline-dot {
+    margin-bottom: 0;
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+  .timeline-connector {
+    top: 14px;
+    left: 6px;
+    width: 1px;
+    height: calc(100% + 2rem);
+  }
 }
 
 /* ── Scroll reveal ── */

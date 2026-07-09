@@ -5,11 +5,16 @@ import "./About.css";
 const API = import.meta.env.VITE_API_URL || "/api";
 
 const DEFAULT_CAPABILITIES = [
-  "Web Development",
+  "MERN Development",
   "UI/UX Design",
-  "Backend Systems",
-  "Cyber Security",
-  "Videography & Motion",
+  "AI Integration",
+  "Cloud Deployment",
+];
+
+const DEFAULT_MILESTONES = [
+  { year: "2024", label: "Started GH Studios" },
+  { year: "2025", label: "First International Client" },
+  { year: "2026", label: "Agency Launch" },
 ];
 
 export default function About() {
@@ -17,18 +22,18 @@ export default function About() {
     name: "Your Company",
     aboutBio: [
       "We are a digital product studio focused on building scalable, high-performance web applications.",
-      "Our work spans full-stack development, UI/UX design, and backend architecture for modern businesses.",
-      "We believe in clean engineering, thoughtful design, and shipping products that solve real problems.",
     ],
     yearsExperience: "3+",
     projectsShipped: "24+",
     clientsServed: "10+",
     avatarUrl: "",
     services: DEFAULT_CAPABILITIES,
+    milestones: DEFAULT_MILESTONES,
   });
 
   const textRef = useRef(null);
   const cardRef = useRef(null);
+  const timelineRefs = useRef([]);
 
   useEffect(() => {
     fetch(`${API}/profile`)
@@ -53,11 +58,13 @@ export default function About() {
 
     if (textRef.current) observer.observe(textRef.current);
     if (cardRef.current) observer.observe(cardRef.current);
+    timelineRefs.current.forEach((el) => el && observer.observe(el));
 
     return () => observer.disconnect();
   }, []);
 
   const capabilities = company.services?.length ? company.services : DEFAULT_CAPABILITIES;
+  const milestones = company.milestones?.length ? company.milestones : DEFAULT_MILESTONES;
 
   return (
     <section id="about" className="about-section">
@@ -71,16 +78,23 @@ export default function About() {
               Building digital products that <span className="accent">scale</span>
             </h2>
 
-            {(company.aboutBio || []).map((para, i) => (
+            {(company.aboutBio || []).slice(0, 1).map((para, i) => (
               <p key={i}>{para}</p>
             ))}
 
-            <div className="about-capabilities">
-              {capabilities.map((cap) => (
-                <span className="capability-pill" key={cap}>
-                  {cap}
-                </span>
-              ))}
+            {/* Who We Are checklist card */}
+            <div className="who-we-are-card">
+              <p className="who-we-are-label">Who We Are</p>
+              <ul className="who-we-are-list">
+                {capabilities.map((cap) => (
+                  <li key={cap}>
+                    <span className="check-icon" aria-hidden="true">
+                      ✔
+                    </span>
+                    {cap}
+                  </li>
+                ))}
+              </ul>
             </div>
 
             <div className="about-stats">
@@ -111,6 +125,23 @@ export default function About() {
               <div className="about-img-border" />
             </div>
           </div>
+        </div>
+
+        {/* Milestone timeline */}
+        <div className="about-timeline">
+          {milestones.map((m, i) => (
+            <div
+              className="timeline-item reveal"
+              key={m.year + i}
+              ref={(node) => (timelineRefs.current[i] = node)}
+              style={{ transitionDelay: `${i * 0.12}s` }}
+            >
+              <div className="timeline-dot" />
+              <span className="timeline-year">{m.year}</span>
+              <span className="timeline-label">{m.label}</span>
+              {i < milestones.length - 1 && <div className="timeline-connector" aria-hidden="true" />}
+            </div>
+          ))}
         </div>
       </div>
     </section>

@@ -16,9 +16,9 @@ import ChatBot from "./components/ChatBot/ChatBot";
 import Footer from "./components/Footer/Footer";
 import LightTransition from "./components/LightTransaction/LightTransition";
 import Testimonials from "./components/Testimonials/Testimonials";
+import AdvancedScrollRestoration from "./components/AdvancedScrollRestoration";
 import { fetchWithCache } from "./utils/Cache";
 import { initSmoothScroll, getLenis } from "./utils/smoothScroll";
-import ScrollRestoration from "./components/AdvancedScrollRestoration"; // Import the advanced scroll restoration
 import "./styles/globals.css";
 
 // const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -28,12 +28,21 @@ function HomeSections({ profile, projects, skills, testimonials }) {
   return (
     <>
       <Hero profile={profile} />
+
       <Skills skills={skills} />
+
       <Collaborations />
+
       <Projects projects={projects} />
+
       <LightTransition caption="entering next chapter" />
+
       <About profile={profile} />
+
       <Testimonials testimonials={testimonials} />
+
+      {/* <Contact profile={profile} /> */}
+
       <Footer company={profile} />
     </>
   );
@@ -49,20 +58,26 @@ function ScrollToHash() {
   useEffect(() => {
     if (!location.hash) return;
 
-    const id = location.hash.slice(1);
-    const timeout = setTimeout(() => {
-      const el = document.getElementById(id);
-      if (!el) return;
+    const id = location.hash.substring(1);
+
+    const timer = setTimeout(() => {
+      const target = document.getElementById(id);
+
+      if (!target) {
+        console.log("Couldn't find:", id);
+        return;
+      }
 
       const lenis = getLenis();
-      if (lenis) {
-        lenis.scrollTo(el, { offset: 0 });
-      } else {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }, 80);
 
-    return () => clearTimeout(timeout);
+      if (lenis) {
+        lenis.scrollTo(target, {
+          duration: 1.2,
+        });
+      }
+    }, 150);
+
+    return () => clearTimeout(timer);
   }, [location]);
 
   return null;
@@ -129,9 +144,8 @@ export default function App() {
 
       {/* GLOBAL DATA PASSED DOWN */}
       <Navbar profile={profile} />
-      
-      {/* Advanced Scroll Restoration - Place it here */}
-      <ScrollRestoration />
+
+      <AdvancedScrollRestoration />
       
       {/* Hash scrolling - Keep this for anchor links */}
       <ScrollToHash />

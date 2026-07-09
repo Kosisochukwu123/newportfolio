@@ -1,4 +1,5 @@
 import "./Hero.css";
+import { Link } from "react-router-dom";
 
 export default function Hero({ profile = {} }) {
   return (
@@ -38,7 +39,7 @@ export default function Hero({ profile = {} }) {
             <a href="#cases" className="btn btn-primary">
               View our work
             </a>
-            <a href="#contact" className="btn btn-outline">
+            <a href="/contact" className="btn btn-outline">
               Start a project
             </a>
           </div>
