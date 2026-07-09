@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const TeamMember = require("../models/TeamMember");
 const fs = require("fs");
 const path = require("path");
+const { uploadToCloudinary } = require("../config/cloudinary");
 
 // ── PUBLIC ──────────────────────────────────────────────
 
@@ -48,11 +49,6 @@ exports.getInviteByToken = async (req, res) => {
 // POST /api/team/invite/:token — friend submits the form (multipart/form-data)
 
 exports.submitInvite = async (req, res) => {
-  console.log("========== MULTER DEBUG ==========");
-  console.log("BODY:", req.body);
-  console.log("FILE:", req.file);
-  console.log("=================================");
-
   try {
     const invite = await TeamMember.findOne({
       inviteToken: req.params.token,
@@ -90,14 +86,20 @@ exports.submitInvite = async (req, res) => {
     }
 
     // Build photo URL
-    const photoUrl = req.file ? `/uploads/${req.file.filename}` : "";
+    let photoUrl = "";
 
+    if (req.file) {
+      const uploaded = await uploadToCloudinary(
+        req.file.path,
+        "portfolio/team",
+      );
+
+      photoUrl = uploaded.secure_url;
+
+      console.log("Cloudinary URL:", photoUrl);
+    }
     // Debug upload
     if (req.file) {
-      console.log("Filename:", req.file.filename);
-      console.log("Destination:", req.file.destination);
-      console.log("Saved path:", req.file.path);
-      console.log("Exists:", fs.existsSync(req.file.path));
 
       const expectedPath = path.join(
         __dirname,

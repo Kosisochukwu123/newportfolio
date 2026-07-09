@@ -107,8 +107,6 @@ app.use("/uploads", (req, res, next) => {
 });
 
 
-// Serve uploaded images (team photos, testimonial photos, etc.)
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ── Health check ────────────────────────────────────────
 app.get("/api/health", (req, res) => {

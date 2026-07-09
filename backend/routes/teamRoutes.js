@@ -15,7 +15,8 @@ const {
 // ⚠️ Adjust these two import paths to match your actual project structure —
 // they should be the same middleware your projects/auth routes already use.
 const { protect } = require("../middleware/authMiddleware");
-const upload = require("../middleware/uploadMiddleware"); // multer instance, e.g. upload.single("photo")
+// const upload = require("../middleware/uploadMiddleware"); 
+const { upload } = require("../config/cloudinary");
 
 // ── Public ──
 router.get("/", getPublicTeam);
@@ -23,10 +24,6 @@ router.get("/invite/:token", getInviteByToken);
 // router.post("/invite/:token", upload.single("photo"), submitInvite);
 router.post(
   "/invite/:token",
-  (req, res, next) => {
-    console.log("✅ Invite route reached");
-    next();
-  },
   upload.single("photo"),
   submitInvite
 );
