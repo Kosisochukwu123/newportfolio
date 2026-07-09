@@ -145,7 +145,7 @@ export default function App() {
       {/* GLOBAL DATA PASSED DOWN */}
       <Navbar profile={profile} />
 
-      <AdvancedScrollRestoration />
+      {/* <AdvancedScrollRestoration /> */}
       
       {/* Hash scrolling - Keep this for anchor links */}
       <ScrollToHash />
