@@ -18,7 +18,7 @@ import LightTransition from "./components/LightTransaction/LightTransition";
 import Testimonials from "./components/Testimonials/Testimonials";
 import AdvancedScrollRestoration from "./components/AdvancedScrollRestoration";
 import { fetchWithCache } from "./utils/Cache";
-import { getLenis } from "./utils/smoothScroll";
+import { initSmoothScroll, getLenis } from "./utils/smoothScroll";
 import "./styles/globals.css";
 
 // const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -133,9 +133,9 @@ export default function App() {
   }, []);
 
   // Momentum/inertia scroll — the "heavy glide" feel
-  // useEffect(() => {
-  //   initSmoothScroll();
-  // }, []);
+  useEffect(() => {
+    initSmoothScroll();
+  }, []);
 
   return (
     <div className="app">
