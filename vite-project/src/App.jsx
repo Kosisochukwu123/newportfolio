@@ -40,7 +40,8 @@ function HomeSections({ profile, projects, skills, testimonials }) {
   }}
 />
       {/* <Testimonials testimonials={testimonials} /> */}
-      <About profile={profile} />
+      {/* <About profile={profile} /> */}
+      <div style={{ height: "100vh", background: "#fff" }} />
 
       {/* <Contact profile={profile} /> */}
       <Footer company={profile} />
@@ -134,9 +135,9 @@ export default function App() {
   }, []);
 
   // Momentum/inertia scroll — the "heavy glide" feel
-  // useEffect(() => {
-  //   initSmoothScroll();
-  // }, []);
+  useEffect(() => {
+    initSmoothScroll();
+  }, []);
 
   return (
     <div className="app">
