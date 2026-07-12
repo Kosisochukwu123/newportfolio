@@ -56,7 +56,7 @@
   inset: 0;
   pointer-events: none;
   opacity: calc(var(--p) * (1 - var(--p)) * 4); /* peaks mid-transition */
-  /* mix-blend-mode: screen; */
+  mix-blend-mode: screen;
 }
 .lt-streak {
   position: absolute;
@@ -107,7 +107,7 @@
   text-transform: uppercase;
   color: #ffffff;
   opacity: calc((0.5 - var(--p)) * 2);
-  /* mix-blend-mode: difference; */
+  mix-blend-mode: difference;
 }
 @media (prefers-reduced-motion: reduce) {
   .lt-orb,
