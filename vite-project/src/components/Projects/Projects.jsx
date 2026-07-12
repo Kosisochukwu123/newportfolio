@@ -201,9 +201,15 @@ export default function Projects() {
           //     </div>
           //   </div>
           // </article>
-          <div style={{height:"400px", background:"#111"}}>
-  Test card
-</div>
+  <article
+  key={item._id}
+  ref={(node) => (cardRefs.current[idx] = node)}
+  className="pj-card"
+>
+  <div style={{height:"400px", background:"#111"}}>
+    Test card
+  </div>
+</article>
         ))}
       </div>
     </section>
