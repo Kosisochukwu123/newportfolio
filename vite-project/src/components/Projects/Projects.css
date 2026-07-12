@@ -43,21 +43,13 @@
 }
 
 /* ---------- Sticky Container ---------- */
-/* .pj-sticky {
+.pj-sticky {
   position: sticky;
   top: 0;
   height: 100dvh;
   width: 100%;
   overflow: hidden;
-} */
-
-
-.pj-sticky {
-  position: relative;
-  height: auto;
-  width: 100%;
 }
-
 
 /* ---------- Header Ribbon ---------- */
 .pj-ribbon {
@@ -132,8 +124,8 @@
 
 /* ---------- Cards ---------- */
 .pj-card {
- position: relative;
-  inset: auto;
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
