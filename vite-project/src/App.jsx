@@ -32,21 +32,12 @@ function HomeSections({ profile, projects, skills, testimonials }) {
       <Skills skills={skills} />
       <Collaborations />
       <Projects projects={projects} />
-      {/* <LightTransition caption="entering next chapter" /> */}
-      <div
-  style={{
-    height: "180vh",
-    background: "#0b0b0c",
-  }}
-/>
-      {/* <Testimonials testimonials={testimonials} /> */}
-      {/* <About profile={profile} /> */}
-      <div style={{ height: "100vh", background: "#fff" }} />
-
-      {/* <Contact profile={profile} /> */}
-      {/* <Footer company={profile} /> */}
-
-   </>
+      <LightTransition caption="entering next chapter" />
+      <Testimonials testimonials={testimonials} />
+      <About profile={profile} />
+      <Contact profile={profile} />
+      <Footer company={profile} />
+    </>
   );
 }
 
@@ -113,10 +104,18 @@ export default function App() {
   // round-trip entirely and resolve near-instantly.
   useEffect(() => {
     Promise.all([
-      fetchWithCache("profile", () => fetch(`${API}/profile`).then((r) => r.json())),
-      fetchWithCache("projects", () => fetch(`${API}/projects`).then((r) => r.json())),
-      fetchWithCache("skills", () => fetch(`${API}/skills`).then((r) => r.json())),
-      fetchWithCache("testimonials", () => fetch(`${API}/testimonials`).then((r) => r.json())),
+      fetchWithCache("profile", () =>
+        fetch(`${API}/profile`).then((r) => r.json()),
+      ),
+      fetchWithCache("projects", () =>
+        fetch(`${API}/projects`).then((r) => r.json()),
+      ),
+      fetchWithCache("skills", () =>
+        fetch(`${API}/skills`).then((r) => r.json()),
+      ),
+      fetchWithCache("testimonials", () =>
+        fetch(`${API}/testimonials`).then((r) => r.json()),
+      ),
     ])
       .then(([profileRes, projectRes, skillsRes, testimonialsRes]) => {
         if (profileRes.success) setProfile(profileRes.data);
@@ -142,13 +141,16 @@ export default function App() {
   return (
     <div className="app">
       {/* <ScrollProgress /> */}
-      <div className="cursor-glow" style={{ left: mousePos.x, top: mousePos.y }} />
+      <div
+        className="cursor-glow"
+        style={{ left: mousePos.x, top: mousePos.y }}
+      />
 
       {/* GLOBAL DATA PASSED DOWN */}
       <Navbar profile={profile} />
 
       <AdvancedScrollRestoration />
-      
+
       {/* Hash scrolling - Keep this for anchor links */}
       <ScrollToHash />
 
