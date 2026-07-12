@@ -141,7 +141,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <ScrollProgress />
+      {/* <ScrollProgress /> */}
       <div className="cursor-glow" style={{ left: mousePos.x, top: mousePos.y }} />
 
       {/* GLOBAL DATA PASSED DOWN */}
