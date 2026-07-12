@@ -16,7 +16,7 @@ function easeOutQuint(t) {
 }
 
 const OVERLAP = 0.35;
-const HOLD = 0.35;
+const HOLD = 0.5;
 const STRIDE = 1 + HOLD;
 
 export default function Projects() {
