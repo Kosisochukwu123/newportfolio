@@ -30,7 +30,7 @@ function HomeSections({ profile, projects, skills, testimonials }) {
     <>
       <Hero profile={profile} />
       <Skills skills={skills} />
-      {/* <Collaborations /> */}
+      <Collaborations />
       {/* <Projects projects={projects} /> */}
       {/* <LightTransition caption="entering next chapter" /> */}
       <div
