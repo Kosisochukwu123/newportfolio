@@ -138,11 +138,11 @@ export default function Projects() {
   }
 
   return (
- <section
-  id="cases"
-  ref={containerRef}
-  className="pj-root"
-  style={{ height: "100vh" }}
+    <section
+      id="cases"
+      ref={containerRef}
+      className="pj-root"
+      style={{ height: `${(total * 1.2 + 1) * 100}dvh` }}    
 >
       <div className="pj-sticky">
         {cases.map((item, idx) => (
