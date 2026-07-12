@@ -29,7 +29,7 @@ export default function Testimonials({ testimonials = [] }) {
   return (
     <section id="testimonials" className="testimonials-section">
       <div className="container">
-        <p className="section-label">06. Testimonials</p>
+        {/* <p className="section-label">06. Testimonials</p> */}
         <h2 className="section-title">
           What people <span className="accent">say</span>
         </h2>

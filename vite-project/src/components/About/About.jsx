@@ -70,7 +70,7 @@ export default function About() {
       </div>
 
       <div className="container about-inner reveal" ref={contentRef}>
-        <p className="section-label">07. About Us</p>
+        {/* <p className="section-label">07. About Us</p> */}
 
         <h2 className="section-title">
           Building digital products that <span className="accent">scale</span>

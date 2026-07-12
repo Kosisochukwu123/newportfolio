@@ -1,4 +1,3 @@
-
 .lt-root {
   --p: 0;
   position: relative;
@@ -57,7 +56,7 @@
   inset: 0;
   pointer-events: none;
   opacity: calc(var(--p) * (1 - var(--p)) * 4); /* peaks mid-transition */
-  mix-blend-mode: screen;
+  /* mix-blend-mode: screen; */
 }
 .lt-streak {
   position: absolute;
@@ -71,10 +70,25 @@
     transparent
   );
 }
-.lt-streak.s1 { top: 28%; transform: rotate(-6deg); }
-.lt-streak.s2 { top: 48%; transform: rotate(3deg); opacity: 0.7; }
-.lt-streak.s3 { top: 68%; transform: rotate(-2deg); opacity: 0.5; }
-.lt-streak.s4 { top: 82%; transform: rotate(4deg); opacity: 0.4; }
+.lt-streak.s1 {
+  top: 28%;
+  transform: rotate(-6deg);
+}
+.lt-streak.s2 {
+  top: 48%;
+  transform: rotate(3deg);
+  opacity: 0.7;
+}
+.lt-streak.s3 {
+  top: 68%;
+  transform: rotate(-2deg);
+  opacity: 0.5;
+}
+.lt-streak.s4 {
+  top: 82%;
+  transform: rotate(4deg);
+  opacity: 0.4;
+}
 /* Final white wash — takes over after the orb fills the screen. */
 .lt-wash {
   position: absolute;
@@ -93,9 +107,14 @@
   text-transform: uppercase;
   color: #ffffff;
   opacity: calc((0.5 - var(--p)) * 2);
-  mix-blend-mode: difference;
+  /* mix-blend-mode: difference; */
 }
 @media (prefers-reduced-motion: reduce) {
-  .lt-orb, .lt-halo { transition: none; }
-  .lt-root { height: 100vh; }
+  .lt-orb,
+  .lt-halo {
+    transition: none;
+  }
+  .lt-root {
+    height: 100vh;
+  }
 }

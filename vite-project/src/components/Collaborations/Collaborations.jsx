@@ -11,7 +11,7 @@ import "./Collaborations.css";
  */
 const PARTNERS = [
   { name: "Northwind", url: "#" },
-  { name: "Acme Co.", url: "#" },
+  { name: "Benson", url: "#" },
   { name: "Dragon Shot", url: "#" },
   { name: "FrankAustine", url: "#" },
   // { name: "Kepler", url: "#" },
@@ -24,7 +24,7 @@ export default function Collaborations() {
     <section className="cl-root" aria-labelledby="cl-title">
       <div className="cl-inner">
         <header className="cl-head">
-          <p className="cl-eyebrow">03 · In good company</p>
+          {/* <p className="cl-eyebrow">03 · In good company</p> */}
           <h2 id="cl-title" className="cl-title">
             Trusted collaborators <span className="cl-accent">we build with.</span>
           </h2>

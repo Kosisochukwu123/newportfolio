@@ -16,6 +16,7 @@ import ChatBot from "./components/ChatBot/ChatBot";
 import Footer from "./components/Footer/Footer";
 import LightTransition from "./components/LightTransaction/LightTransition";
 import Testimonials from "./components/Testimonials/Testimonials";
+import Resume from "./components/Resume/Resume";
 import AdvancedScrollRestoration from "./components/AdvancedScrollRestoration";
 import { fetchWithCache } from "./utils/Cache";
 import { initSmoothScroll, getLenis } from "./utils/smoothScroll";
@@ -172,6 +173,7 @@ export default function App() {
             </GatedPage>
           }
         />
+        <Route path="/resume" element={<Resume />} />
         <Route path="/join/:token" element={<TeamJoin />} />
       </Routes>
 

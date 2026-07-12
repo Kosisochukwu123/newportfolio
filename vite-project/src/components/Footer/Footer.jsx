@@ -28,7 +28,7 @@ export default function Footer({
         {/* Top */}
         <div className="footer-top">
           <div className="footer-left">
-            <p className="footer-label">07. Contact</p>
+            {/* <p className="footer-label">07. Contact</p> */}
 
             <h2 className="footer-heading">
               Let's build something

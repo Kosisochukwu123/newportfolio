@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./Navbar.css";
 
-// In-page scroll sections — these only exist on the homepage ("/")
 const sectionLinks = [
   { name: "Projects", id: "cases" },
   { name: "Skills", id: "skills" },
@@ -10,15 +9,11 @@ const sectionLinks = [
   { name: "About", id: "about" },
 ];
 
-// Separate-page links, grouped under the "Pages" dropdown
 const pageLinks = [
   { name: "Team", path: "/team" },
   { name: "Contact", path: "/contact" },
 ];
 
-// Scroll distance (px) over which the navbar fully transitions from
-// transparent/large to glass/compact — this is what makes the effect
-// continuous (Apple-style) rather than a single on/off breakpoint.
 const SCROLL_RANGE = 140;
 
 export default function Navbar({ profile = {} }) {
@@ -41,21 +36,13 @@ export default function Navbar({ profile = {} }) {
       const y = window.scrollY;
       setScrolled(y > 50);
 
-      // Continuous 0..1 progress drives the glass/compact transition
-      // smoothly via a CSS variable, instead of an abrupt class swap.
       const progress = Math.min(1, y / SCROLL_RANGE);
       if (navRef.current) {
         navRef.current.style.setProperty("--scroll-progress", progress.toFixed(3));
       }
 
-      // Scroll-spy only makes sense on the homepage, where the
-      // sections actually exist in the DOM.
       if (!isHome) return;
 
-      // Gap-free approach: walk the sections in order and keep track
-      // of the LAST one whose top we've scrolled past. This avoids the
-      // overlapping/gappy fixed-window checks that caused the active
-      // link to jump or stick between sections.
       const NAV_OFFSET = 150;
       const scrollPos = y + NAV_OFFSET;
 
@@ -71,16 +58,13 @@ export default function Navbar({ profile = {} }) {
       setActiveSection(current);
     };
 
-    // Throttle through rAF so the (layout-reading) work above only
-    // ever runs once per paint, no matter how many raw scroll events
-    // fire in between — this is what stops the forced-reflow spikes.
     const handleScroll = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(compute);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    compute(); // set correct state immediately, don't wait for first scroll
+    compute();
 
     return () => {
       cancelAnimationFrame(raf);
@@ -88,7 +72,6 @@ export default function Navbar({ profile = {} }) {
     };
   }, [isHome]);
 
-  // Close the "Pages" dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -120,7 +103,7 @@ export default function Navbar({ profile = {} }) {
             <span className="logo-name" />
           </Link>
 
-          {/* Nav */}
+          {/* Navigation Links */}
           <ul className={`nav-links ${menuOpen ? "open" : ""}`}>
             {sectionLinks.map((l, i) => (
               <li key={l.name}>
@@ -135,7 +118,7 @@ export default function Navbar({ profile = {} }) {
               </li>
             ))}
 
-            {/* Pages dropdown — Team / Contact live on separate routes */}
+            {/* Pages Dropdown */}
             <li className="nav-dropdown" ref={dropdownRef}>
               <button
                 type="button"
@@ -143,7 +126,7 @@ export default function Navbar({ profile = {} }) {
                 onClick={() => setPagesOpen((o) => !o)}
               >
                 <span className="nav-num">0{sectionLinks.length + 1}.</span>
-                Pages
+                Connect
                 <span className={`nav-caret ${pagesOpen ? "open" : ""}`}>▾</span>
               </button>
 
@@ -162,14 +145,30 @@ export default function Navbar({ profile = {} }) {
               </ul>
             </li>
 
+            {/* Download Resume Button */}
             <li>
-              <Link to="/contact" className="btn btn-primary nav-cta" onClick={closeMenus}>
+              <Link
+                to="/resume"
+                className="btn btn-primary nav-resume-btn"
+                onClick={closeMenus}
+              >
+                Download Resume
+              </Link>
+            </li>
+
+            {/* Contact CTA */}
+            <li>
+              <Link
+                to="/contact"
+                className="btn btn-primary nav-cta"
+                onClick={closeMenus}
+              >
                 Let's Talk
               </Link>
             </li>
           </ul>
 
-          {/* Hamburger */}
+          {/* Hamburger Menu */}
           <button
             className={`hamburger ${menuOpen ? "active" : ""}`}
             onClick={() => setMenuOpen(!menuOpen)}
