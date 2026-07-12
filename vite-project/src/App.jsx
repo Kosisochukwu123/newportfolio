@@ -39,7 +39,7 @@ function HomeSections({ profile, projects, skills, testimonials }) {
     background: "#0b0b0c",
   }}
 />
-      <Testimonials testimonials={testimonials} />
+      {/* <Testimonials testimonials={testimonials} /> */}
       <About profile={profile} />
 
       {/* <Contact profile={profile} /> */}
