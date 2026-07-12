@@ -79,47 +79,46 @@ export default function Projects() {
 
       el.style.transform = `translate3d(0,${translateY},0) scale(${scale})`;
       el.style.opacity = opacity;
-      // el.style.filter = local > 0 ? `blur(${(local * 4).toFixed(2)}px)` : "none";
-      el.style.filter = "none";
+      el.style.filter = local > 0 ? `blur(${(local * 4).toFixed(2)}px)` : "none";
+      // el.style.filter = "none";
       el.style.pointerEvents = opacity > 0.6 ? "auto" : "none";
     }
   };
 
-  useEffect(() => {
-    if (total === 0) return;
+  // useEffect(() => {
+  //   if (total === 0) return;
 
-    let raf = 0;
+  //   let raf = 0;
 
-    const update = () => {
-      const el = containerRef.current;
-      if (!el) return;
+  //   const update = () => {
+  //     const el = containerRef.current;
+  //     if (!el) return;
 
-      const rect = el.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const scrollable = el.offsetHeight - vh;
-      const scrolled = clamp(-rect.top, 0, scrollable);
-      const progress = scrollable > 0 ? scrolled / scrollable : 0;
+  //     const rect = el.getBoundingClientRect();
+  //     const vh = window.innerHeight;
+  //     const scrollable = el.offsetHeight - vh;
+  //     const scrolled = clamp(-rect.top, 0, scrollable);
+  //     const progress = scrollable > 0 ? scrolled / scrollable : 0;
 
-      applyMetrics(progress);
-    };
+  //     applyMetrics(progress);
+  //   };
 
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(update);
-    };
+  //   const onScroll = () => {
+  //     cancelAnimationFrame(raf);
+  //     raf = requestAnimationFrame(update);
+  //   };
 
-    update(); // set correct initial positions without waiting for a scroll event
+  //   update();
 
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+  //   window.addEventListener("scroll", onScroll, { passive: true });
+  //   window.addEventListener("resize", onScroll);
 
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [total]);
+  //   return () => {
+  //     cancelAnimationFrame(raf);
+  //     window.removeEventListener("scroll", onScroll);
+  //     window.removeEventListener("resize", onScroll);
+  //   };
+  // }, [total]);
 
   if (loading) {
     return <section className="pj-loading">Loading projects...</section>;
