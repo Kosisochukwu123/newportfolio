@@ -21,6 +21,7 @@ const uploadRoutes = require("./routes/upload.routes");
 const chatRoutes = require("./routes/chat.routes");
 const teamRoutes = require("./routes/teamRoutes");
 const testimonialRoutes = require("./routes/testimonialRoutes");
+const bugReportRoutes = require("./routes/bugReportRoutes");
 
 // ── App setup ───────────────────────────────────────────
 const app = express();
@@ -34,9 +35,6 @@ const allowedOrigins = [
   "https://newportfolio-sand-five.vercel.app",
   "https://ghstudios.online",
   "https://www.ghstudios.online",
-
-
-  // ADD BOTH VERCEL POSSIBILITIES
   "https://gh-studios.vercel.app",
   "https://ghstudios.vercel.app",
 ];
@@ -45,13 +43,10 @@ app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin) return callback(null, true);
-
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-
       console.log("❌ Blocked CORS origin:", origin);
-
       return callback(null, false); // IMPORTANT: do NOT throw error
     },
     credentials: true,
@@ -78,7 +73,8 @@ const authLimiter = rateLimit({
   },
 });
 
-// app.use(limiter);
+// app.use(limiter); // Global limiter is currently disabled
+
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -93,20 +89,10 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/team", teamRoutes);
 app.use("/api/testimonials", testimonialRoutes);
+app.use("/api/bugs", bugReportRoutes);
 
-
-const fs = require("fs");
-
-app.use("/uploads", (req, res, next) => {
-  const filePath = path.join(__dirname, "uploads", path.basename(req.path));
-
-  console.log("Looking for:", filePath);
-  console.log("Exists:", fs.existsSync(filePath));
-
-  next();
-});
-
-
+// Serve uploaded files
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ── Health check ────────────────────────────────────────
 app.get("/api/health", (req, res) => {
@@ -117,8 +103,9 @@ app.get("/api/health", (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-// ── Start ────────────────────────────────────────────────
+// ── Start Server ────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
   console.log(
     `\n🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`,

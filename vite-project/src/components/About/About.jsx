@@ -20,9 +20,6 @@ const DEFAULT_MILESTONES = [
 export default function About() {
   const [company, setCompany] = useState({
     name: "Your Company",
-    aboutBio: [
-      "We are a digital product studio focused on building scalable, high-performance web applications.",
-    ],
     yearsExperience: "3+",
     projectsShipped: "24+",
     clientsServed: "10+",
@@ -31,8 +28,7 @@ export default function About() {
     milestones: DEFAULT_MILESTONES,
   });
 
-  const textRef = useRef(null);
-  const cardRef = useRef(null);
+  const contentRef = useRef(null);
   const timelineRefs = useRef([]);
 
   useEffect(() => {
@@ -53,110 +49,82 @@ export default function About() {
           if (entry.isIntersecting) entry.target.classList.add("in-view");
         });
       },
-      { threshold: 0.2, rootMargin: "0px 0px -60px 0px" },
+      { threshold: 0.2, rootMargin: "0px 0px -60px 0px" }
     );
 
-    if (textRef.current) observer.observe(textRef.current);
-    if (cardRef.current) observer.observe(cardRef.current);
+    if (contentRef.current) observer.observe(contentRef.current);
     timelineRefs.current.forEach((el) => el && observer.observe(el));
 
     return () => observer.disconnect();
   }, []);
 
-  const capabilities = company.services?.length
-    ? company.services
-    : DEFAULT_CAPABILITIES;
-  const milestones = company.milestones?.length
-    ? company.milestones
-    : DEFAULT_MILESTONES;
+  const capabilities = company.services?.length ? company.services : DEFAULT_CAPABILITIES;
+  const milestones = company.milestones?.length ? company.milestones : DEFAULT_MILESTONES;
 
   return (
     <section id="about" className="about-section">
-      <div className="container">
+      {/* Full-bleed background photo */}
+      <div className="about-bg" aria-hidden="true">
+        <img src={company.avatarUrl || "/about.jpg"} alt="" />
+        <div className="about-bg-overlay" />
+      </div>
+
+      <div className="container about-inner reveal" ref={contentRef}>
         <p className="section-label">07. About Us</p>
 
-        <div className="about-grid">
-          {/* TEXT SIDE */}
-          <div className="about-text reveal" ref={textRef}>
-            <h2 className="section-title">
-              Building digital products that{" "}
-              <span className="accent">scale</span>
-            </h2>
+        <h2 className="section-title">
+          Building digital products that <span className="accent">scale</span>
+        </h2>
 
-            {(company.aboutBio || []).slice(0, 1).map((para, i) => (
-              <p key={i}>{para}</p>
+        {/* Who We Are checklist — glass card over the photo */}
+        <div className="who-we-are-card">
+          <p className="who-we-are-label">Who We Are</p>
+          <ul className="who-we-are-list">
+            {capabilities.map((cap) => (
+              <li key={cap}>
+                <span className="check-icon" aria-hidden="true">
+                  ✔
+                </span>
+                {cap}
+              </li>
             ))}
-
-            {/* Who We Are checklist card */}
-            <div className="who-we-are-card">
-              <p className="who-we-are-label">Who We Are</p>
-              <ul className="who-we-are-list">
-                {capabilities.map((cap) => (
-                  <li key={cap}>
-                    <span className="check-icon" aria-hidden="true">
-                      ✔
-                    </span>
-                    {cap}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="about-stats">
-              {[
-                {
-                  num: company.yearsExperience || "3+",
-                  label: "Years Experience",
-                },
-                {
-                  num: company.projectsShipped || "20+",
-                  label: "Projects Delivered",
-                },
-                {
-                  num: company.clientsServed || "10+",
-                  label: "Clients Served",
-                },
-              ].map((s) => (
-                <div className="stat" key={s.label}>
-                  <span className="stat-num">{s.num}</span>
-                  <span className="stat-label">{s.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* VISUAL SIDE */}
-          <div className="about-card reveal" ref={cardRef}>
-            <div className="about-img-wrapper">
-              <div className="about-img-dots" aria-hidden="true" />
-              <div className="about-img-placeholder">
-                <img
-                  src={company.avatarUrl || "/about.jpg"}
-                  alt={company.name}
-                />
-              </div>
-              <div className="about-img-border" />
-            </div>
-          </div>
+          </ul>
         </div>
 
-        {/* Milestone timeline */}
-        <div className="about-timeline">
-          {milestones.map((m, i) => (
-            <div
-              className="timeline-item reveal"
-              key={m.year + i}
-              ref={(node) => (timelineRefs.current[i] = node)}
-              style={{ transitionDelay: `${i * 0.12}s` }}
-            >
-              <div className="timeline-dot" />
-              <span className="timeline-year">{m.year}</span>
-              <span className="timeline-label">{m.label}</span>
-              {i < milestones.length - 1 && (
-                <div className="timeline-connector" aria-hidden="true" />
-              )}
+        <div className="about-stats">
+          {[
+            { num: company.yearsExperience || "3+", label: "Years Experience" },
+            { num: company.projectsShipped || "20+", label: "Projects Delivered" },
+            { num: company.clientsServed || "10+", label: "Clients Served" },
+          ].map((s) => (
+            <div className="stat" key={s.label}>
+              <span className="stat-num">{s.num}</span>
+              <span className="stat-label">{s.label}</span>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Milestone timeline — its own solid strip below the photo */}
+      <div className="about-timeline-wrap">
+        <div className="container">
+          <div className="about-timeline">
+            {milestones.map((m, i) => (
+              <div
+                className="timeline-item reveal"
+                key={m.year + i}
+                ref={(node) => (timelineRefs.current[i] = node)}
+                style={{ transitionDelay: `${i * 0.12}s` }}
+              >
+                <div className="timeline-dot" />
+                <span className="timeline-year">{m.year}</span>
+                <span className="timeline-label">{m.label}</span>
+                {i < milestones.length - 1 && (
+                  <div className="timeline-connector" aria-hidden="true" />
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

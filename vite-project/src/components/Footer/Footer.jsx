@@ -1,4 +1,7 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { getLenis } from "../../utils/smoothScroll";
+import BugReportModal from "./BugReportModal";
 import "./Footer.css";
 
 export default function Footer({
@@ -8,6 +11,17 @@ export default function Footer({
     location: "Switzerland",
   },
 }) {
+  const [bugModalOpen, setBugModalOpen] = useState(false);
+
+  const scrollToTop = () => {
+    const lenis = getLenis();
+    if (lenis) {
+      lenis.scrollTo(0);
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   return (
     <footer className="footer">
       <div className="footer-container">
@@ -31,9 +45,13 @@ export default function Footer({
               <Link to="/contact" className="btn btn-primary">
                 Start Project
               </Link>
-              <a href="mailto:bugs@ghstudios.com" className="btn btn-outline">
+              <button
+                type="button"
+                className="btn btn-outline"
+                onClick={() => setBugModalOpen(true)}
+              >
                 🐞 Report Bug
-              </a>
+              </button>
             </div>
           </div>
 
@@ -86,13 +104,27 @@ export default function Footer({
             © {new Date().getFullYear()} {company.name}
           </p>
 
-          <div className="footer-socials">
-            <a href="#">Github</a>
-            <a href="#">LinkedIn</a>
-            <a href="#">Instagram</a>
+          <div className="footer-bottom-right">
+            <div className="footer-socials">
+              <a href="#">Github</a>
+              <a href="#">LinkedIn</a>
+              <a href="#">Instagram</a>
+            </div>
+
+            <button
+              type="button"
+              className="footer-back-to-top"
+              onClick={scrollToTop}
+              aria-label="Back to top"
+            >
+              <span>Back to top</span>
+              <span className="footer-back-to-top-arrow">↑</span>
+            </button>
           </div>
         </div>
       </div>
+
+      {bugModalOpen && <BugReportModal onClose={() => setBugModalOpen(false)} />}
     </footer>
   );
 }

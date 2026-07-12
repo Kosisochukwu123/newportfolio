@@ -12,12 +12,12 @@ import "./Collaborations.css";
 const PARTNERS = [
   { name: "Northwind", url: "#" },
   { name: "Acme Co.", url: "#" },
-  { name: "Lumen", url: "#" },
-  { name: "Foundry", url: "#" },
-  { name: "Kepler", url: "#" },
-  { name: "Meridian", url: "#" },
-  { name: "Halcyon", url: "#" },
-  { name: "Ovant", url: "#" },
+  { name: "Dragon Shot", url: "#" },
+  { name: "FrankAustine", url: "#" },
+  // { name: "Kepler", url: "#" },
+  // { name: "Meridian", url: "#" },
+  // { name: "Halcyon", url: "#" },
+  // { name: "Ovant", url: "#" },
 ];
 export default function Collaborations() {
   return (
