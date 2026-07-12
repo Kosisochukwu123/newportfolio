@@ -16,7 +16,7 @@ function easeOutQuint(t) {
 }
 
 const OVERLAP = 0.35;
-const HOLD = 0.75;
+const HOLD = 0.35;
 const STRIDE = 1 + HOLD;
 
 export default function Projects() {
@@ -142,8 +142,9 @@ export default function Projects() {
       id="cases"
       ref={containerRef}
       className="pj-root"
-      style={{ height: `${(total * 1.2 + 1) * 100}dvh` }}    
->
+style={{
+  height: `${(total * STRIDE + 1) * 100}dvh`
+}}>
       <div className="pj-sticky">
         {cases.map((item, idx) => (
           <article
