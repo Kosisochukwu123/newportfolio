@@ -153,16 +153,13 @@ export default function Projects() {
             style={{ zIndex: 10 + idx }}
           >
             <div className="pj-grid">
-              {/* <div className="pj-visual">
+              <div className="pj-visual">
                 {item.imageUrl ? (
                   <img src={item.imageUrl} alt={item.title} />
                 ) : (
                   <div className="pj-visual-empty" aria-hidden="true" />
                 )}
-              </div> */}
-              <div className="pj-visual">
-  <div className="pj-visual-empty" aria-hidden="true" />
-</div>
+              </div>
 
               <div className="pj-content">
                 <p className="pj-subtitle">{item.subtitle}</p>
