@@ -145,7 +145,7 @@ export default function Projects() {
       style={{ height: `${(total * STRIDE + 1) * 100}dvh` }}
     >
       <div className="pj-sticky">
-        {cases.map((item, idx) => (
+        {cases.slice(0, 1).map((item, idx) => (
           <article
             key={item._id}
             ref={(node) => (cardRefs.current[idx] = node)}
