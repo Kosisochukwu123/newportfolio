@@ -145,62 +145,65 @@ export default function Projects() {
       style={{ height: `${(total * STRIDE + 1) * 100}dvh` }}
     >
       <div className="pj-sticky">
-        {cases.slice(0, 1).map((item, idx) => (
-          <article
-            key={item._id}
-            ref={(node) => (cardRefs.current[idx] = node)}
-            className="pj-card"
-            style={{ zIndex: 10 + idx }}
-          >
-            <div className="pj-grid">
-              <div className="pj-visual">
-                {item.imageUrl ? (
-                  <img src={item.imageUrl} alt={item.title} />
-                ) : (
-                  <div className="pj-visual-empty" aria-hidden="true" />
-                )}
-              </div>
+        {cases.map((item, idx) => (
+          // <article
+          //   key={item._id}
+          //   ref={(node) => (cardRefs.current[idx] = node)}
+          //   className="pj-card"
+          //   style={{ zIndex: 10 + idx }}
+          // >
+          //   <div className="pj-grid">
+          //     <div className="pj-visual">
+          //       {item.imageUrl ? (
+          //         <img src={item.imageUrl} alt={item.title} />
+          //       ) : (
+          //         <div className="pj-visual-empty" aria-hidden="true" />
+          //       )}
+          //     </div>
 
-              <div className="pj-content">
-                <p className="pj-subtitle">{item.subtitle}</p>
+          //     <div className="pj-content">
+          //       <p className="pj-subtitle">{item.subtitle}</p>
 
-                <h2 className="pj-title">{item.title}</h2>
+          //       <h2 className="pj-title">{item.title}</h2>
 
-                <p className="pj-desc">{item.description}</p>
+          //       <p className="pj-desc">{item.description}</p>
 
-                <div className="pj-tags">
-                  {item.tags?.map((tag) => (
-                    <span key={tag} className="pj-tag">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+          //       <div className="pj-tags">
+          //         {item.tags?.map((tag) => (
+          //           <span key={tag} className="pj-tag">
+          //             {tag}
+          //           </span>
+          //         ))}
+          //       </div>
 
-                <div className="pj-actions">
-                  {item.liveUrl && (
-                    <a
-                      href={item.liveUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="pj-btn pj-btn-primary"
-                    >
-                      View Project ↗
-                    </a>
-                  )}
-                  {item.githubUrl && (
-                    <a
-                      href={item.githubUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="pj-btn pj-btn-ghost"
-                    >
-                      GitHub
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
-          </article>
+          //       <div className="pj-actions">
+          //         {item.liveUrl && (
+          //           <a
+          //             href={item.liveUrl}
+          //             target="_blank"
+          //             rel="noreferrer"
+          //             className="pj-btn pj-btn-primary"
+          //           >
+          //             View Project ↗
+          //           </a>
+          //         )}
+          //         {item.githubUrl && (
+          //           <a
+          //             href={item.githubUrl}
+          //             target="_blank"
+          //             rel="noreferrer"
+          //             className="pj-btn pj-btn-ghost"
+          //           >
+          //             GitHub
+          //           </a>
+          //         )}
+          //       </div>
+          //     </div>
+          //   </div>
+          // </article>
+          <div style={{height:"400px", background:"#111"}}>
+  Test card
+</div>
         ))}
       </div>
     </section>
