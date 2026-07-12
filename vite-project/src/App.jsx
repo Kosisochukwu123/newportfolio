@@ -44,7 +44,7 @@ function HomeSections({ profile, projects, skills, testimonials }) {
       <div style={{ height: "100vh", background: "#fff" }} />
 
       {/* <Contact profile={profile} /> */}
-      <Footer company={profile} />
+      {/* <Footer company={profile} /> */}
 
    </>
   );
