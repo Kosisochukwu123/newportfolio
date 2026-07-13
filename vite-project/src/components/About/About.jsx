@@ -52,9 +52,9 @@ export default function About() {
   const capabilities = company.services?.length ? company.services : DEFAULT_CAPABILITIES;
   const milestones = company.milestones?.length ? company.milestones : DEFAULT_MILESTONES;
   const stats = [
-    { num: company.yearsExperience || "3+", label: "Years Experience" },
-    { num: company.projectsShipped || "20+", label: "Projects Delivered" },
-    { num: company.clientsServed || "10+", label: "Clients Served" },
+    { num:  "4+", label: "Years Experience" },
+    { num:  "40+", label: "Projects Delivered" },
+    { num:  "20+", label: "Clients Served" },
   ];
   return (
     <section id="about" className="about-section" aria-labelledby="about-title">

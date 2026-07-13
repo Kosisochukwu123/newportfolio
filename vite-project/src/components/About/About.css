@@ -4,7 +4,7 @@
    ============================================================ */
 .about-section {
   position: relative;
-  overflow: hidden;
+  overflow: hidden !important;
   color: #f5f5f4;
   isolation: isolate;
 }
