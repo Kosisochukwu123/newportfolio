@@ -1,12 +1,16 @@
 * ============================================================
    About Section — full-bleed dark hero with glass detail card
    + solid milestone timeline strip beneath.
-   ============================================================ */
+  
+ ============================================================ */
+#about {
+  overflow: hidden !important;
+}
 .about-section {
   position: relative;
-  overflow: hidden !important;
   color: #f5f5f4;
   isolation: isolate;
+  overflow: hidden !important;
 }
 /* ── Full-bleed background photo ── */
 .about-bg {
