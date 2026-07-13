@@ -35,7 +35,6 @@ function HomeSections({ profile, projects, skills, testimonials }) {
       <LightTransition caption="entering next chapter" />
       <Testimonials testimonials={testimonials} />
       <About profile={profile} />
-      {/* <Contact profile={profile} /> */}
       <Footer company={profile} />
     </>
   );
@@ -65,7 +64,7 @@ function ScrollToHash() {
 
       if (lenis) {
         lenis.scrollTo(target, {
-          duration: 1.2,
+          duration: 2.2,
         });
       }
     }, 150);
