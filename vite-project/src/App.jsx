@@ -38,25 +38,25 @@ function HomeSections({ profile, projects, skills, testimonials }) {
 
       <Collaborations />
 
-      <LazySection>
+      {/* <LazySection> */}
         <Projects projects={projects} />
-      </LazySection>
+      {/* </LazySection> */}
 
-      <LazySection>
+      {/* <LazySection> */}
         <LightTransition />
-      </LazySection>
+      {/* </LazySection> */}
 
-      <LazySection>
+      {/* <LazySection> */}
         <Testimonials testimonials={testimonials} />
-      </LazySection>
+      {/* </LazySection> */}
 
-      <LazySection>
+      {/* <LazySection> */}
         <About profile={profile} />
-      </LazySection>
+      {/* </LazySection> */}
 
-      <LazySection>
+      {/* <LazySection> */}
         <Footer company={profile} />
-      </LazySection>
+      {/* </LazySection> */}
     </>
   );
 }
