@@ -258,8 +258,8 @@ export default function Contact() {
             </div>
             <div className="contact-details">
               {[
-                { key: "Email",    val: profile.email },
-                { key: "Location", val: profile.location },
+                { key: "Email",    val: "Kosiogbunuko@gmail.com" },
+                { key: "Location", val: "Uyo, Nigeria" },
                 { key: "Timezone", val: profile.timezone },
                 { key: "Response", val: "Within 24 hours" },
               ].map(({ key, val }) => (

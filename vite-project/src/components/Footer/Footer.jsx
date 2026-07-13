@@ -76,8 +76,10 @@ export default function Footer({
 
             <div className="footer-block">
               <h4>Contact</h4>
-              <p>{company.email}</p>
-              <p>{company.location}</p>
+              {/* <p>{company.email}</p> */}
+              {/* <p>{company.location}</p> */}
+              <p>Kosiogbunuko@gmail.com</p>
+              <p>Uyo, Nigeria</p>
             </div>
           </div>
         </div>
