@@ -1,5 +1,5 @@
 {
-  "name": "tanstack_start_ts",
+  "name": "portfolio",
   "private": true,
   "sideEffects": false,
   "type": "module",
@@ -23,12 +23,14 @@
     "vite-tsconfig-paths": "^6.0.2"
   },
   "devDependencies": {
+    "@esbuild/win32-x64": "^0.28.1",
     "@eslint/js": "^9.39.4",
     "@types/node": "^22.16.5",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "depcheck": "^1.4.7",
+    "esbuild": "^0.28.1",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.6",
