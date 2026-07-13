@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import Hero from "./components/Hero/Hero";
-import About from "./components/About/About";
+const About = lazy(() => import("./components/About/About"));
 import Skills from "./components/Skills/Skills";
-import Projects from "./components/Projects/Projects";
+const Projects = lazy(() => import("./components/Projects/Projects"));
 import Collaborations from "./components/Collaborations/Collaborations";
 import Contact from "./components/Contact/Contact";
 import Team from "./components/Team/Team";
@@ -13,12 +14,15 @@ import Loader from "./components/Loader/Loader";
 import GatedPage from "./utils/pageReady";
 import ScrollProgress from "./components/ScrollProgress/ScrollProgress";
 import ChatBot from "./components/ChatBot/ChatBot";
-import Footer from "./components/Footer/Footer";
+const Footer = lazy(() => import("./components/Footer/Footer"));
 import LightTransition from "./components/LightTransaction/LightTransition";
-import Testimonials from "./components/Testimonials/Testimonials";
+const Testimonials = lazy(
+  () => import("./components/Testimonials/Testimonials"),
+);
 import Resume from "./components/Resume/Resume";
 import AdvancedScrollRestoration from "./components/AdvancedScrollRestoration";
 import { fetchWithCache } from "./utils/Cache";
+import LazySection from "./components/LazySection";
 import { initSmoothScroll, getLenis } from "./utils/smoothScroll";
 import "./styles/globals.css";
 
@@ -29,13 +33,30 @@ function HomeSections({ profile, projects, skills, testimonials }) {
   return (
     <>
       <Hero profile={profile} />
+
       <Skills skills={skills} />
+
       <Collaborations />
-      <Projects projects={projects} />
-      <LightTransition caption="entering next chapter" />
-      <Testimonials testimonials={testimonials} />
-      <About profile={profile} />
-      <Footer company={profile} />
+
+      <LazySection>
+        <Projects projects={projects} />
+      </LazySection>
+
+      <LazySection>
+        <LightTransition />
+      </LazySection>
+
+      <LazySection>
+        <Testimonials testimonials={testimonials} />
+      </LazySection>
+
+      <LazySection>
+        <About profile={profile} />
+      </LazySection>
+
+      <LazySection>
+        <Footer company={profile} />
+      </LazySection>
     </>
   );
 }
@@ -153,37 +174,39 @@ export default function App() {
       {/* Hash scrolling - Keep this for anchor links */}
       <ScrollToHash />
 
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <HomeSections
-              profile={profile}
-              projects={projects}
-              skills={skills}
-              testimonials={testimonials}
-            />
-          }
-        />
-        <Route
-          path="/contact"
-          element={
-            <GatedPage key="contact">
-              <Contact profile={profile} />
-            </GatedPage>
-          }
-        />
-        <Route
-          path="/team"
-          element={
-            <GatedPage key="team">
-              <Team />
-            </GatedPage>
-          }
-        />
-        <Route path="/resume" element={<Resume />} />
-        <Route path="/join/:token" element={<TeamJoin />} />
-      </Routes>
+      <Suspense fallback={<div />}>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <HomeSections
+                profile={profile}
+                projects={projects}
+                skills={skills}
+                testimonials={testimonials}
+              />
+            }
+          />
+          <Route
+            path="/contact"
+            element={
+              <GatedPage key="contact">
+                <Contact profile={profile} />
+              </GatedPage>
+            }
+          />
+          <Route
+            path="/team"
+            element={
+              <GatedPage key="team">
+                <Team />
+              </GatedPage>
+            }
+          />
+          <Route path="/resume" element={<Resume />} />
+          <Route path="/join/:token" element={<TeamJoin />} />
+        </Routes>
+      </Suspense>
 
       {/* <ChatBot /> */}
 

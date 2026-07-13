@@ -129,6 +129,8 @@ export default function ProjectsPage() {
               <img
                 src={p.imageUrl}
                 alt={p.title}
+                loading="lazy"
+                decoding="async"
                 style={{
                   width: 80,
                   height: 52,
