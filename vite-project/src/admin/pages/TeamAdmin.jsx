@@ -132,7 +132,11 @@ export default function TeamAdmin() {
       // and that `api.put` (like axios) will detect the FormData body
       // and set the correct Content-Type automatically. If your admin
       // update route or field names differ, adjust this call.
-      await api.put(`/team/admin/${id}`, formData);
+      // Third arg tells api.js this is a FormData body — skips the
+      // forced Content-Type: application/json header (which was
+      // JSON.stringify-ing the FormData into "{}") and lets the
+      // browser set the multipart boundary itself.
+      await api.put(`/team/admin/${id}`, formData, true);
       show("Member updated");
       cancelEdit();
       load();
