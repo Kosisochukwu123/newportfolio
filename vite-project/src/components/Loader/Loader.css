@@ -5,21 +5,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg, #0b0b0c);
-  transition: opacity 0.65s ease, filter 0.65s ease;
+  background: #0b0b0c;
+  transition:
+    opacity 0.68s ease,
+    filter 0.68s ease;
   opacity: 1;
-  overflow: hidden;
 }
 
 .loader-overlay.exiting {
   opacity: 0;
-  filter: blur(6px);
+  filter: blur(8px);
   pointer-events: none;
 }
 
-/* White flash burst on exit — sits above everything else in the
-   overlay, briefly floods white, then fades along with the rest of
-   the overlay as it unmounts. */
+/* White flash */
 .loader-flash {
   position: absolute;
   inset: 0;
@@ -27,117 +26,118 @@
   z-index: 2;
   opacity: 0;
   animation: loaderFlash 0.65s ease-out forwards;
-  pointer-events: none;
 }
 
 @keyframes loaderFlash {
   0% {
     opacity: 0;
   }
-  18% {
-    opacity: 1;
+  15% {
+    opacity: 0.95;
   }
   100% {
     opacity: 0;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .loader-flash {
-    animation: none;
-    opacity: 0;
-  }
-}
-
+/* Main container */
 .loader-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.25rem;
-  animation: loader-breathe 2.6s ease-in-out infinite;
-  position: relative;
-  z-index: 1;
+  gap: 2.2rem;
 }
 
-/* Logo */
-.loader-mark {
+/* Ring + Logo Container */
+.loader-ring-container {
+  position: relative;
+  width: 130px;
+  height: 130px;
+}
+
+/* Neon Rotating Ring */
+.loader-ring {
+  position: absolute;
+  inset: 0;
+  border: 3px solid transparent;
+  border-top-color: #e8ff47;
+  border-radius: 50%;
+  animation: ringRotate 1.75s linear infinite;
+  box-shadow:
+    0 0 15px #e8ff47,
+    0 0 30px rgba(232, 255, 71, 0.6);
+  transition: box-shadow 0.4s ease;
+}
+
+/* Glow gets stronger with progress */
+.loader-ring {
+  box-shadow:
+    0 0 15px #e8ff47,
+    0 0 calc(18px + var(--progress) * 0.3px) #e8ff47,
+    0 0 calc(35px + var(--progress) * 0.45px) rgba(232, 255, 71, 0.7);
+}
+
+@keyframes ringRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Logo inside the ring */
+.loader-logo-wrapper {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;
 }
 
 .loader-logo {
   width: auto;
-  height: 80px;
-  max-width: 200px;
+  height: 68px;
+  max-width: 160px;
   object-fit: contain;
-  display: block;
+  opacity: 0;
+  animation: logoFadeIn 1.1s ease 0.2s forwards;
 }
 
-/* Segmented block progress bar — visually distinct blocks that fill
-   in one at a time as progress crosses each 10% threshold. */
-.loader-track-blocks {
-  display: flex;
-  gap: 5px;
-  width: auto;
-}
-
-.loader-block {
-  width: 14px;
-  height: 4px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.1);
-  transition: background 0.25s ease, transform 0.25s ease;
-}
-
-.loader-block.filled {
-  background: var(--accent, #e8ff47);
-  transform: scaleY(1.4);
-}
-
-@media (max-width: 480px) {
-  .loader-block {
-    width: 10px;
-  }
-}
-
-/* Status text — cycles through loading phrases */
-.loader-status {
-  font-family: var(--font-mono, monospace);
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  color: var(--text-muted, #8a8a89);
-  min-height: 1.2em;
-}
-
-@keyframes loader-breathe {
-  0%, 100% {
-    opacity: 0.75;
-  }
-  50% {
+@keyframes logoFadeIn {
+  to {
     opacity: 1;
   }
 }
 
-/* Responsive adjustments for different screen sizes */
+/* Status */
+.loader-status {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.76rem;
+  letter-spacing: 0.1em;
+  color: #8a8a89;
+  min-height: 1.4em;
+  text-transform: uppercase;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
+  .loader-ring-container {
+    width: 110px;
+    height: 110px;
+  }
   .loader-logo {
-    height: 60px;
-    max-width: 150px;
+    height: 55px;
   }
 }
 
 @media (max-width: 480px) {
-  .loader-logo {
-    height: 40px;
-    max-width: 120px;
+  .loader-ring-container {
+    width: 92px;
+    height: 92px;
   }
-}
-
-/* For larger screens */
-@media (min-width: 1200px) {
   .loader-logo {
-    height: 100px;
-    max-width: 300px;
+    height: 46px;
   }
 }
