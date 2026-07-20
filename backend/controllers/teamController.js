@@ -171,11 +171,24 @@ exports.createInvite = async (req, res) => {
 // after a member has submitted (or after they've gone live).
 exports.updateMemberByAdmin = async (req, res) => {
   try {
+    console.log("── updateMemberByAdmin ──");
+    console.log("params.id:", req.params.id);
+    console.log("req.body:", req.body);
+    console.log("req.file:", req.file ? req.file.originalname : "none");
+
     const member = await TeamMember.findById(req.params.id);
 
     if (!member) {
+      console.log("No member found for that id");
       return res.status(404).json({ success: false, message: "Not found" });
     }
+
+    console.log("Before update:", {
+      name: member.name,
+      role: member.role,
+      bio: member.bio,
+      photoUrl: member.photoUrl,
+    });
 
     const { name, role, bio } = req.body;
 
@@ -193,12 +206,23 @@ exports.updateMemberByAdmin = async (req, res) => {
       );
 
       member.photoUrl = uploaded.secure_url;
+      console.log("New Cloudinary URL:", uploaded.secure_url);
     }
 
-    await member.save();
+    console.log("modifiedPaths before save:", member.modifiedPaths());
 
-    res.json({ success: true, data: member });
+    const saved = await member.save();
+
+    console.log("After save:", {
+      name: saved.name,
+      role: saved.role,
+      bio: saved.bio,
+      photoUrl: saved.photoUrl,
+    });
+
+    res.json({ success: true, data: saved });
   } catch (err) {
+    console.error("updateMemberByAdmin error:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 };
