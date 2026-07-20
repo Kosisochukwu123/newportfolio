@@ -48,7 +48,7 @@ export default function Hero({ profile = {} }) {
           setTimeout(() => {
             setPhase(p + 1);
             runPhase(p + 1);
-          }, 550)
+          }, 550),
         );
       });
     }
@@ -117,7 +117,9 @@ export default function Hero({ profile = {} }) {
     if (idx === 2) {
       return (
         <p className={`t-output ${profile.availableForWork ? "t-green" : ""}`}>
-          {profile.availableForWork ? "✓ Accepting new projects" : "✗ Currently at capacity"}
+          {profile.availableForWork
+            ? "✓ Accepting new projects"
+            : "✗ Currently at capacity"}
         </p>
       );
     }
@@ -128,7 +130,14 @@ export default function Hero({ profile = {} }) {
     <section className="hero" id="hero" ref={heroRef}>
       {/* 🎬 VIDEO BACKGROUND */}
       <div className="hero-video-wrapper">
-        <video className="hero-video" autoPlay muted loop playsInline>
+        <video
+          className="hero-video"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+        >
           <source src="/hero-video.mp4" type="video/mp4" />
         </video>
 
@@ -194,7 +203,8 @@ export default function Hero({ profile = {} }) {
 
               const isCurrent = idx === phase;
               const displayCmd = isCurrent ? typedCmd : cmdText;
-              const showOutputForThis = idx < phase || (isCurrent && outputShown);
+              const showOutputForThis =
+                idx < phase || (isCurrent && outputShown);
               const stillTyping = isCurrent && !outputShown;
 
               return (
