@@ -1,70 +1,71 @@
-import { useState, useEffect } from "react";
-import { lazy, Suspense } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
+
 import Navbar from "./components/Navbar/Navbar";
 import Hero from "./components/Hero/Hero";
-const About = lazy(() => import("./components/About/About"));
 import Skills from "./components/Skills/Skills";
-const Projects = lazy(() => import("./components/Projects/Projects"));
-import Collaborations from "./components/Collaborations/Collaborations";
-import Contact from "./components/Contact/Contact";
-import Team from "./components/Team/Team";
-import TeamJoin from "./components/Team/TeamJoin";
 import Loader from "./components/Loader/Loader";
 import GatedPage from "./utils/pageReady";
-import ScrollProgress from "./components/ScrollProgress/ScrollProgress";
-import ChatBot from "./components/ChatBot/ChatBot";
-const Footer = lazy(() => import("./components/Footer/Footer"));
-import LightTransition from "./components/LightTransaction/LightTransition";
+import AdvancedScrollRestoration from "./components/AdvancedScrollRestoration";
+import LazySection from "./components/LazySection";
+
+import { fetchWithCache } from "./utils/Cache";
+import { initSmoothScroll, getLenis } from "./utils/smoothScroll";
+
+import "./styles/globals.css";
+
+// Lazy-loaded components
+const About = lazy(() => import("./components/About/About"));
+const Projects = lazy(() => import("./components/Projects/Projects"));
 const Testimonials = lazy(
   () => import("./components/Testimonials/Testimonials"),
 );
-import Resume from "./components/Resume/Resume";
-import AdvancedScrollRestoration from "./components/AdvancedScrollRestoration";
-import { fetchWithCache } from "./utils/Cache";
-import LazySection from "./components/LazySection";
-import { initSmoothScroll, getLenis } from "./utils/smoothScroll";
-import "./styles/globals.css";
+const Footer = lazy(() => import("./components/Footer/Footer"));
+const Contact = lazy(() => import("./components/Contact/Contact"));
+const Team = lazy(() => import("./components/Team/Team"));
+const TeamJoin = lazy(() => import("./components/Team/TeamJoin"));
+const Resume = lazy(() => import("./components/Resume/Resume"));
+const LightTransition = lazy(
+  () => import("./components/LightTransaction/LightTransition"),
+);
 
 const API = import.meta.env.VITE_API_URL || "/api";
+
+const getData = (endpoint) =>
+  fetch(`${API}/${endpoint}`).then((res) => res.json());
 
 function HomeSections({ profile, projects, skills, testimonials }) {
   return (
     <>
       <Hero profile={profile} />
 
-      <Skills skills={skills} />
+      <LazySection>
+        <Skills skills={skills} />
+      </LazySection>
 
-      {/* <Collaborations /> */}
-
-
-      {/* <LazySection> */}
+      <LazySection>
         <Projects projects={projects} />
-      {/* </LazySection> */}
+      </LazySection>
 
-      {/* <LazySection> */}
+      <LazySection>
         <LightTransition />
-      {/* </LazySection> */}
+      </LazySection>
 
-      {/* <LazySection> */}
+      <LazySection>
         <Testimonials testimonials={testimonials} />
-      {/* </LazySection> */}
+      </LazySection>
 
-      {/* <LazySection> */}
+      <LazySection>
         <About profile={profile} />
-      {/* </LazySection> */}
+      </LazySection>
 
-      {/* <LazySection> */}
+      <LazySection>
         <Footer company={profile} />
-      {/* </LazySection> */}
+      </LazySection>
     </>
   );
 }
 
-// React Router's client-side navigation doesn't auto-scroll to hash
-// fragments the way a full page load does. This handles nav links like
-// `/#cases` — including when clicked from a different page (e.g. from
-// /contact back to a homepage section).
 function ScrollToHash() {
   const location = useLocation();
 
@@ -77,7 +78,9 @@ function ScrollToHash() {
       const target = document.getElementById(id);
 
       if (!target) {
-        console.log("Couldn't find:", id);
+        if (import.meta.env.DEV) {
+          console.log(`Couldn't find element: ${id}`);
+        }
         return;
       }
 
@@ -97,11 +100,8 @@ function ScrollToHash() {
 }
 
 export default function App() {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const cursorRef = useRef(null);
 
-  // `dataReady` reflects the REAL fetch state — this is what the Loader
-  // waits on. `appReady` becomes true only once the Loader has finished
-  // its exit animation, at which point we unmount it entirely.
   const [dataReady, setDataReady] = useState(false);
   const [appReady, setAppReady] = useState(false);
 
@@ -117,25 +117,12 @@ export default function App() {
   const [skills, setSkills] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
 
-  // Home renders immediately and fetches in the background — the Loader
-  // sits on top (opaque) hiding this in-progress state, so by the time
-  // it fades away everything underneath is already fully painted.
-  // Cache-first: repeat visits within the session skip the network
-  // round-trip entirely and resolve near-instantly.
   useEffect(() => {
     Promise.all([
-      fetchWithCache("profile", () =>
-        fetch(`${API}/profile`).then((r) => r.json()),
-      ),
-      fetchWithCache("projects", () =>
-        fetch(`${API}/projects`).then((r) => r.json()),
-      ),
-      fetchWithCache("skills", () =>
-        fetch(`${API}/skills`).then((r) => r.json()),
-      ),
-      fetchWithCache("testimonials", () =>
-        fetch(`${API}/testimonials`).then((r) => r.json()),
-      ),
+      fetchWithCache("profile", () => getData("profile")),
+      fetchWithCache("projects", () => getData("projects")),
+      fetchWithCache("skills", () => getData("skills")),
+      fetchWithCache("testimonials", () => getData("testimonials")),
     ])
       .then(([profileRes, projectRes, skillsRes, testimonialsRes]) => {
         if (profileRes.success) setProfile(profileRes.data);
@@ -146,35 +133,35 @@ export default function App() {
       .finally(() => setDataReady(true));
   }, []);
 
-  // cursor effect
   useEffect(() => {
-    const move = (e) => setMousePos({ x: e.clientX, y: e.clientY });
+    const move = (e) => {
+      if (!cursorRef.current) return;
+
+      cursorRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+    };
+
     window.addEventListener("mousemove", move);
-    return () => window.removeEventListener("mousemove", move);
+
+    return () => {
+      window.removeEventListener("mousemove", move);
+    };
   }, []);
 
-  // Momentum/inertia scroll — the "heavy glide" feel
   useEffect(() => {
     initSmoothScroll();
   }, []);
 
   return (
     <div className="app">
-      {/* <ScrollProgress /> */}
-      <div
-        className="cursor-glow"
-        style={{ left: mousePos.x, top: mousePos.y }}
-      />
+      <div ref={cursorRef} className="cursor-glow" />
 
-      {/* GLOBAL DATA PASSED DOWN */}
       <Navbar profile={profile} />
 
       <AdvancedScrollRestoration />
 
-      {/* Hash scrolling - Keep this for anchor links */}
       <ScrollToHash />
 
-      <Suspense fallback={<div />}>
+      <Suspense fallback={null}>
         <Routes>
           <Route
             path="/"
@@ -187,6 +174,7 @@ export default function App() {
               />
             }
           />
+
           <Route
             path="/contact"
             element={
@@ -195,6 +183,7 @@ export default function App() {
               </GatedPage>
             }
           />
+
           <Route
             path="/team"
             element={
@@ -203,12 +192,12 @@ export default function App() {
               </GatedPage>
             }
           />
+
           <Route path="/resume" element={<Resume />} />
+
           <Route path="/join/:token" element={<TeamJoin />} />
         </Routes>
       </Suspense>
-
-      {/* <ChatBot /> */}
 
       {!appReady && (
         <Loader dataReady={dataReady} onComplete={() => setAppReady(true)} />

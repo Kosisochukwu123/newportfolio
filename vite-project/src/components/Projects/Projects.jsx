@@ -237,6 +237,13 @@ export default function Projects() {
       }}
     >
       <div className="pj-sticky">
+
+        <div className="pj-ribbon">
+          <p className="pj-eyebrow">
+            Recent Work<span className="pj-slash">/</span>Freshly built &amp; deployed
+          </p>
+        </div>
+        
         {cases.map((item, idx) => {
           const hasFaqs = item.faqs?.length > 0;
           const isFaqOpen = openFaqId === item._id;

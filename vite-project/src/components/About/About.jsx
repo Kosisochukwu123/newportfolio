@@ -3,9 +3,9 @@ import "./About.css";
 const API = import.meta.env.VITE_API_URL || "/api";
 const DEFAULT_CAPABILITIES = [
   "MERN Development",
-  "UI/UX Design",
+  "Typescript & React",
   "AI Integration",
-  "Cloud Deployment",
+  "Videography",
 ];
 const DEFAULT_MILESTONES = [
   { year: "2024", label: "Started GH Studios" },

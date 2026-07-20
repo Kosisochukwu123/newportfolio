@@ -26,6 +26,16 @@ const bugReportRoutes = require("./routes/bugReportRoutes");
 // ── App setup ───────────────────────────────────────────
 const app = express();
 
+// Render (and most PaaS hosts) sit behind a reverse proxy, so incoming
+// requests carry an X-Forwarded-For header set by that proxy rather
+// than by the client directly. Without this, Express doesn't trust
+// that header, and express-rate-limit (which uses it to identify
+// requesters) throws the ERR_ERL_UNEXPECTED_X_FORWARDED_FOR warning
+// since it can't safely tell a real proxy header from a spoofed one.
+// `1` means trust exactly one hop — Render's own proxy — rather than
+// blindly trusting the whole chain.
+app.set("trust proxy", 1);
+
 connectDB();
 
 const allowedOrigins = [
