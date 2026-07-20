@@ -95,11 +95,12 @@ export default function Hero({ profile = {} }) {
   }, []);
 
   const services = profile.services || [
-    "Web Development",
-    "UI/UX Design",
-    "Backend Systems",
+    "Web Development(Mern Stack)",
+    "TypeScript",
+    "Backend Systems(Node.js, MongoDB)",
     "Cyber Security",
     "Videography & Motion Graphics",
+    "Other services...",
   ];
 
   const renderOutput = (idx) => {

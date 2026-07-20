@@ -1,43 +1,58 @@
 import { useEffect, useRef } from "react";
 import "./LightTransition.css";
-/**
- * Scroll-driven dark → light bridge.
- *
- * Drop between a dark section (e.g. <Projects />) and a light section
- * (e.g. <About />). Motion is driven by a single CSS variable (--p)
- * updated on scroll via rAF — no infinite CSS animations, no filter:blur
- * repaints every frame, so it stays smooth on low-end machines.
- */
+
 export default function LightTransition({ caption = "entering next chapter" }) {
   const rootRef = useRef(null);
+
   useEffect(() => {
-    const el = rootRef.current;
-    if (!el) return;
-    let raf = 0;
+    const element = rootRef.current;
+    if (!element) return;
+
+    let animationFrame = null;
     let ticking = false;
-    const update = () => {
+
+    const updateProgress = () => {
       ticking = false;
-      const rect = el.getBoundingClientRect();
-      const vh = window.innerHeight || 1;
-      const runway = el.offsetHeight - vh;
-      const scrolled = Math.min(Math.max(-rect.top, 0), runway);
-      const p = runway > 0 ? scrolled / runway : 0;
-      el.style.setProperty("--p", p.toFixed(4));
+
+      const { top, height } = element.getBoundingClientRect();
+      const viewportHeight = window.innerHeight || 1;
+
+      const scrollable = height - viewportHeight;
+
+      const progress =
+        scrollable > 0
+          ? Math.max(0, Math.min(-top, scrollable)) / scrollable
+          : 0;
+
+      element.style.setProperty("--p", progress.toFixed(4));
     };
-    const onScroll = () => {
+
+    const handleScroll = () => {
       if (ticking) return;
+
       ticking = true;
-      raf = requestAnimationFrame(update);
+
+      animationFrame = requestAnimationFrame(updateProgress);
     };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+
+    updateProgress();
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    window.addEventListener("resize", handleScroll);
+
     return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
+
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
     };
   }, []);
+
   return (
     <section ref={rootRef} className="lt-root" aria-hidden="true">
       <div className="lt-sticky">
@@ -47,11 +62,15 @@ export default function LightTransition({ caption = "entering next chapter" }) {
           <span className="lt-streak s3" />
           <span className="lt-streak s4" />
         </div>
+
         <div className="lt-halo" />
+
         <div className="lt-orb" />
+
         <p className="lt-caption">
           <span>{caption}</span>
         </p>
+
         <div className="lt-wash" />
       </div>
     </section>

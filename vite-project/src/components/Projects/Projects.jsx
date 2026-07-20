@@ -1,32 +1,24 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import ProjectFAQ from "../ProjectFAQ/ProjectFAQ";
+import ProjectCard from './ProjectCard';  
+import { clamp, easeInOut, easeOutQuint } from "../../utils/animation";
 import "./Projects.css";
 
 const API = import.meta.env.VITE_API_URL || "/api";
-
-function clamp(n, min = 0, max = 1) {
-  return Math.min(max, Math.max(min, n));
-}
-
-function easeInOut(t) {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-}
-
-function easeOutQuint(t) {
-  return 1 - Math.pow(1 - t, 5);
-}
 
 const OVERLAP = 0.35;
 const HOLD = 0.5;
 const STRIDE = 1 + HOLD;
 
-export default function Projects() {
+export default function Projects({ projects = [] }) {
   const containerRef = useRef(null);
   const cardRefs = useRef([]);
   const faqPanelRefs = useRef({});
+  const handleFaqPanelRef = (id, node) => {
+    faqPanelRefs.current[id] = node;
+  };
 
-  const [cases, setCases] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const cases = projects;
 
   // FAQ accordion state — which card's FAQ panel is open, and which
   // question inside that panel is expanded. Kept separate from the
@@ -35,18 +27,7 @@ export default function Projects() {
   const [openFaqId, setOpenFaqId] = useState(null);
   const [activeQuestion, setActiveQuestion] = useState({});
 
-  useEffect(() => {
-    fetch(`${API}/projects`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.success) setCases(data.data);
-        else setError(true);
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const total = cases.length;
+  const total = useMemo(() => cases.length, [cases]);
 
   const toggleFaqPanel = (id) => {
     setOpenFaqId((prev) => {
@@ -100,9 +81,10 @@ export default function Projects() {
 
     for (let idx = 0; idx < total; idx++) {
       const distance = Math.abs(scaled - idx * STRIDE);
-      if (!force && distance > ACTIVE_MARGIN) continue; // settled — nothing to update
+      if (!force && distance > ACTIVE_MARGIN) continue;
 
       const el = cardRefs.current[idx];
+
       if (!el) continue;
 
       const local = scaled - idx * STRIDE;
@@ -144,7 +126,10 @@ export default function Projects() {
       el.style.opacity = opacity;
       // Skip the filter entirely once basically invisible — one less
       // thing for the browser to paint per frame for offscreen cards.
-      el.style.filter = opacity > 0.02 && blurPx > 0.05 ? `blur(${blurPx.toFixed(2)}px)` : "none";
+      el.style.filter =
+        opacity > 0.02 && blurPx > 0.05
+          ? `blur(${blurPx.toFixed(2)}px)`
+          : "none";
       el.style.pointerEvents = opacity > 0.6 ? "auto" : "none";
     }
   };
@@ -211,18 +196,6 @@ export default function Projects() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [total]);
 
-  if (loading) {
-    return <section className="pj-loading">Loading projects...</section>;
-  }
-
-  if (error) {
-    return (
-      <section className="pj-loading">
-        Couldn't load projects — please try refreshing.
-      </section>
-    );
-  }
-
   if (total === 0) {
     return <section className="pj-loading">No projects to show yet.</section>;
   }
@@ -237,124 +210,30 @@ export default function Projects() {
       }}
     >
       <div className="pj-sticky">
-
         <div className="pj-ribbon">
           <p className="pj-eyebrow">
-            Recent Work<span className="pj-slash">/</span>Freshly built &amp; deployed
+            Recent Work<span className="pj-slash">/</span>Freshly built &amp;
+            deployed
           </p>
         </div>
-        
+
         {cases.map((item, idx) => {
           const hasFaqs = item.faqs?.length > 0;
           const isFaqOpen = openFaqId === item._id;
 
           return (
-            <article
+            <ProjectCard
               key={item._id}
-              ref={(node) => (cardRefs.current[idx] = node)}
-              className="pj-card"
-              style={{ zIndex: 10 + idx }}
-            >
-              <div className="pj-grid">
-                <div className="pj-visual">
-                  {item.imageUrl ? (
-                    <img
-                      src={item.imageUrl}
-                      alt={item.title}
-                      loading={idx === 0 ? "eager" : "lazy"}
-                      decoding="async"
-                    />
-                  ) : (
-                    <div className="pj-visual-empty" aria-hidden="true" />
-                  )}
-                </div>
-
-                <div className="pj-content">
-                  <p className="pj-subtitle">{item.subtitle}</p>
-
-                  <h2 className="pj-title">{item.title}</h2>
-
-                  <p className="pj-desc">{item.description}</p>
-
-                  <div className="pj-tags">
-                    {item.tags?.map((tag) => (
-                      <span key={tag} className="pj-tag">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="pj-actions">
-                    {item.liveUrl && (
-                      <a
-                        href={item.liveUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="pj-btn pj-btn-primary"
-                      >
-                        View Project ↗
-                      </a>
-                    )}
-                    {item.githubUrl && (
-                      <a
-                        href={item.githubUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="pj-btn pj-btn-ghost"
-                      >
-                        GitHub
-                      </a>
-                    )}
-                    {hasFaqs && (
-                      <button
-                        type="button"
-                        className="pj-btn pj-btn-ghost"
-                        onClick={() => toggleFaqPanel(item._id)}
-                        aria-expanded={isFaqOpen}
-                      >
-                        {isFaqOpen ? "Close Case ↑" : "Open Case ↓"}
-                      </button>
-                    )}
-                  </div>
-
-                  {hasFaqs && (
-                    <div
-                      ref={(node) => (faqPanelRefs.current[item._id] = node)}
-                      className={`pj-faq ${isFaqOpen ? "is-open" : ""}`}
-                    >
-                      <div className="pj-faq-scroll">
-                        {item.faqs.map((faq, qIdx) => {
-                          const key = faq.id ?? `${item._id}-${qIdx}`;
-                          const isQOpen = activeQuestion[item._id] === qIdx;
-                          return (
-                            <div className="pj-faq-item" key={key}>
-                              <button
-                                type="button"
-                                className="pj-faq-question"
-                                onClick={() => toggleQuestion(item._id, qIdx)}
-                                aria-expanded={isQOpen}
-                              >
-                                <span>{faq.question}</span>
-                                <span className="pj-faq-icon">
-                                  {isQOpen ? "−" : "+"}
-                                </span>
-                              </button>
-                              <div
-                                className={`pj-faq-answer ${
-                                  isQOpen ? "is-open" : ""
-                                }`}
-                              >
-                                <p>{faq.answer}</p>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </article>
+              item={item}
+              idx={idx}
+              isFaqOpen={isFaqOpen}
+              hasFaqs={hasFaqs}
+              activeQuestion={activeQuestion}
+              toggleQuestion={toggleQuestion}
+              toggleFaqPanel={toggleFaqPanel}
+              onFaqPanelRef={handleFaqPanelRef}
+              cardRef={(node) => (cardRefs.current[idx] = node)}
+            />
           );
         })}
       </div>
