@@ -22,10 +22,18 @@ const STRIDE = 1 + HOLD;
 export default function Projects() {
   const containerRef = useRef(null);
   const cardRefs = useRef([]);
+  const faqPanelRefs = useRef({});
 
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+
+  // FAQ accordion state — which card's FAQ panel is open, and which
+  // question inside that panel is expanded. Kept separate from the
+  // scroll-driven DOM writes below, since it's plain React state that
+  // only changes on click, not on every scroll frame.
+  const [openFaqId, setOpenFaqId] = useState(null);
+  const [activeQuestion, setActiveQuestion] = useState({});
 
   useEffect(() => {
     fetch(`${API}/projects`)
@@ -40,6 +48,34 @@ export default function Projects() {
 
   const total = cases.length;
 
+  const toggleFaqPanel = (id) => {
+    setOpenFaqId((prev) => {
+      const next = prev === id ? null : id;
+      if (next) {
+        // Wait for the max-height transition (450ms in Projects.css)
+        // to settle before scrolling, so we scroll to the panel's
+        // actual expanded position rather than its collapsed one.
+        // block: "nearest" scrolls the nearest scrollable ancestor —
+        // .pj-content's own overflow-y: auto — not the page/window,
+        // since the scroll-jacked animation owns window scroll.
+        setTimeout(() => {
+          faqPanelRefs.current[next]?.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+          });
+        }, 460);
+      }
+      return next;
+    });
+  };
+
+  const toggleQuestion = (id, qIdx) => {
+    setActiveQuestion((prev) => ({
+      ...prev,
+      [id]: prev[id] === qIdx ? null : qIdx,
+    }));
+  };
+
   // Applies transform/opacity/filter/pointer-events directly to each
   // card's DOM node, bypassing React re-render entirely. Calling
   // setState on every scroll frame (the old approach) forced a full
@@ -47,15 +83,30 @@ export default function Projects() {
   // is what was actually showing up as the 'message handler' /
   // forced-reflow violations, not the math itself. Direct DOM writes
   // keep this at a steady 60fps regardless of how many cards there are.
-  const applyMetrics = (progress) => {
+  //
+  // Windowing: a card's resting style stops changing once it's more
+  // than one stride away from the current scroll position — it's
+  // already sitting at its fully-settled off-screen values and nothing
+  // further will change until scroll comes back near it. Recomputing
+  // and rewriting styles for every card, every frame, regardless of
+  // distance, made the per-frame cost grow with total project count
+  // instead of staying constant — that's what was causing the scroll
+  // hang. Only cards within ACTIVE_MARGIN of the current position are
+  // touched each frame; everything else is left alone.
+  const ACTIVE_MARGIN = STRIDE * 1.5;
+
+  const applyMetrics = (progress, force = false) => {
     const scaled = progress * total * STRIDE;
 
     for (let idx = 0; idx < total; idx++) {
+      const distance = Math.abs(scaled - idx * STRIDE);
+      if (!force && distance > ACTIVE_MARGIN) continue; // settled — nothing to update
+
       const el = cardRefs.current[idx];
       if (!el) continue;
 
       const local = scaled - idx * STRIDE;
-      let translateY, scale, opacity;
+      let translateY, scale, opacity, blurPx;
 
       if (local <= 0) {
         const raw = clamp((local + 1) / (1 - OVERLAP), 0, 1);
@@ -64,10 +115,12 @@ export default function Projects() {
         translateY = `${(1 - t) * 60}%`;
         scale = 0.92 + t * 0.08;
         opacity = o;
+        blurPx = (1 - raw) * 4;
       } else if (local <= HOLD) {
         translateY = "0%";
         scale = 1;
         opacity = 1;
+        blurPx = 0;
       } else {
         const raw = clamp((local - HOLD) / (1 - OVERLAP), 0, 1);
         const t = easeInOut(raw);
@@ -75,12 +128,23 @@ export default function Projects() {
         translateY = `${-t * 18}%`;
         scale = 1 - t * 0.09;
         opacity = 1 - o;
+        // Bug fix: this used to be `local * 4` — since `local` grows
+        // unbounded the further you scroll past a card, blur radius
+        // kept climbing indefinitely (40px, 80px, more) on cards that
+        // were already invisible. Large-radius blur is extremely
+        // expensive to paint, and doing it every scroll frame on full
+        // project images was a real contributor to the scroll hang.
+        // Clamped to the same 0..1 transition window as opacity/scale
+        // instead, so blur maxes out at a cheap 4px and never grows
+        // past that no matter how far you keep scrolling.
+        blurPx = raw * 4;
       }
 
       el.style.transform = `translate3d(0,${translateY},0) scale(${scale})`;
       el.style.opacity = opacity;
-      el.style.filter = local > 0 ? `blur(${(local * 4).toFixed(2)}px)` : "none";
-      // el.style.filter = "none";
+      // Skip the filter entirely once basically invisible — one less
+      // thing for the browser to paint per frame for offscreen cards.
+      el.style.filter = opacity > 0.02 && blurPx > 0.05 ? `blur(${blurPx.toFixed(2)}px)` : "none";
       el.style.pointerEvents = opacity > 0.6 ? "auto" : "none";
     }
   };
@@ -108,15 +172,41 @@ export default function Projects() {
       raf = requestAnimationFrame(update);
     };
 
-    update(); // set correct initial positions without waiting for a scroll event
+    // Force a full pass on mount so every card (not just ones near the
+    // current scroll position) gets its correct resting style set at
+    // least once — otherwise cards outside the initial active window
+    // would have no inline style at all and briefly render at their
+    // unstyled default (fully visible, stacked) until scroll reaches
+    // them for the first time.
+    (() => {
+      const el = containerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const scrollable = el.offsetHeight - vh;
+      const scrolled = clamp(-rect.top, 0, scrollable);
+      const progress = scrollable > 0 ? scrolled / scrollable : 0;
+      applyMetrics(progress, true);
+    })();
+
+    const onResize = () => {
+      const el = containerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const scrollable = el.offsetHeight - vh;
+      const scrolled = clamp(-rect.top, 0, scrollable);
+      const progress = scrollable > 0 ? scrolled / scrollable : 0;
+      applyMetrics(progress, true);
+    };
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", onResize);
 
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", onResize);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [total]);
@@ -142,67 +232,124 @@ export default function Projects() {
       id="cases"
       ref={containerRef}
       className="pj-root"
-style={{
-  height: `${(total * STRIDE + 1) * 100}vh`
-}}>
+      style={{
+        height: `${(total * STRIDE + 1) * 100}vh`,
+      }}
+    >
       <div className="pj-sticky">
-        {cases.map((item, idx) => (
-          <article
-            key={item._id}
-            ref={(node) => (cardRefs.current[idx] = node)}
-            className="pj-card"
-            style={{ zIndex: 10 + idx }}
-          >
-            <div className="pj-grid">
-              <div className="pj-visual">
-                {item.imageUrl ? (
-                  <img src={item.imageUrl} alt={item.title} />
-                ) : (
-                  <div className="pj-visual-empty" aria-hidden="true" />
-                )}
-              </div>
+        {cases.map((item, idx) => {
+          const hasFaqs = item.faqs?.length > 0;
+          const isFaqOpen = openFaqId === item._id;
 
-              <div className="pj-content">
-                <p className="pj-subtitle">{item.subtitle}</p>
-
-                <h2 className="pj-title">{item.title}</h2>
-
-                <p className="pj-desc">{item.description}</p>
-
-                <div className="pj-tags">
-                  {item.tags?.map((tag) => (
-                    <span key={tag} className="pj-tag">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="pj-actions">
-                  {item.liveUrl && (
-                    <a
-                      href={item.liveUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="pj-btn pj-btn-primary"
-                    >
-                      View Project ↗
-                    </a>
-                  )}
-                  {item.githubUrl && (
-                    <a
-                      href={item.githubUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="pj-btn pj-btn-ghost"
-                    >
-                      GitHub
-                    </a>
+          return (
+            <article
+              key={item._id}
+              ref={(node) => (cardRefs.current[idx] = node)}
+              className="pj-card"
+              style={{ zIndex: 10 + idx }}
+            >
+              <div className="pj-grid">
+                <div className="pj-visual">
+                  {item.imageUrl ? (
+                    <img
+                      src={item.imageUrl}
+                      alt={item.title}
+                      loading={idx === 0 ? "eager" : "lazy"}
+                      decoding="async"
+                    />
+                  ) : (
+                    <div className="pj-visual-empty" aria-hidden="true" />
                   )}
                 </div>
+
+                <div className="pj-content">
+                  <p className="pj-subtitle">{item.subtitle}</p>
+
+                  <h2 className="pj-title">{item.title}</h2>
+
+                  <p className="pj-desc">{item.description}</p>
+
+                  <div className="pj-tags">
+                    {item.tags?.map((tag) => (
+                      <span key={tag} className="pj-tag">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="pj-actions">
+                    {item.liveUrl && (
+                      <a
+                        href={item.liveUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="pj-btn pj-btn-primary"
+                      >
+                        View Project ↗
+                      </a>
+                    )}
+                    {item.githubUrl && (
+                      <a
+                        href={item.githubUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="pj-btn pj-btn-ghost"
+                      >
+                        GitHub
+                      </a>
+                    )}
+                    {hasFaqs && (
+                      <button
+                        type="button"
+                        className="pj-btn pj-btn-ghost"
+                        onClick={() => toggleFaqPanel(item._id)}
+                        aria-expanded={isFaqOpen}
+                      >
+                        {isFaqOpen ? "Close Case ↑" : "Open Case ↓"}
+                      </button>
+                    )}
+                  </div>
+
+                  {hasFaqs && (
+                    <div
+                      ref={(node) => (faqPanelRefs.current[item._id] = node)}
+                      className={`pj-faq ${isFaqOpen ? "is-open" : ""}`}
+                    >
+                      <div className="pj-faq-scroll">
+                        {item.faqs.map((faq, qIdx) => {
+                          const key = faq.id ?? `${item._id}-${qIdx}`;
+                          const isQOpen = activeQuestion[item._id] === qIdx;
+                          return (
+                            <div className="pj-faq-item" key={key}>
+                              <button
+                                type="button"
+                                className="pj-faq-question"
+                                onClick={() => toggleQuestion(item._id, qIdx)}
+                                aria-expanded={isQOpen}
+                              >
+                                <span>{faq.question}</span>
+                                <span className="pj-faq-icon">
+                                  {isQOpen ? "−" : "+"}
+                                </span>
+                              </button>
+                              <div
+                                className={`pj-faq-answer ${
+                                  isQOpen ? "is-open" : ""
+                                }`}
+                              >
+                                <p>{faq.answer}</p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
     </section>
   );

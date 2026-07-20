@@ -26,7 +26,6 @@ import LazySection from "./components/LazySection";
 import { initSmoothScroll, getLenis } from "./utils/smoothScroll";
 import "./styles/globals.css";
 
-// const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 const API = import.meta.env.VITE_API_URL || "/api";
 
 function HomeSections({ profile, projects, skills, testimonials }) {
@@ -36,7 +35,8 @@ function HomeSections({ profile, projects, skills, testimonials }) {
 
       <Skills skills={skills} />
 
-      <Collaborations />
+      {/* <Collaborations /> */}
+
 
       {/* <LazySection> */}
         <Projects projects={projects} />

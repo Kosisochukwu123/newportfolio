@@ -162,7 +162,17 @@
   .pj-grid {
     grid-template-columns: 1fr 1fr;
     gap: 64px;
-    height: auto;
+    /* Was `height: auto`, which let the grid grow past the card's
+       fixed 100vh whenever the FAQ opened. There's no scroll room
+       reserved for that growth (the page's total scroll height is
+       computed up front from project count alone), so the extra
+       height just got centered out of view and clipped by
+       .pj-sticky's overflow: hidden — nothing pushed, nothing showed.
+       Filling the full card height and stretching both columns keeps
+       the grid itself fixed-size; .pj-content below handles any
+       overflow internally instead. */
+    height: 100%;
+    align-items: stretch;
   }
 }
 
@@ -273,6 +283,26 @@
 /* ---------- Content ---------- */
 .pj-content {
   min-width: 0;
+}
+@media (min-width: 768px) {
+  .pj-content {
+    /* Matches .pj-visual's height (grid is align-items: stretch now),
+       so opening the FAQ grows content inside this box and scrolls
+       internally instead of pushing the grid taller than the card. */
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 6px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--pj-border) transparent;
+  }
+  .pj-content::-webkit-scrollbar {
+    width: 4px;
+  }
+  .pj-content::-webkit-scrollbar-thumb {
+    background: var(--pj-border);
+    border-radius: 999px;
+  }
 }
 .pj-subtitle {
   margin: 0;
@@ -391,6 +421,7 @@
   font-weight: 500;
   text-decoration: none;
   border: 1px solid transparent;
+  cursor: pointer;
   transition:
     transform 200ms,
     background 200ms,
@@ -412,9 +443,127 @@
 .pj-btn-ghost {
   border-color: var(--pj-border);
   color: var(--pj-fg);
+  background: transparent;
 }
 .pj-btn-ghost:hover {
   background: var(--pj-secondary);
+}
+
+/* ---------- FAQ Panel ---------- */
+/* Ported from CaseStudies' "Open Case / Close Case" pattern, restyled
+   to match Projects' monospace/accent token system. Height-capped and
+   internally scrollable rather than growing the card, since .pj-card
+   is a fixed 100vh sticky panel driven by the scroll animation above —
+   letting this section grow unbounded would push content out of the
+   viewport instead of scrolling within it. */
+.pj-faq {
+  margin-top: 0;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    max-height 450ms ease,
+    opacity 350ms ease,
+    margin-top 450ms ease;
+}
+.pj-faq.is-open {
+  margin-top: 20px;
+  max-height: 34vh;
+  opacity: 1;
+}
+@media (min-width: 640px) {
+  .pj-faq.is-open {
+    margin-top: 24px;
+    max-height: 38vh;
+  }
+}
+
+.pj-faq-scroll {
+  max-height: inherit;
+  overflow-y: auto;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pj-faq-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.pj-faq-scroll::-webkit-scrollbar-thumb {
+  background: var(--pj-border);
+  border-radius: 999px;
+}
+
+.pj-faq-item {
+  border: 1px solid var(--pj-border);
+  border-radius: 12px;
+  background: var(--pj-secondary);
+  overflow: hidden;
+}
+
+.pj-faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: transparent;
+  border: none;
+  color: var(--pj-fg);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+@media (min-width: 640px) {
+  .pj-faq-question {
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+}
+.pj-faq-question:hover {
+  color: var(--pj-accent);
+}
+
+.pj-faq-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--pj-border);
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+  color: var(--pj-muted);
+}
+
+.pj-faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-height 350ms ease,
+    opacity 300ms ease;
+}
+.pj-faq-answer.is-open {
+  max-height: 260px;
+  opacity: 1;
+}
+.pj-faq-answer p {
+  margin: 0;
+  padding: 0 14px 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--pj-muted);
+}
+@media (min-width: 640px) {
+  .pj-faq-answer p {
+    padding: 0 16px 16px;
+    font-size: 14px;
+  }
 }
 
 /* ---------- Scroll Hint ---------- */
@@ -610,6 +759,3 @@
   font-variant-numeric: tabular-nums;
   color: var(--pj-fg);
 }
-
-
-
