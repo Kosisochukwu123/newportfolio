@@ -7,6 +7,7 @@ const {
   submitInvite,
   getAllForAdmin,
   createInvite,
+  updateMemberByAdmin,
   approveMember,
   rejectMember,
   deleteMember,
@@ -33,6 +34,14 @@ router.get("/admin/all", protect, getAllForAdmin);
 router.post("/admin/invite", protect, createInvite);
 router.put("/admin/:id/approve", protect, approveMember);
 router.put("/admin/:id/reject", protect, rejectMember);
+// General content edit (name/role/bio/photo) — distinct from the
+// approve/reject status-only routes above.
+router.put(
+  "/admin/:id",
+  protect,
+  upload.single("photo"),
+  updateMemberByAdmin
+);
 router.delete("/admin/:id", protect, deleteMember);
 
 // console.log(__dirname);

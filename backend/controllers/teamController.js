@@ -165,6 +165,44 @@ exports.createInvite = async (req, res) => {
   }
 };
 
+// PUT /api/team/admin/:id — admin edits name/role/bio, optionally replaces
+// the photo. This is separate from approve/reject: those only ever change
+// `status`, while this is a general content edit for minor corrections
+// after a member has submitted (or after they've gone live).
+exports.updateMemberByAdmin = async (req, res) => {
+  try {
+    const member = await TeamMember.findById(req.params.id);
+
+    if (!member) {
+      return res.status(404).json({ success: false, message: "Not found" });
+    }
+
+    const { name, role, bio } = req.body;
+
+    // Only touch fields that were actually sent, so a partial edit
+    // (e.g. just fixing a typo in the role) can't accidentally blank
+    // out the other fields.
+    if (name !== undefined) member.name = name.trim();
+    if (role !== undefined) member.role = role.trim();
+    if (bio !== undefined) member.bio = bio.trim();
+
+    if (req.file) {
+      const uploaded = await uploadToCloudinary(
+        req.file.path,
+        "portfolio/team",
+      );
+
+      member.photoUrl = uploaded.secure_url;
+    }
+
+    await member.save();
+
+    res.json({ success: true, data: member });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 // PUT /api/team/admin/:id/approve
 exports.approveMember = async (req, res) => {
   try {
