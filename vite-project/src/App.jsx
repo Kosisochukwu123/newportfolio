@@ -103,8 +103,13 @@ export default function App() {
   const cursorRef = useRef(null);
 
   const [dataReady, setDataReady] = useState(false);
-  const [appReady, setAppReady] = useState(false);
-
+  const [appReady, setAppReady] = useState(() => {
+    return sessionStorage.getItem("loaderShown") === "true";
+  });
+  const handleLoaderComplete = () => {
+  sessionStorage.setItem("loaderShown", "true");
+  setAppReady(true);
+};
   const [profile, setProfile] = useState({
     name: "Loading...",
     tagline: "",
@@ -200,7 +205,7 @@ export default function App() {
       </Suspense>
 
       {!appReady && (
-        <Loader dataReady={dataReady} onComplete={() => setAppReady(true)} />
+        <Loader dataReady={dataReady} onComplete={handleLoaderComplete} />
       )}
     </div>
   );
