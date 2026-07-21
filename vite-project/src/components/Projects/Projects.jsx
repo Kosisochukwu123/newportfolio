@@ -210,12 +210,12 @@ export default function Projects({ projects = [] }) {
       }}
     >
       <div className="pj-sticky">
-        <div className="pj-ribbon">
+        {/* <div className="pj-ribbon">
           <p className="pj-eyebrow">
             Recent Work<span className="pj-slash">/</span>Freshly built &amp;
             deployed
           </p>
-        </div>
+        </div> */}
 
         {cases.map((item, idx) => {
           const hasFaqs = item.faqs?.length > 0;
