@@ -26,6 +26,31 @@ export default function Navbar({ profile = {} }) {
   const [pagesOpen, setPagesOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
 
+  const sectionPositions = useRef([]);
+
+  const calculateSections = () => {
+    sectionPositions.current = sectionLinks
+      .map((link) => {
+        const el = document.getElementById(link.id);
+
+        return el
+          ? {
+              id: link.id,
+              top: el.offsetTop,
+            }
+          : null;
+      })
+      .filter(Boolean);
+  };
+
+  useEffect(() => {
+    calculateSections();
+
+    window.addEventListener("resize", calculateSections);
+
+    return () => window.removeEventListener("resize", calculateSections);
+  }, [isHome]);
+
   const dropdownRef = useRef(null);
   const navRef = useRef(null);
 
@@ -38,7 +63,10 @@ export default function Navbar({ profile = {} }) {
 
       const progress = Math.min(1, y / SCROLL_RANGE);
       if (navRef.current) {
-        navRef.current.style.setProperty("--scroll-progress", progress.toFixed(3));
+        navRef.current.style.setProperty(
+          "--scroll-progress",
+          progress.toFixed(3),
+        );
       }
 
       if (!isHome) return;
@@ -48,10 +76,9 @@ export default function Navbar({ profile = {} }) {
 
       let current = sectionLinks[0]?.id ?? "";
 
-      for (const link of sectionLinks) {
-        const section = document.getElementById(link.id);
-        if (section && section.offsetTop <= scrollPos) {
-          current = link.id;
+      for (const section of sectionPositions.current) {
+        if (section.top <= scrollPos) {
+          current = section.id;
         }
       }
 
@@ -92,7 +119,12 @@ export default function Navbar({ profile = {} }) {
       <nav ref={navRef} className={`navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="navbar-inner">
           {/* Logo */}
-          <Link to="/" className="nav-logo" onClick={closeMenus}>
+          <Link
+            to="/"
+            className="na
+          v-logo"
+            onClick={closeMenus}
+          >
             <div className="logo-box">
               <img
                 src="/GHStudios-logo-preview.png"
@@ -127,7 +159,9 @@ export default function Navbar({ profile = {} }) {
               >
                 <span className="nav-num">0{sectionLinks.length + 1}.</span>
                 Connect
-                <span className={`nav-caret ${pagesOpen ? "open" : ""}`}>▾</span>
+                <span className={`nav-caret ${pagesOpen ? "open" : ""}`}>
+                  ▾
+                </span>
               </button>
 
               <ul className={`nav-dropdown-menu ${pagesOpen ? "open" : ""}`}>

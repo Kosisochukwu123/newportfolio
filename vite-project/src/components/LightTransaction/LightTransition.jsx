@@ -11,17 +11,30 @@ export default function LightTransition({ caption = "entering next chapter" }) {
     let animationFrame = null;
     let ticking = false;
 
+    // Cache measurements
+    let elementTop = 0;
+    let elementHeight = 0;
+
+    const calculateDimensions = () => {
+      const rect = element.getBoundingClientRect();
+
+      elementTop = rect.top + window.scrollY;
+      elementHeight = element.offsetHeight;
+    };
+
     const updateProgress = () => {
       ticking = false;
 
-      const { top, height } = element.getBoundingClientRect();
       const viewportHeight = window.innerHeight || 1;
+      const scrollY = window.scrollY;
 
-      const scrollable = height - viewportHeight;
+      const scrollable = elementHeight - viewportHeight;
+
+      const distance = scrollY - elementTop;
 
       const progress =
         scrollable > 0
-          ? Math.max(0, Math.min(-top, scrollable)) / scrollable
+          ? Math.max(0, Math.min(distance, scrollable)) / scrollable
           : 0;
 
       element.style.setProperty("--p", progress.toFixed(4));
@@ -35,13 +48,20 @@ export default function LightTransition({ caption = "entering next chapter" }) {
       animationFrame = requestAnimationFrame(updateProgress);
     };
 
+    const handleResize = () => {
+      calculateDimensions();
+      updateProgress();
+    };
+
+    // Initial measurement
+    calculateDimensions();
     updateProgress();
 
     window.addEventListener("scroll", handleScroll, {
       passive: true,
     });
 
-    window.addEventListener("resize", handleScroll);
+    window.addEventListener("resize", handleResize);
 
     return () => {
       if (animationFrame) {
@@ -49,7 +69,8 @@ export default function LightTransition({ caption = "entering next chapter" }) {
       }
 
       window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleScroll);
+
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 

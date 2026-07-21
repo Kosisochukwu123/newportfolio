@@ -280,7 +280,7 @@
   z-index: 500;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 868px) {
   .navbar {
     padding: 1.2rem 1.2rem !important;
   }

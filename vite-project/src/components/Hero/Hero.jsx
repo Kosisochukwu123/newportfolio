@@ -136,7 +136,7 @@ export default function Hero({ profile = {} }) {
           muted
           loop
           playsInline
-          preload="auto"
+          preload="metadata"
         >
           <source src="/hero-video.mp4" type="video/mp4" />
         </video>
