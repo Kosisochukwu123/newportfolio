@@ -1,6 +1,21 @@
 /* Updated Projects.css - Cloud transition styles removed */
 /* ============================================
    Projects Component Styles
+   ============================================
+
+   Breakpoint scheme:
+     base   — small phones (<480px)
+     480px  — large phones / phablets
+     640px  — landscape phones / small tablets in portrait
+     768px  — tablets in portrait (iPad Mini/Air/Pro all land here) —
+              STILL single-column/stacked; there isn't enough width
+              for a real two-column layout until 1024px, and forcing
+              it earlier squeezed both the image and text into ~300px
+              columns on iPad-width screens.
+     1024px — tablets in landscape / small laptops — two-column
+              layout starts here instead of 768px.
+     1280px — laptops / desktops — extra breathing room.
+     1536px — large desktops / ultra-wide.
    ============================================ */
 
 /* ---------- Root ---------- */
@@ -64,17 +79,20 @@
   padding: 16px;
   pointer-events: none;
   padding-left: 2rem;
- 
 }
 @media (min-width: 640px) {
   .pj-ribbon {
     padding: 24px;
   }
 }
-@media (min-width: 768px) {
+/* Was gated at 768px, matching the old 768px two-column switch. Moved
+   to 1024px so it changes together with .pj-card/.pj-grid/.pj-visual
+   below — tablet portrait now keeps the same ribbon treatment as
+   large phones instead of jumping early. */
+@media (min-width: 1024px) {
   .pj-ribbon {
     padding: 24px 48px;
-     margin-top: -0.9rem;
+    margin-top: -0.9rem;
   }
 }
 
@@ -94,7 +112,6 @@
 .pj-slash {
   margin: 0 8px;
   opacity: 0.4;
-  /* border: 2px solid red !important; */
 }
 
 /* ---------- Progress Rail ---------- */
@@ -108,7 +125,7 @@
   flex-direction: column;
   gap: 12px;
 }
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .pj-rail {
     display: flex;
   }
@@ -138,14 +155,34 @@
   will-change: transform, opacity, filter;
   transform-origin: 50% 40%;
 }
+@media (min-width: 480px) {
+  .pj-card {
+    padding: 72px 20px 40px;
+  }
+}
 @media (min-width: 640px) {
   .pj-card {
     padding: 80px 24px 40px;
   }
 }
+/* New tier: tablets in portrait get a bit more breathing room than
+   phones, but stay in the stacked single-column layout — they were
+   previously jumping straight from this phone-ish padding to the
+   desktop "0 64px" (no vertical padding) at 768px, which only makes
+   sense once the two-column layout actually starts. */
 @media (min-width: 768px) {
   .pj-card {
+    padding: 88px 32px 40px;
+  }
+}
+@media (min-width: 1024px) {
+  .pj-card {
     padding: 0 64px;
+  }
+}
+@media (min-width: 1280px) {
+  .pj-card {
+    padding: 0 80px;
   }
 }
 
@@ -164,19 +201,30 @@
 }
 @media (min-width: 768px) {
   .pj-grid {
+    gap: 24px;
+    padding: 20px;
+  }
+}
+/* Two-column layout now starts here instead of 768px — that's the
+   point where there's actually enough width for image + text side by
+   side without squeezing both into ~300px columns (roughly what an
+   iPad in portrait, 768–834px wide, was getting before). */
+@media (min-width: 1024px) {
+  .pj-grid {
     grid-template-columns: 1fr 1fr;
-    gap: 64px;
-    /* Was `height: auto`, which let the grid grow past the card's
-       fixed 100vh whenever the FAQ opened. There's no scroll room
-       reserved for that growth (the page's total scroll height is
-       computed up front from project count alone), so the extra
-       height just got centered out of view and clipped by
-       .pj-sticky's overflow: hidden — nothing pushed, nothing showed.
-       Filling the full card height and stretching both columns keeps
-       the grid itself fixed-size; .pj-content below handles any
-       overflow internally instead. */
+    gap: 48px;
     height: 100%;
     align-items: stretch;
+  }
+}
+@media (min-width: 1280px) {
+  .pj-grid {
+    gap: 64px;
+  }
+}
+@media (min-width: 1536px) {
+  .pj-grid {
+    max-width: 1280px;
   }
 }
 
@@ -191,18 +239,34 @@
   aspect-ratio: 16 / 10;
   max-height: 78vh !important;
 }
+@media (min-width: 480px) {
+  .pj-visual {
+    max-height: 50vh;
+  }
+}
 @media (min-width: 640px) {
   .pj-visual {
     aspect-ratio: 4 / 3;
     max-height: 42vh;
   }
 }
+/* Tablet portrait keeps the same landscape-ish aspect ratio as large
+   phones — a tall 5/6 image (meant for a narrow side-by-side column)
+   looked odd stacked full-width above the text at this size. */
 @media (min-width: 768px) {
+  .pj-visual {
+    max-height: 46vh;
+  }
+}
+/* Switches to the taller portrait-style ratio only once it's actually
+   sitting in a narrow column next to text, at 1024px+. */
+@media (min-width: 1024px) {
   .pj-visual {
     aspect-ratio: 5 / 6;
     max-height: none;
   }
 }
+
 .pj-visual img {
   width: 100%;
   height: 100%;
@@ -288,11 +352,13 @@
 .pj-content {
   min-width: 0;
 }
-@media (min-width: 768px) {
+/* Was gated at 768px — matched to the old (too-early) two-column
+   switch. A definite height + internal scroll only makes sense once
+   .pj-content is actually a grid column stretched to the card's full
+   height; before 1024px it's just flowing full-width beneath the
+   image, where height:100% has no sensible track to resolve against. */
+@media (min-width: 1024px) {
   .pj-content {
-    /* Matches .pj-visual's height (grid is align-items: stretch now),
-       so opening the FAQ grows content inside this box and scrolls
-       internally instead of pushing the grid taller than the card. */
     height: 100%;
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -330,18 +396,28 @@
   letter-spacing: -0.02em;
   color: var(--pj-fg);
 }
+@media (min-width: 480px) {
+  .pj-title {
+    font-size: 30px;
+  }
+}
 @media (min-width: 640px) {
   .pj-title {
     margin-top: 16px;
-    font-size: 32px;
+    font-size: 34px;
   }
 }
 @media (min-width: 768px) {
   .pj-title {
-    font-size: 48px;
+    font-size: 42px;
   }
 }
 @media (min-width: 1024px) {
+  .pj-title {
+    font-size: 52px;
+  }
+}
+@media (min-width: 1280px) {
   .pj-title {
     font-size: 60px;
   }
@@ -479,6 +555,11 @@
   .pj-faq.is-open {
     margin-top: 24px;
     max-height: 38vh;
+  }
+}
+@media (min-width: 1024px) {
+  .pj-faq.is-open {
+    max-height: 44vh;
   }
 }
 
