@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 
@@ -18,7 +19,7 @@ import "./styles/globals.css";
 const About = lazy(() => import("./components/About/About"));
 const Projects = lazy(() => import("./components/Projects/Projects"));
 const Testimonials = lazy(
-  () => import("./components/Testimonials/Testimonials"),
+  () => import("./components/Testimonials/Testimonials")
 );
 const Footer = lazy(() => import("./components/Footer/Footer"));
 const Contact = lazy(() => import("./components/Contact/Contact"));
@@ -26,7 +27,7 @@ const Team = lazy(() => import("./components/Team/Team"));
 const TeamJoin = lazy(() => import("./components/Team/TeamJoin"));
 const Resume = lazy(() => import("./components/Resume/Resume"));
 const LightTransition = lazy(
-  () => import("./components/LightTransaction/LightTransition"),
+  () => import("./components/LightTransaction/LightTransition")
 );
 
 const API = import.meta.env.VITE_API_URL || "/api";
@@ -103,13 +104,11 @@ export default function App() {
   const cursorRef = useRef(null);
 
   const [dataReady, setDataReady] = useState(false);
+
   const [appReady, setAppReady] = useState(() => {
     return sessionStorage.getItem("loaderShown") === "true";
   });
-  const handleLoaderComplete = () => {
-  sessionStorage.setItem("loaderShown", "true");
-  setAppReady(true);
-};
+
   const [profile, setProfile] = useState({
     name: "Loading...",
     tagline: "",
@@ -122,6 +121,31 @@ export default function App() {
   const [skills, setSkills] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
 
+  const handleLoaderComplete = () => {
+    sessionStorage.setItem("loaderShown", "true");
+    setAppReady(true);
+  };
+
+  // Custom background glow follows the mouse.
+  // The native mouse pointer remains visible.
+  useEffect(() => {
+    const move = (event) => {
+      if (!cursorRef.current) return;
+
+      cursorRef.current.style.transform = `
+        translate3d(${event.clientX}px, ${event.clientY}px, 0)
+        translate(-50%, -50%)
+      `;
+    };
+
+    window.addEventListener("pointermove", move, { passive: true });
+
+    return () => {
+      window.removeEventListener("pointermove", move);
+    };
+  }, []);
+
+  // Fetch website data
   useEffect(() => {
     Promise.all([
       fetchWithCache("profile", () => getData("profile")),
@@ -133,32 +157,21 @@ export default function App() {
         if (profileRes.success) setProfile(profileRes.data);
         if (projectRes.success) setProjects(projectRes.data);
         if (skillsRes.success) setSkills(skillsRes.data);
-        if (testimonialsRes.success) setTestimonials(testimonialsRes.data);
+        if (testimonialsRes.success) {
+          setTestimonials(testimonialsRes.data);
+        }
       })
       .finally(() => setDataReady(true));
   }, []);
 
-  useEffect(() => {
-    const move = (e) => {
-      if (!cursorRef.current) return;
-
-      cursorRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-    };
-
-    window.addEventListener("mousemove", move);
-
-    return () => {
-      window.removeEventListener("mousemove", move);
-    };
-  }, []);
-
+  // Initialize smooth scrolling
   useEffect(() => {
     initSmoothScroll();
   }, []);
 
   return (
     <div className="app">
-      <div ref={cursorRef} className="cursor-glow" />
+      <div ref={cursorRef} className="cursor-glow" aria-hidden="true" />
 
       <Navbar profile={profile} />
 
@@ -205,7 +218,10 @@ export default function App() {
       </Suspense>
 
       {!appReady && (
-        <Loader dataReady={dataReady} onComplete={handleLoaderComplete} />
+        <Loader
+          dataReady={dataReady}
+          onComplete={handleLoaderComplete}
+        />
       )}
     </div>
   );

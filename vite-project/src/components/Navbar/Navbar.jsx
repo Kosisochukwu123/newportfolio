@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./Navbar.css";
@@ -10,23 +11,26 @@ const sectionLinks = [
 ];
 
 const pageLinks = [
-  { name: "Team", path: "/team" },
-  { name: "Contact", path: "/contact" },
+  { name: "Our Team", path: "/team" },
+  { name: "Contact Us", path: "/contact" },
 ];
 
 const SCROLL_RANGE = 140;
 
-export default function Navbar({ profile = {} }) {
+export default function Navbar() {
   const location = useLocation();
   const isHome = location.pathname === "/";
-  const isPagesActive = pageLinks.some((p) => location.pathname === p.path);
+  const isPagesActive = pageLinks.some(
+    (page) => location.pathname === page.path
+  );
 
-  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [pagesOpen, setPagesOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
 
   const sectionPositions = useRef([]);
+  const dropdownRef = useRef(null);
+  const navRef = useRef(null);
 
   const calculateSections = () => {
     sectionPositions.current = sectionLinks
@@ -36,7 +40,7 @@ export default function Navbar({ profile = {} }) {
         return el
           ? {
               id: link.id,
-              top: el.offsetTop,
+              top: el.getBoundingClientRect().top + window.scrollY,
             }
           : null;
       })
@@ -47,33 +51,30 @@ export default function Navbar({ profile = {} }) {
     calculateSections();
 
     window.addEventListener("resize", calculateSections);
+    window.addEventListener("load", calculateSections);
 
-    return () => window.removeEventListener("resize", calculateSections);
+    return () => {
+      window.removeEventListener("resize", calculateSections);
+      window.removeEventListener("load", calculateSections);
+    };
   }, [isHome]);
 
-  const dropdownRef = useRef(null);
-  const navRef = useRef(null);
-
+  // Scroll progress and active section tracking.
   useEffect(() => {
     let raf = 0;
 
     const compute = () => {
       const y = window.scrollY;
-      setScrolled(y > 50);
-
       const progress = Math.min(1, y / SCROLL_RANGE);
-      if (navRef.current) {
-        navRef.current.style.setProperty(
-          "--scroll-progress",
-          progress.toFixed(3),
-        );
-      }
+
+      navRef.current?.style.setProperty(
+        "--scroll-progress",
+        progress.toFixed(3)
+      );
 
       if (!isHome) return;
 
-      const NAV_OFFSET = 150;
-      const scrollPos = y + NAV_OFFSET;
-
+      const scrollPos = y + 150;
       let current = sectionLinks[0]?.id ?? "";
 
       for (const section of sectionPositions.current) {
@@ -91,6 +92,7 @@ export default function Navbar({ profile = {} }) {
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
+
     compute();
 
     return () => {
@@ -99,15 +101,49 @@ export default function Navbar({ profile = {} }) {
     };
   }, [isHome]);
 
+  // Close dropdown when clicking outside.
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+    const onDown = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
         setPagesOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    document.addEventListener("mousedown", onDown);
+
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+    };
   }, []);
+
+  // Lock page scrolling while mobile menu is open.
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+
+    if (!menuOpen) return;
+
+    const onKey = (event) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", onKey);
+
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
+  // Close menus after navigation.
+  useEffect(() => {
+    setMenuOpen(false);
+    setPagesOpen(false);
+  }, [location.pathname, location.hash]);
 
   const closeMenus = () => {
     setMenuOpen(false);
@@ -115,106 +151,119 @@ export default function Navbar({ profile = {} }) {
   };
 
   return (
-    <>
-      <nav ref={navRef} className={`navbar ${scrolled ? "scrolled" : ""}`}>
-        <div className="navbar-inner">
-          {/* Logo */}
+    <nav
+      ref={navRef}
+      className={`nb${menuOpen ? " is-open" : ""}`}
+    >
+      <div className="nb-inner">
+        <Link
+          to="/"
+          className="nb-logo"
+          onClick={closeMenus}
+          aria-label="GH Studios home"
+        >
+          <img src="/GHStudios-logo-preview.png" alt="GH Studios" />
+        </Link>
+
+        <button
+          type="button"
+          className="nb-toggle"
+          onClick={() => setMenuOpen((open) => !open)}
+          aria-expanded={menuOpen}
+          aria-controls="nb-panel"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+        >
+          <span className="nb-toggle-label" aria-hidden="true">
+            <span>Menu</span>
+            <span>Close</span>
+          </span>
+
+          <span className="nb-toggle-lines" aria-hidden="true">
+            <i />
+            <i />
+          </span>
+        </button>
+      </div>
+
+      <div id="nb-panel" className="nb-panel">
+        <ul className="nb-links">
+          {sectionLinks.map((link, index) => (
+            <li key={link.id} style={{ "--i": index }}>
+              <Link
+                to={`/#${link.id}`}
+                className={`nb-link${
+                  isHome && activeSection === link.id ? " is-active" : ""
+                }`}
+                onClick={closeMenus}
+              >
+                <span className="nb-link-text">
+                  <span className="nb-num">0{index + 1}</span>
+                  {link.name}
+                </span>
+              </Link>
+            </li>
+          ))}
+
+          <li
+            className="nb-dd"
+            ref={dropdownRef}
+            style={{ "--i": sectionLinks.length }}
+          >
+            <button
+              type="button"
+              className={`nb-link nb-dd-trigger${
+                isPagesActive ? " is-active" : ""
+              }`}
+              onClick={() => setPagesOpen((open) => !open)}
+              aria-expanded={pagesOpen}
+            >
+              Connect
+
+              <span
+                className={`nb-caret${pagesOpen ? " is-open" : ""}`}
+                aria-hidden="true"
+              />
+            </button>
+
+            <ul className={`nb-dd-menu${pagesOpen ? " is-open" : ""}`}>
+              {pageLinks.map((page, index) => (
+                <li
+                  key={page.path}
+                  style={{ "--i": sectionLinks.length + index }}
+                >
+                  <Link
+                    to={page.path}
+                    className={`nb-link${
+                      location.pathname === page.path ? " is-active" : ""
+                    }`}
+                    onClick={closeMenus}
+                  >
+                    <span className="nb-link-text">
+                      <span className="nb-num">
+                        0{sectionLinks.length + 1 + index}
+                      </span>
+                      {page.name}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </li>
+        </ul>
+
+        <div className="nb-cta">
           <Link
-            to="/"
-            className="na
-          v-logo"
+            to="/contact"
+            className="nb-btn nb-btn-solid"
             onClick={closeMenus}
           >
-            <div className="logo-box">
-              <img
-                src="/GHStudios-logo-preview.png"
-                alt="GH Studios Logo"
-                className="logo-img"
-              />
-            </div>
-            <span className="logo-name" />
+            Build Your First Project
+            <span className="nb-btn-arrow" aria-hidden="true">
+              ↗
+            </span>
           </Link>
-
-          {/* Navigation Links */}
-          <ul className={`nav-links ${menuOpen ? "open" : ""}`}>
-            {sectionLinks.map((l, i) => (
-              <li key={l.name}>
-                <Link
-                  to={`/#${l.id}`}
-                  className={isHome && activeSection === l.id ? "active" : ""}
-                  onClick={closeMenus}
-                >
-                  <span className="nav-num">0{i + 1}.</span>
-                  {l.name}
-                </Link>
-              </li>
-            ))}
-
-            {/* Pages Dropdown */}
-            <li className="nav-dropdown" ref={dropdownRef}>
-              <button
-                type="button"
-                className={`nav-dropdown-trigger ${isPagesActive ? "active" : ""}`}
-                onClick={() => setPagesOpen((o) => !o)}
-              >
-                <span className="nav-num">0{sectionLinks.length + 1}.</span>
-                Connect
-                <span className={`nav-caret ${pagesOpen ? "open" : ""}`}>
-                  ▾
-                </span>
-              </button>
-
-              <ul className={`nav-dropdown-menu ${pagesOpen ? "open" : ""}`}>
-                {pageLinks.map((p) => (
-                  <li key={p.path}>
-                    <Link
-                      to={p.path}
-                      className={location.pathname === p.path ? "active" : ""}
-                      onClick={closeMenus}
-                    >
-                      {p.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </li>
-
-            {/* Download Resume Button */}
-            <li>
-              <Link
-                to="/resume"
-                className="btn btn-primary nav-resume-btn"
-                onClick={closeMenus}
-              >
-                Download Resume
-              </Link>
-            </li>
-
-            {/* Contact CTA */}
-            <li>
-              <Link
-                to="/contact"
-                className="btn btn-primary nav-cta"
-                onClick={closeMenus}
-              >
-                Let's Talk
-              </Link>
-            </li>
-          </ul>
-
-          {/* Hamburger Menu */}
-          <button
-            className={`hamburger ${menuOpen ? "active" : ""}`}
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            <span />
-            <span />
-            <span />
-          </button>
         </div>
-      </nav>
-
-      {menuOpen && <div className="menu-overlay" onClick={closeMenus} />}
-    </>
+      </div>
+    </nav>
   );
 }

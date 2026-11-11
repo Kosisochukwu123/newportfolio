@@ -1,134 +1,175 @@
 import { useEffect, useRef, useState } from "react";
 import "./Hero.css";
 
-const COMMANDS = ["who_are_we", "services --list", "availability"];
+// What the agency does, one word at a time. The headline reads
+// "<word> on your terms." and the word, icon and line below it change
+// together every INTERVAL ms.
+const INTERVAL = 2000;
 
-export default function Hero({ profile = {} }) {
+const ROTATOR = [
+  {
+    word: "Build",
+    icon: "build",
+    from: "#ffe066",
+    to: "#f5a623",
+    line: "Websites, apps and backend systems on the MERN stack and TypeScript.",
+  },
+  {
+    word: "Design",
+    icon: "design",
+    from: "#ffa66b",
+    to: "#ff5e62",
+    line: "Interfaces and brand identities that feel considered, never templated.",
+  },
+  {
+    word: "Secure",
+    icon: "secure",
+    from: "#6ff0b0",
+    to: "#1fa971",
+    line: "Cyber security, hardening and audits, so what you ship stays safe.",
+  },
+  {
+    word: "Animate",
+    icon: "animate",
+    from: "#8fd0ff",
+    to: "#5470f5",
+    line: "Videography and motion graphics that make people stop scrolling.",
+  },
+];
+
+const SKELETON_TIMEOUT = 6000; // show real content anyway if data never arrives
+
+function Icon({ name }) {
+  const p = {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "#fff",
+    strokeWidth: 1.7,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+  };
+  if (name === "build")
+    return (
+      <svg {...p}>
+        <path d="M9 7l-5 5 5 5M15 7l5 5-5 5M13.5 5l-3 14" />
+      </svg>
+    );
+  if (name === "design")
+    return (
+      <svg {...p}>
+        <path d="M12 3l2.2 6.3L21 12l-6.8 2.7L12 21l-2.2-6.3L3 12l6.8-2.7z" />
+      </svg>
+    );
+  if (name === "secure")
+    return (
+      <svg {...p}>
+        <path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z" />
+        <path d="M9 12l2 2 4-4" />
+      </svg>
+    );
+  return (
+    <svg {...p}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M10 8.5l5.5 3.5-5.5 3.5z" />
+    </svg>
+  );
+}
+
+// Placeholder shown while the profile data loads: same layout as the real
+// content, so nothing jumps when it arrives.
+function HeroSkeleton() {
+  return (
+    <>
+      <div className="hero-content" aria-busy="true" aria-label="Loading">
+        <span className="hs hs-label" />
+        <span className="hs hs-icon" />
+        <span className="hs hs-h1 hs-h1-a" />
+        <span className="hs hs-h1 hs-h1-b" />
+        <span className="hs hs-p" />
+        <span className="hs hs-p hs-p-short" />
+        <div className="hs-row">
+          <span className="hs hs-btn" />
+          <span className="hs hs-btn" />
+        </div>
+      </div>
+      <div className="hero-stats hs-stats">
+        <span className="hs hs-stat-lead" />
+        <span className="hs hs-stat" />
+        <span className="hs hs-stat" />
+        <span className="hs hs-stat" />
+      </div>
+    </>
+  );
+}
+
+export default function Hero({ profile = {}, loading }) {
   const heroRef = useRef(null);
-  const terminalRef = useRef(null);
+  const [idx, setIdx] = useState(0);
+  const [timedOut, setTimedOut] = useState(false);
+  const [reduceMotion] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
 
-  // ── Typewriter sequence ──
-  // phase: which command (0..COMMANDS.length) we're on. Once it equals
-  // COMMANDS.length, everything has been typed and only the final
-  // blinking cursor shows.
-  const [phase, setPhase] = useState(0);
-  const [typedCmd, setTypedCmd] = useState("");
-  const [outputShown, setOutputShown] = useState(false);
+  // Skeleton while data loads. Pass `loading` from the parent if you have it,
+  // otherwise an empty profile counts as "still loading".
+  const isLoading = loading ?? Object.keys(profile).length === 0;
+  const showSkeleton = isLoading && !timedOut;
 
   useEffect(() => {
-    let cancelled = false;
-    const timers = [];
+    if (!isLoading) return;
+    const t = setTimeout(() => setTimedOut(true), SKELETON_TIMEOUT);
+    return () => clearTimeout(t);
+  }, [isLoading]);
 
-    function typeCommand(text, onDone) {
-      let i = 0;
-      const tick = () => {
-        if (cancelled) return;
-        i++;
-        setTypedCmd(text.slice(0, i));
-        if (i < text.length) {
-          timers.push(setTimeout(tick, 38));
-        } else {
-          timers.push(setTimeout(onDone, 350));
-        }
-      };
-      tick();
-    }
+  // Rotate word + icon + line together. Clicking a step restarts the timer.
+  useEffect(() => {
+    if (showSkeleton || reduceMotion) return;
+    const t = setTimeout(() => setIdx((i) => (i + 1) % ROTATOR.length), INTERVAL);
+    return () => clearTimeout(t);
+  }, [idx, showSkeleton, reduceMotion]);
 
-    function runPhase(p) {
-      if (cancelled) return;
-      if (p >= COMMANDS.length) return;
-
-      setTypedCmd("");
-      setOutputShown(false);
-
-      typeCommand(COMMANDS[p], () => {
-        if (cancelled) return;
-        setOutputShown(true);
-        timers.push(
-          setTimeout(() => {
-            setPhase(p + 1);
-            runPhase(p + 1);
-          }, 550),
-        );
-      });
-    }
-
-    runPhase(0);
-
+  // The hero holds still (sticky) while the next section slides up over it;
+  // once it is fully covered, hide it so it can't show through later sections.
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el) return;
+    const update = () => {
+      const covered = window.scrollY > el.offsetTop + el.offsetHeight + 20;
+      el.style.visibility = covered ? "hidden" : "visible";
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
     return () => {
-      cancelled = true;
-      timers.forEach(clearTimeout);
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+      el.style.visibility = "";
     };
   }, []);
 
-  // ── Mouse parallax on the terminal ──
-  useEffect(() => {
-    const container = heroRef.current;
-    const el = terminalRef.current;
-    if (!container || !el) return;
+  const stateOf = (i) =>
+    i === idx
+      ? "is-active"
+      : i === (idx - 1 + ROTATOR.length) % ROTATOR.length
+        ? "is-prev"
+        : "";
 
-    let raf = 0;
-
-    const handleMove = (e) => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const rect = container.getBoundingClientRect();
-        const relX = (e.clientX - rect.left) / rect.width - 0.5;
-        const relY = (e.clientY - rect.top) / rect.height - 0.5;
-        el.style.transform = `perspective(900px) rotateX(${(-relY * 8).toFixed(2)}deg) rotateY(${(relX * 8).toFixed(2)}deg)`;
-      });
-    };
-
-    const reset = () => {
-      cancelAnimationFrame(raf);
-      el.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg)";
-    };
-
-    container.addEventListener("mousemove", handleMove);
-    container.addEventListener("mouseleave", reset);
-
-    return () => {
-      cancelAnimationFrame(raf);
-      container.removeEventListener("mousemove", handleMove);
-      container.removeEventListener("mouseleave", reset);
-    };
-  }, []);
-
-  const services = profile.services || [
-    "Web Development(Mern Stack)",
-    "TypeScript",
-    "Backend Systems(Node.js, MongoDB)",
-    "Cyber Security",
-    "Videography & Motion Graphics",
-    "Other services...",
+  const stats = [
+    { num: profile.projectsShipped || "20+", label: "Projects shipped" },
+    { num: profile.clientsServed || "10+", label: "Clients served" },
+    { num: profile.yearsExperience || "3+", label: "Years experience" },
   ];
 
-  const renderOutput = (idx) => {
-    if (idx === 0) {
-      return <p className="t-output">{profile.name || "Digital Agency"}</p>;
-    }
-    if (idx === 1) {
-      return services.map((service, i) => (
-        <p className="t-output" key={i}>
-          {service}
-        </p>
-      ));
-    }
-    if (idx === 2) {
-      return (
-        <p className={`t-output ${profile.availableForWork ? "t-green" : ""}`}>
-          {profile.availableForWork
-            ? "✓ Accepting new projects"
-            : "✗ Currently at capacity"}
-        </p>
-      );
-    }
-    return null;
-  };
-
   return (
-    <section className="hero" id="hero" ref={heroRef}>
-      {/* 🎬 VIDEO BACKGROUND */}
+    <section
+      className="hero"
+      id="hero"
+      ref={heroRef}
+      style={{ "--hero-ms": `${INTERVAL}ms` }}
+    >
+      {/* 🎬 VIDEO BACKGROUND (replaces the coloured gradients of the reference) */}
       <div className="hero-video-wrapper">
         <video
           className="hero-video"
@@ -140,98 +181,97 @@ export default function Hero({ profile = {} }) {
         >
           <source src="/hero-video.mp4" type="video/mp4" />
         </video>
-
         <div className="hero-overlay" />
         <div className="hero-fade-bottom" />
       </div>
 
-      <div className="hero-grid-bg" aria-hidden />
-
       <div className="container hero-inner">
-        {/* LEFT SIDE */}
-        <div className="hero-content fade-up">
-          <p className="hero-greeting">
-            <span className="mono-tag">We are</span>
-          </p>
-
-          <h1 className="hero-name">{profile.name || "Your Name"}.</h1>
-
-          <h2 className="hero-title">{profile.tagline || ""}</h2>
-
-          <p className="hero-bio">{profile.heroBio || ""}</p>
-
-          <div className="hero-cta">
-            <a href="#cases" className="btn btn-primary">
-              View our work
-            </a>
-            <a href="/contact" className="btn btn-outline">
-              Start a project
-            </a>
-          </div>
-
-          {/* Stats counter */}
-          {/* <div className="hero-stats">
-            {[
-              { num: profile.projectsShipped || "20+", label: "Projects" },
-              { num: profile.clientsServed || "10+", label: "Clients" },
-              { num: profile.yearsExperience || "3+", label: "Years Experience" },
-            ].map((s) => (
-              <div className="hero-stat" key={s.label}>
-                <span className="hero-stat-num">{s.num}</span>
-                <span className="hero-stat-label">{s.label}</span>
-              </div>
-            ))}
-          </div> */}
-        </div>
-
-        {/* RIGHT SIDE */}
-        <div
-          className="hero-terminal fade-up"
-          style={{ animationDelay: "0.2s" }}
-          ref={terminalRef}
-        >
-          <div className="terminal-header">
-            <span className="dot red" />
-            <span className="dot yellow" />
-            <span className="dot green" />
-            <span className="terminal-title">~/profile</span>
-          </div>
-
-          <div className="terminal-body">
-            {COMMANDS.map((cmdText, idx) => {
-              if (idx > phase) return null;
-
-              const isCurrent = idx === phase;
-              const displayCmd = isCurrent ? typedCmd : cmdText;
-              const showOutputForThis =
-                idx < phase || (isCurrent && outputShown);
-              const stillTyping = isCurrent && !outputShown;
-
-              return (
-                <div key={idx}>
-                  <p>
-                    <span className="t-prompt">$</span> {displayCmd}
-                    {stillTyping && <span className="blink"> ▋</span>}
-                  </p>
-                  {showOutputForThis && renderOutput(idx)}
-                  {showOutputForThis && <p className="t-spacer" />}
-                </div>
-              );
-            })}
-
-            {phase >= COMMANDS.length && (
-              <p className="t-cursor">
-                <span className="t-prompt">$</span>
-                <span className="blink"> ▋</span>
+        {showSkeleton ? (
+          <HeroSkeleton />
+        ) : (
+          <>
+            <div className="hero-content hero-enter">
+              <p className="hero-greeting">
+                <span className="mono-tag">We are {profile.name || "GH Studios"}</span>
               </p>
-            )}
-          </div>
-        </div>
-      </div>
 
-      <div className="scroll-hint">
-        <span className="scroll-line" />
-        <span className="mono-tag">scroll</span>
+              {/* icon changes with the word */}
+              <div className="hero-icon" aria-hidden="true">
+                {ROTATOR.map((r, i) => (
+                  <span
+                    key={r.word}
+                    className={`hero-icon-face ${stateOf(i)}`}
+                    style={{
+                      background: `linear-gradient(145deg, ${r.from}, ${r.to})`,
+                      boxShadow: `inset 0 2px 0 rgba(255,255,255,.55), 0 16px 44px -10px ${r.to}`,
+                    }}
+                  >
+                    <Icon name={r.icon} />
+                  </span>
+                ))}
+              </div>
+
+              <h1 className="hero-title">
+                <span className="hero-sr">
+                  Build, design, secure and animate on your terms.
+                </span>
+                <span className="hero-rot" aria-hidden="true">
+                  {ROTATOR.map((r, i) => (
+                    <span key={r.word} className={`hero-word ${stateOf(i)}`}>
+                      {r.word}
+                    </span>
+                  ))}
+                </span>
+                <span className="hero-rest" aria-hidden="true">
+                  on your terms.
+                </span>
+              </h1>
+
+              {/* one line per word, in step with the headline */}
+              <div className="hero-lines" aria-hidden="true">
+                {ROTATOR.map((r, i) => (
+                  <p key={r.word} className={`hero-line ${stateOf(i)}`}>
+                    {r.line}
+                  </p>
+                ))}
+              </div>
+
+              <div className="hero-steps">
+                {ROTATOR.map((r, i) => (
+                  <button
+                    key={r.word}
+                    type="button"
+                    className={`hero-step${i === idx ? " is-active" : ""}`}
+                    onClick={() => setIdx(i)}
+                    aria-label={`Show: ${r.word}`}
+                    aria-current={i === idx}
+                  >
+                    <i />
+                  </button>
+                ))}
+              </div>
+
+              <div className="hero-cta">
+                <a href="#cases" className="btn btn-primary">
+                  View our work
+                </a>
+                <a href="/contact" className="btn btn-outline">
+                  Start a project
+                </a>
+              </div>
+            </div>
+
+            <div className="hero-stats hero-enter">
+              <p className="hero-stats-lead">Great work isn&rsquo;t made alone.</p>
+              {stats.map((s) => (
+                <div className="hero-stat" key={s.label}>
+                  <span className="hero-stat-num">{s.num}</span>
+                  <span className="hero-stat-label">{s.label}</span>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

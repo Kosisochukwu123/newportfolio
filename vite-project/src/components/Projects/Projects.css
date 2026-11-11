@@ -1,24 +1,19 @@
-/* Updated Projects.css - Cloud transition styles removed */
+```css
 /* ============================================
-   Projects Component Styles
+   PROJECTS COMPONENT
    ============================================
 
-   Breakpoint scheme:
-     base   — small phones (<480px)
-     480px  — large phones / phablets
-     640px  — landscape phones / small tablets in portrait
-     768px  — tablets in portrait (iPad Mini/Air/Pro all land here) —
-              STILL single-column/stacked; there isn't enough width
-              for a real two-column layout until 1024px, and forcing
-              it earlier squeezed both the image and text into ~300px
-              columns on iPad-width screens.
-     1024px — tablets in landscape / small laptops — two-column
-              layout starts here instead of 768px.
-     1280px — laptops / desktops — extra breathing room.
-     1536px — large desktops / ultra-wide.
-   ============================================ */
+   Breakpoints:
+   480px  — Large phones / phablets
+   640px  — Landscape phones / small tablets
+   768px  — Portrait tablets (stacked layout)
+   1024px — Landscape tablets / small laptops (two columns)
+   1280px — Laptops / desktops
+   1536px — Large desktops / ultra-wide
+============================================ */
 
 /* ---------- Root ---------- */
+
 .pj-root {
   --pj-bg: #0b0b0c;
   --pj-fg: #f5f5f4;
@@ -42,53 +37,82 @@
     sans-serif;
 }
 
-/* ---------- Loading / Error ---------- */
+/* ---------- Loading ---------- */
+
 .pj-loading {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 60dvh;
-  background: #0b0b0c;
-  color: #8a8a89;
+  padding: 24px;
+
+  background: var(--pj-bg);
+  color: var(--pj-muted);
+
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 13px;
   letter-spacing: 0.05em;
   text-align: center;
-  padding: 24px;
 }
 
 /* ---------- Sticky Container ---------- */
+
 .pj-sticky {
   position: sticky;
   top: 0;
-  height: 100vh;
+
   width: 100%;
+  height: 100vh;
+  margin-top: -100px;
+
   overflow: hidden;
   contain: layout paint;
 }
 
 /* ---------- Header Ribbon ---------- */
+
 .pj-ribbon {
   position: absolute;
-  inset: 0 0 auto 0;
+  inset: 0 0 auto;
   z-index: 40;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+
   padding: 16px;
-  pointer-events: none;
   padding-left: 2rem;
+
+  pointer-events: none;
 }
+
+.pj-eyebrow {
+  margin: 0;
+
+  color: var(--pj-muted);
+
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.pj-slash {
+  margin: 0 8px;
+  opacity: 0.4;
+}
+
 @media (min-width: 640px) {
   .pj-ribbon {
     padding: 24px;
   }
+
+  .pj-eyebrow {
+    font-size: 12px;
+  }
 }
-/* Was gated at 768px, matching the old 768px two-column switch. Moved
-   to 1024px so it changes together with .pj-card/.pj-grid/.pj-visual
-   below — tablet portrait now keeps the same ribbon treatment as
-   large phones instead of jumping early. */
+
 @media (min-width: 1024px) {
   .pj-ribbon {
     padding: 24px 48px;
@@ -96,250 +120,329 @@
   }
 }
 
-.pj-eyebrow {
-  margin: 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 13px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--pj-muted);
-}
-@media (min-width: 640px) {
-  .pj-eyebrow {
-    font-size: 12px;
-  }
-}
-.pj-slash {
-  margin: 0 8px;
-  opacity: 0.4;
-}
-
 /* ---------- Progress Rail ---------- */
+
 .pj-rail {
   position: absolute;
-  left: 24px;
   top: 50%;
-  transform: translateY(-50%);
+  left: 24px;
   z-index: 40;
+
   display: none;
   flex-direction: column;
   gap: 12px;
+
+  transform: translateY(-50%);
 }
-@media (min-width: 1024px) {
-  .pj-rail {
-    display: flex;
-  }
-}
+
 .pj-rail-tick {
   width: 2px;
   height: 32px;
+
   background: var(--pj-border);
   transform-origin: top;
+
   transition:
     transform 500ms,
     background 500ms;
 }
+
 .pj-rail-tick.is-active {
   background: var(--pj-accent);
   transform: scaleY(1.4);
 }
 
-/* ---------- Cards ---------- */
+@media (min-width: 1024px) {
+  .pj-rail {
+    display: flex;
+  }
+}
+
+/* ---------- Project Cards ---------- */
+
 .pj-card {
   position: absolute;
   inset: 0;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   padding: 64px 16px 40px;
-  will-change: transform, opacity, filter;
+
   transform-origin: 50% 40%;
+  will-change: transform, opacity, filter;
 }
+
 @media (min-width: 480px) {
   .pj-card {
     padding: 72px 20px 40px;
   }
 }
+
 @media (min-width: 640px) {
   .pj-card {
     padding: 80px 24px 40px;
   }
 }
-/* New tier: tablets in portrait get a bit more breathing room than
-   phones, but stay in the stacked single-column layout — they were
-   previously jumping straight from this phone-ish padding to the
-   desktop "0 64px" (no vertical padding) at 768px, which only makes
-   sense once the two-column layout actually starts. */
+
 @media (min-width: 768px) {
   .pj-card {
     padding: 88px 32px 40px;
   }
 }
+
 @media (min-width: 1024px) {
   .pj-card {
     padding: 0 64px;
   }
 }
+
 @media (min-width: 1280px) {
   .pj-card {
     padding: 0 80px;
   }
 }
 
+/* ---------- Project Grid ---------- */
+/* ---------- Project Grid ---------- */
+
 .pj-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
   align-items: center;
+  gap: 16px;
+
   width: 100%;
   max-width: 1152px;
-  height: 90% !important;
-  overflow: hidden;
-  /* border: 2px solid #666E30; */
-  border-radius: 16px;
+  height: 90%;
+
   padding: 16px;
+  overflow: hidden;
+  border-radius: 16px;
 }
+
 @media (min-width: 768px) {
   .pj-grid {
     gap: 24px;
     padding: 20px;
   }
 }
-/* Two-column layout now starts here instead of 768px — that's the
-   point where there's actually enough width for image + text side by
-   side without squeezing both into ~300px columns (roughly what an
-   iPad in portrait, 768–834px wide, was getting before). */
+
 @media (min-width: 1024px) {
   .pj-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 0.85fr 1.15fr;
+    align-items: center;
     gap: 48px;
     height: 100%;
-    align-items: stretch;
   }
 }
+
 @media (min-width: 1280px) {
   .pj-grid {
     gap: 64px;
   }
 }
+
 @media (min-width: 1536px) {
   .pj-grid {
     max-width: 1280px;
   }
 }
 
-/* ---------- Visual ---------- */
+/* ---------- Project Image Container ---------- */
+
 .pj-visual {
   position: relative;
+
   width: 100%;
-  overflow: hidden;
-  border-radius: 16px;
-  border: 1px solid var(--pj-border);
-  background: var(--pj-secondary);
+  max-width: 520px;
+  max-height: 78vh;
   aspect-ratio: 16 / 10;
-  max-height: 78vh !important;
-}
-@media (min-width: 480px) {
-  .pj-visual {
-    max-height: 50vh;
-  }
-}
-@media (min-width: 640px) {
-  .pj-visual {
-    aspect-ratio: 4 / 3;
-    max-height: 42vh;
-  }
-}
-/* Tablet portrait keeps the same landscape-ish aspect ratio as large
-   phones — a tall 5/6 image (meant for a narrow side-by-side column)
-   looked odd stacked full-width above the text at this size. */
-@media (min-width: 768px) {
-  .pj-visual {
-    max-height: 46vh;
-  }
-}
-/* Switches to the taller portrait-style ratio only once it's actually
-   sitting in a narrow column next to text, at 1024px+. */
-@media (min-width: 1024px) {
-  .pj-visual {
-    aspect-ratio: 5 / 6;
-    max-height: none;
-  }
+
+  margin-inline: auto;
+
+  overflow: hidden;
+  border: 1px solid var(--pj-border);
+  border-radius: 16px;
+
+  background: var(--pj-secondary);
+
+ 
 }
 
 .pj-visual img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* object-fit: cover; */
+}
+
+@media (min-width: 480px) {
+  .pj-visual {
+    max-height: 50vh;
+    
+  }
+}
+
+@media (min-width: 640px) {
+  .pj-visual {
+    max-height: 42vh;
+    aspect-ratio: 16 / 10;
+  }
+}
+
+@media (min-width: 768px) {
+  .pj-visual {
+    max-width: 560px;
+    max-height: 46vh;
+  }
+}
+
+/* Laptop image sizing */
+@media (min-width: 1024px) {
+  .pj-visual {
+    width: 100%;
+    max-width: 420px;
+    max-height: 440px;
+    aspect-ratio: 4 / 5;
+  }
+}
+
+/* Larger desktop */
+@media (min-width: 1280px) {
+  .pj-visual {
+    max-width: 460px;
+    max-height: 500px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .pj-visual {
+    max-width: 500px;
+    max-height: 540px;
+  }
+}
+
+/* ---------- Project Visual ---------- */
+
+.pj-visual {
+  position: relative;
+
+  width: 100%;
+  max-height: 78vh;
+  aspect-ratio: 16 / 10;
+
+  overflow: hidden;
+  border: 1px solid var(--pj-border);
+  border-radius: 16px;
+
+  background: var(--pj-secondary);
+}
+
+.pj-visual img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
+
 .pj-visual-empty {
   width: 100%;
   height: 100%;
+
   background: linear-gradient(
     135deg,
     var(--pj-secondary),
     color-mix(in oklab, var(--pj-secondary) 60%, black)
   );
 }
+
 .pj-visual-fade {
   position: absolute;
   inset: 0;
-  pointer-events: none;
+
   background: linear-gradient(to top, rgba(11, 11, 12, 0.6), transparent 50%);
+
+  pointer-events: none;
 }
+
 .pj-visual-tag {
   position: absolute;
   top: 12px;
   left: 12px;
+
   padding: 4px 10px;
-  border-radius: 999px;
+
   border: 1px solid var(--pj-border);
+  border-radius: 999px;
+
   background: rgba(11, 11, 12, 0.6);
   backdrop-filter: blur(8px);
+
+  color: var(--pj-muted);
+
   font-family: ui-monospace, monospace;
   font-size: 9px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--pj-muted);
-}
-@media (min-width: 640px) {
-  .pj-visual-tag {
-    top: 16px;
-    left: 16px;
-    padding: 4px 12px;
-    font-size: 10px;
-  }
 }
 
 .pj-visual-cta {
   position: absolute;
   right: 12px;
   bottom: 12px;
+
   display: inline-flex;
   align-items: center;
   gap: 6px;
+
   padding: 8px 14px;
+
+  border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 999px;
+
   background: var(--pj-accent);
   color: var(--pj-primary-fg);
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+
   font-family: ui-monospace, monospace;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
   text-decoration: none;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  text-transform: uppercase;
+
   transition:
     transform 200ms ease,
     box-shadow 200ms ease;
 }
+
 .pj-visual-cta:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
 }
+
+@media (min-width: 480px) {
+  .pj-visual {
+    max-height: 50vh;
+  }
+}
+
 @media (min-width: 640px) {
+  .pj-visual {
+    max-height: 42vh;
+    aspect-ratio: 4 / 3;
+  }
+
+  .pj-visual-tag {
+    top: 16px;
+    left: 16px;
+    padding: 4px 12px;
+    font-size: 10px;
+  }
+
   .pj-visual-cta {
     right: 16px;
     bottom: 16px;
@@ -348,335 +451,399 @@
   }
 }
 
-/* ---------- Content ---------- */
+@media (min-width: 768px) {
+  .pj-visual {
+    max-height: 46vh;
+  }
+}
+
+@media (min-width: 1024px) {
+  .pj-visual {
+    max-height: none;
+    aspect-ratio: 5 / 6;
+  }
+}
+
+/* ---------- Project Content ---------- */
+
 .pj-content {
   min-width: 0;
 }
-/* Was gated at 768px — matched to the old (too-early) two-column
-   switch. A definite height + internal scroll only makes sense once
-   .pj-content is actually a grid column stretched to the card's full
-   height; before 1024px it's just flowing full-width beneath the
-   image, where height:100% has no sensible track to resolve against. */
-@media (min-width: 1024px) {
-  .pj-content {
-    height: 100%;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    padding-right: 6px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--pj-border) transparent;
-  }
-  .pj-content::-webkit-scrollbar {
-    width: 4px;
-  }
-  .pj-content::-webkit-scrollbar-thumb {
-    background: var(--pj-border);
-    border-radius: 999px;
-  }
-}
+
 .pj-subtitle {
   margin: 0;
+
+  color: var(--pj-accent);
+
   font-family: ui-monospace, monospace;
   font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--pj-accent);
-}
-@media (min-width: 640px) {
-  .pj-subtitle {
-    font-size: 12px;
-  }
 }
 
 .pj-title {
   margin: 12px 0 0;
+
+  color: var(--pj-fg);
+
   font-size: 28px;
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.02em;
-  color: var(--pj-fg);
 }
-@media (min-width: 480px) {
-  .pj-title {
-    font-size: 30px;
-  }
+
+.pj-desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+
+  max-width: 32rem;
+  margin: 12px 0 0;
+
+  overflow: hidden;
+
+  color: var(--pj-muted);
+
+  font-size: 14px;
+  line-height: 1.6;
 }
+
 @media (min-width: 640px) {
+  .pj-subtitle {
+    font-size: 12px;
+  }
+
   .pj-title {
     margin-top: 16px;
     font-size: 34px;
   }
+
+  .pj-desc {
+    margin-top: 24px;
+    font-size: 16px;
+  }
 }
+
 @media (min-width: 768px) {
   .pj-title {
     font-size: 42px;
   }
+
+  .pj-desc {
+    display: block;
+    overflow: visible;
+    -webkit-line-clamp: unset;
+    font-size: 18px;
+  }
 }
+
 @media (min-width: 1024px) {
+  .pj-content {
+    height: 100%;
+    padding-right: 6px;
+
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
+    scrollbar-width: thin;
+    scrollbar-color: var(--pj-border) transparent;
+  }
+
+  .pj-content::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .pj-content::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: var(--pj-border);
+  }
+
   .pj-title {
     font-size: 52px;
   }
 }
+
 @media (min-width: 1280px) {
   .pj-title {
     font-size: 60px;
   }
 }
 
-.pj-desc {
-  margin: 12px 0 0;
-  max-width: 32rem;
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--pj-muted);
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-@media (min-width: 640px) {
-  .pj-desc {
-    margin-top: 24px;
-    font-size: 16px;
-  }
-}
-@media (min-width: 768px) {
-  .pj-desc {
-    font-size: 18px;
-    -webkit-line-clamp: unset;
-    overflow: visible;
-    display: block;
-  }
-}
+/* ---------- Project Tags ---------- */
 
 .pj-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+
   margin-top: 16px;
 }
-@media (min-width: 640px) {
-  .pj-tags {
-    margin-top: 24px;
-    gap: 8px;
-  }
-}
+
 .pj-tag {
   padding: 2px 10px;
-  border-radius: 999px;
+
   border: 1px solid var(--pj-border);
+  border-radius: 999px;
+
+  color: var(--pj-muted);
+
   font-family: ui-monospace, monospace;
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--pj-muted);
 }
+
 @media (min-width: 640px) {
+  .pj-tags {
+    gap: 8px;
+    margin-top: 24px;
+  }
+
   .pj-tag {
     padding: 4px 12px;
     font-size: 11px;
   }
 }
 
+/* ---------- Project Actions ---------- */
+
 .pj-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+
   margin-top: 20px;
-}
-@media (min-width: 640px) {
-  .pj-actions {
-    margin-top: 32px;
-    gap: 12px;
-  }
 }
 
 .pj-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+
   padding: 10px 16px;
+
+  border: 1px solid transparent;
   border-radius: 999px;
+
   font-size: 12px;
   font-weight: 500;
   text-decoration: none;
-  border: 1px solid transparent;
+
   cursor: pointer;
+
   transition:
     transform 200ms,
     background 200ms,
     color 200ms;
 }
+
+.pj-btn-primary {
+  background: var(--pj-primary);
+  color: var(--pj-primary-fg);
+}
+
+.pj-btn-primary:hover {
+  transform: translateY(-2px);
+}
+
+.pj-btn-ghost {
+  border-color: var(--pj-border);
+  background: transparent;
+  color: var(--pj-fg);
+}
+
+.pj-btn-ghost:hover {
+  background: var(--pj-secondary);
+}
+
 @media (min-width: 640px) {
+  .pj-actions {
+    gap: 12px;
+    margin-top: 32px;
+  }
+
   .pj-btn {
     padding: 12px 20px;
     font-size: 14px;
   }
 }
-.pj-btn-primary {
-  background: var(--pj-primary);
-  color: var(--pj-primary-fg);
-}
-.pj-btn-primary:hover {
-  transform: translateY(-2px);
-}
-.pj-btn-ghost {
-  border-color: var(--pj-border);
-  color: var(--pj-fg);
-  background: transparent;
-}
-.pj-btn-ghost:hover {
-  background: var(--pj-secondary);
-}
 
 /* ---------- FAQ Panel ---------- */
-/* Ported from CaseStudies' "Open Case / Close Case" pattern, restyled
-   to match Projects' monospace/accent token system. Height-capped and
-   internally scrollable rather than growing the card, since .pj-card
-   is a fixed 100vh sticky panel driven by the scroll animation above —
-   letting this section grow unbounded would push content out of the
-   viewport instead of scrolling within it. */
+
 .pj-faq {
-  margin-top: 0;
   max-height: 0;
-  opacity: 0;
+  margin-top: 0;
+
   overflow: hidden;
+  opacity: 0;
+
   transition:
     max-height 450ms ease,
     opacity 350ms ease,
     margin-top 450ms ease;
 }
+
 .pj-faq.is-open {
-  margin-top: 20px;
   max-height: 34vh;
+  margin-top: 20px;
   opacity: 1;
-}
-@media (min-width: 640px) {
-  .pj-faq.is-open {
-    margin-top: 24px;
-    max-height: 38vh;
-  }
-}
-@media (min-width: 1024px) {
-  .pj-faq.is-open {
-    max-height: 44vh;
-  }
 }
 
 .pj-faq-scroll {
-  max-height: inherit;
-  overflow-y: auto;
-  padding-right: 4px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  max-height: inherit;
+  padding-right: 4px;
+
+  overflow-y: auto;
 }
+
 .pj-faq-scroll::-webkit-scrollbar {
   width: 4px;
 }
+
 .pj-faq-scroll::-webkit-scrollbar-thumb {
-  background: var(--pj-border);
   border-radius: 999px;
+  background: var(--pj-border);
 }
 
 .pj-faq-item {
+  overflow: hidden;
+
   border: 1px solid var(--pj-border);
   border-radius: 12px;
+
   background: var(--pj-secondary);
-  overflow: hidden;
 }
 
 .pj-faq-question {
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+
+  width: 100%;
   padding: 12px 14px;
-  background: transparent;
+
   border: none;
+  background: transparent;
   color: var(--pj-fg);
+
   font-size: 13px;
   font-weight: 500;
   text-align: left;
+
   cursor: pointer;
 }
-@media (min-width: 640px) {
-  .pj-faq-question {
-    padding: 14px 16px;
-    font-size: 14px;
-  }
-}
+
 .pj-faq-question:hover {
   color: var(--pj-accent);
 }
 
 .pj-faq-icon {
-  flex-shrink: 0;
-  width: 20px;
-  height: 20px;
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
+
+  width: 20px;
+  height: 20px;
+
   border: 1px solid var(--pj-border);
+  border-radius: 999px;
+
+  color: var(--pj-muted);
+
   font-family: ui-monospace, monospace;
   font-size: 13px;
-  color: var(--pj-muted);
 }
 
 .pj-faq-answer {
   max-height: 0;
   overflow: hidden;
   opacity: 0;
+
   transition:
     max-height 350ms ease,
     opacity 300ms ease;
 }
+
 .pj-faq-answer.is-open {
   max-height: 260px;
   opacity: 1;
 }
+
 .pj-faq-answer p {
   margin: 0;
   padding: 0 14px 14px;
+
+  color: var(--pj-muted);
+
   font-size: 13px;
   line-height: 1.6;
-  color: var(--pj-muted);
 }
+
 @media (min-width: 640px) {
+  .pj-faq.is-open {
+    max-height: 38vh;
+    margin-top: 24px;
+  }
+
+  .pj-faq-question {
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+
   .pj-faq-answer p {
     padding: 0 16px 16px;
     font-size: 14px;
   }
 }
 
+@media (min-width: 1024px) {
+  .pj-faq.is-open {
+    max-height: 44vh;
+  }
+}
+
 /* ---------- Scroll Hint ---------- */
+
 .pj-hint {
   position: absolute;
   inset-inline: 0;
   bottom: 24px;
   z-index: 40;
+
   display: flex;
   justify-content: center;
+
   pointer-events: none;
+
   transition: opacity 500ms;
 }
+
 .pj-hint-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
+
+  color: var(--pj-muted);
+
   font-family: ui-monospace, monospace;
   font-size: 10px;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--pj-muted);
 }
+
 .pj-hint-bar {
   width: 1px;
   height: 32px;
+
   background: var(--pj-muted);
+
   animation: pj-pulse 1.6s ease-in-out infinite;
 }
 
@@ -685,29 +852,38 @@
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.35;
   }
 }
 
 /* ---------- Debug Overlay ---------- */
+
 .pj-debug-toggle {
   position: absolute;
   bottom: 80px;
   left: 16px;
   z-index: 50;
 }
+
 .pj-debug-toggle button {
   padding: 4px 10px;
-  border-radius: 4px;
+
   border: 1px solid var(--pj-border);
+  border-radius: 4px;
+
   background: rgba(11, 11, 12, 0.85);
   backdrop-filter: blur(8px);
+
   color: var(--pj-muted);
+
   font-family: ui-monospace, monospace;
   font-size: 10px;
+
   cursor: pointer;
 }
+
 .pj-debug-toggle button:hover {
   color: var(--pj-fg);
 }
@@ -718,129 +894,173 @@
   right: 16px;
   left: 12px;
   z-index: 50;
+
   max-height: calc(100dvh - 4rem);
-  overflow: auto;
   padding: 12px;
-  border-radius: 8px;
+
+  overflow: auto;
+
   border: 1px solid var(--pj-border);
+  border-radius: 8px;
+
   background: rgba(11, 11, 12, 0.85);
   backdrop-filter: blur(8px);
+
+  color: var(--pj-fg);
+
   font-family: ui-monospace, monospace;
   font-size: 10px;
   line-height: 1.5;
-  color: var(--pj-fg);
+
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
-@media (min-width: 640px) {
-  .pj-debug {
-    left: auto;
-    width: 320px;
-    padding: 16px;
-    top: 64px;
-  }
-}
+
 .pj-debug-head {
   display: flex;
   justify-content: space-between;
+
   margin-bottom: 8px;
-  text-transform: uppercase;
+
+  color: var(--pj-muted);
+
   letter-spacing: 0.2em;
-  color: var(--pj-muted);
+  text-transform: uppercase;
 }
+
 .pj-debug-head button {
-  background: transparent;
-  color: var(--pj-muted);
+  padding: 2px 6px;
+
   border: 1px solid var(--pj-border);
   border-radius: 4px;
-  padding: 2px 6px;
+
+  background: transparent;
+  color: var(--pj-muted);
+
   font-size: 9px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
+
   cursor: pointer;
 }
+
 .pj-debug-head button:hover {
   color: var(--pj-fg);
 }
+
 .pj-debug-stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 4px;
+
   margin-bottom: 8px;
 }
+
 .pj-debug-stats span:nth-child(odd) {
   color: var(--pj-muted);
 }
+
 .pj-debug-stats span:nth-child(even) {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
+
 .pj-debug-bar {
   position: relative;
-  height: 6px;
+
   width: 100%;
+  height: 6px;
   margin-bottom: 12px;
+
   overflow: hidden;
   border-radius: 4px;
+
   background: var(--pj-secondary);
 }
+
 .pj-debug-bar-fill {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
+  inset: 0 auto 0 0;
+
   background: var(--pj-accent);
 }
+
 .pj-debug-rows {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
+
 .pj-debug-row {
   display: flex;
   align-items: center;
   gap: 8px;
 }
+
 .pj-debug-idx {
   width: 16px;
   color: var(--pj-muted);
 }
+
 .pj-debug-track {
   position: relative;
   flex: 1;
+
   height: 12px;
+
   overflow: hidden;
   border-radius: 4px;
+
   background: var(--pj-secondary);
 }
-.pj-debug-in {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  background: color-mix(in oklab, var(--pj-accent) 25%, transparent);
-}
+
+.pj-debug-in,
 .pj-debug-out {
   position: absolute;
   top: 0;
   bottom: 0;
+}
+
+.pj-debug-in {
+  background: color-mix(in oklab, var(--pj-accent) 25%, transparent);
+}
+
+.pj-debug-out {
   background: color-mix(in oklab, var(--pj-destructive) 30%, transparent);
 }
-.pj-debug-tick {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: var(--pj-accent);
-}
+
+.pj-debug-tick,
 .pj-debug-head-mark {
   position: absolute;
   top: 0;
   bottom: 0;
+}
+
+.pj-debug-tick {
+  width: 1px;
+  background: var(--pj-accent);
+}
+
+.pj-debug-head-mark {
   width: 2px;
   background: var(--pj-fg);
 }
+
 .pj-debug-op {
   width: 32px;
+
+  color: var(--pj-fg);
+
   text-align: right;
   font-variant-numeric: tabular-nums;
-  color: var(--pj-fg);
+}
+
+@media (min-width: 640px) {
+  .pj-debug {
+    top: 64px;
+    right: 16px;
+    left: auto;
+
+    width: 320px;
+    padding: 16px;
+  }
 }

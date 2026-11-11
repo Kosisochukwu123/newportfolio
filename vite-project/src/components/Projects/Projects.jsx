@@ -1,241 +1,279 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ProjectFAQ from "../ProjectFAQ/ProjectFAQ";
-import ProjectCard from './ProjectCard';  
-import { clamp, easeInOut, easeOutQuint } from "../../utils/animation";
-import "./Projects.css";
+import ProjectInfo from "./ProjectInfo";
+import { clamp } from "../../utils/animation";
+import "./Projects.css"; // keep for now: ProjectFAQ's styles probably live here
+import "./ProjectsStack.css";
+import ProjectsIntro from "./ProjectsIntro"; // NEW: teddy + big header that opens the section
+import "./ProjectsIntro.css";
 
-const API = import.meta.env.VITE_API_URL || "/api";
+// Each block holds still for the first and last part of its scroll and
+// travels in the middle. Phones get a much shorter hold, so there is little
+// dead scrolling before the next block starts moving.
+const HOLD_EDGE = 0.18; // laptop: 18% at each end
+const HOLD_EDGE_MOBILE = 0.05; // phones: 5%
+const FOLLOW = 0.14; // 0..1, lower = floatier
 
-const OVERLAP = 0.35;
-const HOLD = 0.5;
-const STRIDE = 1 + HOLD;
+const smooth = (t) => t * t * (3 - 2 * t);
+
+// p runs 0..total-1 linearly with scroll. This returns the same range with
+// a pause on every whole number.
+const withHold = (p, total, edge) => {
+  const i = Math.min(Math.floor(p), total - 1);
+  return i + smooth(clamp((p - i - edge) / (1 - edge * 2), 0, 1));
+};
 
 export default function Projects({ projects = [] }) {
-  const containerRef = useRef(null);
+  const total = projects.length;
+
+  const rootRef = useRef(null);
+  const stageRef = useRef(null);
+  // cardRefs[0] is the intro block, cardRefs[1..total] are the projects
   const cardRefs = useRef([]);
-  const faqPanelRefs = useRef({});
-  const handleFaqPanelRef = (id, node) => {
-    faqPanelRefs.current[id] = node;
-  };
+  const activeIdx = useRef(0);
 
-  const cases = projects;
-
-  // FAQ accordion state — which card's FAQ panel is open, and which
-  // question inside that panel is expanded. Kept separate from the
-  // scroll-driven DOM writes below, since it's plain React state that
-  // only changes on click, not on every scroll frame.
   const [openFaqId, setOpenFaqId] = useState(null);
+  // Which project the drawer shows. Stays set after closing, so the content
+  // doesn't vanish while the drawer slides out.
+  const [shownFaqId, setShownFaqId] = useState(null);
   const [activeQuestion, setActiveQuestion] = useState({});
 
-  const total = useMemo(() => cases.length, [cases]);
-
-  const toggleFaqPanel = (id) => {
-    setOpenFaqId((prev) => {
-      const next = prev === id ? null : id;
-      if (next) {
-        // Wait for the max-height transition (450ms in Projects.css)
-        // to settle before scrolling, so we scroll to the panel's
-        // actual expanded position rather than its collapsed one.
-        // block: "nearest" scrolls the nearest scrollable ancestor —
-        // .pj-content's own overflow-y: auto — not the page/window,
-        // since the scroll-jacked animation owns window scroll.
-        setTimeout(() => {
-          faqPanelRefs.current[next]?.scrollIntoView({
-            behavior: "smooth",
-            block: "nearest",
-          });
-        }, 460);
-      }
-      return next;
-    });
-  };
-
-  const toggleQuestion = (id, qIdx) => {
+  const toggleQuestion = (id, qIdx) =>
     setActiveQuestion((prev) => ({
       ...prev,
       [id]: prev[id] === qIdx ? null : qIdx,
     }));
-  };
 
-  // Applies transform/opacity/filter/pointer-events directly to each
-  // card's DOM node, bypassing React re-render entirely. Calling
-  // setState on every scroll frame (the old approach) forced a full
-  // React reconciliation of every card, every frame — that render cost
-  // is what was actually showing up as the 'message handler' /
-  // forced-reflow violations, not the math itself. Direct DOM writes
-  // keep this at a steady 60fps regardless of how many cards there are.
-  //
-  // Windowing: a card's resting style stops changing once it's more
-  // than one stride away from the current scroll position — it's
-  // already sitting at its fully-settled off-screen values and nothing
-  // further will change until scroll comes back near it. Recomputing
-  // and rewriting styles for every card, every frame, regardless of
-  // distance, made the per-frame cost grow with total project count
-  // instead of staying constant — that's what was causing the scroll
-  // hang. Only cards within ACTIVE_MARGIN of the current position are
-  // touched each frame; everything else is left alone.
-  const ACTIVE_MARGIN = STRIDE * 1.5;
-
-  const applyMetrics = (progress, force = false) => {
-    const scaled = progress * total * STRIDE;
-
-    for (let idx = 0; idx < total; idx++) {
-      const distance = Math.abs(scaled - idx * STRIDE);
-      if (!force && distance > ACTIVE_MARGIN) continue;
-
-      const el = cardRefs.current[idx];
-
-      if (!el) continue;
-
-      const local = scaled - idx * STRIDE;
-      let translateY, scale, opacity, blurPx;
-
-      if (local <= 0) {
-        const raw = clamp((local + 1) / (1 - OVERLAP), 0, 1);
-        const t = easeInOut(raw);
-        const o = easeOutQuint(raw);
-        translateY = `${(1 - t) * 60}%`;
-        scale = 0.92 + t * 0.08;
-        opacity = o;
-        blurPx = (1 - raw) * 4;
-      } else if (local <= HOLD) {
-        translateY = "0%";
-        scale = 1;
-        opacity = 1;
-        blurPx = 0;
-      } else {
-        const raw = clamp((local - HOLD) / (1 - OVERLAP), 0, 1);
-        const t = easeInOut(raw);
-        const o = easeOutQuint(raw);
-        translateY = `${-t * 18}%`;
-        scale = 1 - t * 0.09;
-        opacity = 1 - o;
-        // Bug fix: this used to be `local * 4` — since `local` grows
-        // unbounded the further you scroll past a card, blur radius
-        // kept climbing indefinitely (40px, 80px, more) on cards that
-        // were already invisible. Large-radius blur is extremely
-        // expensive to paint, and doing it every scroll frame on full
-        // project images was a real contributor to the scroll hang.
-        // Clamped to the same 0..1 transition window as opacity/scale
-        // instead, so blur maxes out at a cheap 4px and never grows
-        // past that no matter how far you keep scrolling.
-        blurPx = raw * 4;
-      }
-
-      el.style.transform = `translate3d(0,${translateY},0) scale(${scale})`;
-      el.style.opacity = opacity;
-      // Skip the filter entirely once basically invisible — one less
-      // thing for the browser to paint per frame for offscreen cards.
-      el.style.filter =
-        opacity > 0.02 && blurPx > 0.05
-          ? `blur(${blurPx.toFixed(2)}px)`
-          : "none";
-      el.style.pointerEvents = opacity > 0.6 ? "auto" : "none";
-    }
+  const openFaq = (id) => {
+    setShownFaqId(id);
+    setOpenFaqId(id);
   };
 
   useEffect(() => {
-    if (total === 0) return;
+    if (!openFaqId) return;
+    const onKey = (e) => e.key === "Escape" && setOpenFaqId(null);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [openFaqId]);
 
+  // The intro (teddy + headline) starts playing when it scrolls into view,
+  // and resets when you leave, so it plays again next time.
+  useEffect(() => {
+    const el = cardRefs.current[0];
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => el.classList.toggle("is-in", entry.isIntersecting),
+      { threshold: 0.12 }, // plays as soon as the top of the block is on screen
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [total]);
+
+  // Scroll-driven animation. Everything below writes straight to the DOM
+  // (no setState per frame), so React never re-renders while scrolling.
+  useEffect(() => {
+    if (!total) return;
+
+    // the intro counts as the first slide, then one slide per project
+    const slides = total + 1;
+
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    let target = 0;
+    let current = 0;
     let raf = 0;
+    let running = false;
 
-    const update = () => {
-      const el = containerRef.current;
-      if (!el) return;
+    // The stage pins `stickyTop` px from the top of the screen, so progress
+    // starts when the root reaches that offset.
+    let stickyTop = 0;
+    // How far (px) a waiting card sits below its resting spot: enough that
+    // its top edge, shadow included, is past the bottom of the screen. Every
+    // card therefore rises from the true bottom edge.
+    let startOffset = 0;
+    let edge = HOLD_EDGE;
+    const measure = () => {
+      const stage = stageRef.current;
+      if (!stage) return;
+      edge = window.matchMedia("(max-width: 760px)").matches
+        ? HOLD_EDGE_MOBILE
+        : HOLD_EDGE;
+      stickyTop = parseFloat(getComputedStyle(stage).top) || 0;
+      startOffset = window.innerHeight - stickyTop + 80;
+    };
 
-      const rect = el.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const scrollable = el.offsetHeight - vh;
-      const scrolled = clamp(-rect.top, 0, scrollable);
-      const progress = scrollable > 0 ? scrolled / scrollable : 0;
+    const readTarget = () => {
+      const root = rootRef.current;
+      const stage = stageRef.current;
+      if (!root || !stage) return 0;
+      const scrollable = root.offsetHeight - stage.offsetHeight;
+      const scrolled = clamp(
+        stickyTop - root.getBoundingClientRect().top,
+        0,
+        scrollable,
+      );
+      return scrollable > 0 ? (scrolled / scrollable) * (slides - 1) : 0;
+    };
 
-      applyMetrics(progress);
+    const paint = (p, force) => {
+      // Reduced motion: no travel, cards just switch at each step.
+      const pe = reduce ? Math.round(p) : withHold(p, slides, edge);
+
+      for (let k = 0; k < slides; k++) {
+        // Cards far from the current position are already at their resting
+        // values, so skip them. `force` does a full pass.
+        if (!force && Math.abs(pe - k) > 1.6) continue;
+
+        const card = cardRefs.current[k];
+        if (!card) continue;
+
+        // How far this card has risen: 0 = waiting below, 1 = in place.
+        const enter = k === 0 ? 1 : clamp(pe - (k - 1), 0, 1);
+
+        // Each card is one solid block (image + text on black). The next
+        // block rises over the whole thing and the one underneath stays
+        // still, so it is covered text first, then image. No fading.
+        card.style.transform = `translate3d(0,${(1 - enter) * startOffset}px,0)`;
+        // Hidden until it starts moving, so waiting cards never show below the frame.
+        card.style.visibility = k === 0 || enter > 0.001 ? "visible" : "hidden";
+        card.inert = Math.round(pe) !== k; // no tabbing into covered cards
+      }
+
+      const active = Math.round(pe);
+      // Close the FAQ drawer if the visible project changes underneath it.
+      if (active !== activeIdx.current) {
+        activeIdx.current = active;
+        setOpenFaqId(null);
+      }
+    };
+
+    const tick = () => {
+      const prev = current;
+      current += (target - current) * FOLLOW;
+      if (Math.abs(target - current) < 0.001) current = target;
+      // Big jumps (anchor links, scrollbar drags) need a full pass so the
+      // cards we skip over don't keep stale styles.
+      paint(current, Math.abs(current - prev) > 0.8);
+      if (current !== target) raf = requestAnimationFrame(tick);
+      else running = false;
     };
 
     const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(update);
+      target = readTarget();
+      if (reduce) {
+        current = target;
+        paint(current, true);
+        return;
+      }
+      if (!running) {
+        running = true;
+        raf = requestAnimationFrame(tick);
+      }
     };
-
-    // Force a full pass on mount so every card (not just ones near the
-    // current scroll position) gets its correct resting style set at
-    // least once — otherwise cards outside the initial active window
-    // would have no inline style at all and briefly render at their
-    // unstyled default (fully visible, stacked) until scroll reaches
-    // them for the first time.
-    (() => {
-      const el = containerRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const scrollable = el.offsetHeight - vh;
-      const scrolled = clamp(-rect.top, 0, scrollable);
-      const progress = scrollable > 0 ? scrolled / scrollable : 0;
-      applyMetrics(progress, true);
-    })();
 
     const onResize = () => {
-      const el = containerRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const scrollable = el.offsetHeight - vh;
-      const scrolled = clamp(-rect.top, 0, scrollable);
-      const progress = scrollable > 0 ? scrolled / scrollable : 0;
-      applyMetrics(progress, true);
+      measure();
+      target = current = readTarget();
+      paint(current, true);
     };
+
+    measure();
+    target = current = readTarget();
+    paint(current, true);
 
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
-
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [total]);
 
   if (total === 0) {
     return <section className="pj-loading">No projects to show yet.</section>;
   }
 
+  const faqItem = projects.find((p) => p._id === shownFaqId);
+
   return (
     <section
       id="cases"
-      ref={containerRef}
-      className="pj-root"
-      style={{
-        height: `${(total * STRIDE + 1) * 100}vh`,
-      }}
+      ref={rootRef}
+      className="ps-root"
+      style={{ "--ps-count": total + 1 }}
     >
-      <div className="pj-sticky">
-        {/* <div className="pj-ribbon">
-          <p className="pj-eyebrow">
-            Recent Work<span className="pj-slash">/</span>Freshly built &amp;
-            deployed
-          </p>
-        </div> */}
+      <div ref={stageRef} className="ps-stage">
+        {/* NEW: big header block, the first thing in the stack */}
+        <ProjectsIntro cardRef={(n) => (cardRefs.current[0] = n)} />
 
-        {cases.map((item, idx) => {
-          const hasFaqs = item.faqs?.length > 0;
-          const isFaqOpen = openFaqId === item._id;
+        {projects.map((item, idx) => (
+          <article
+            key={item._id}
+            ref={(n) => (cardRefs.current[idx + 1] = n)}
+            className="ps-card"
+            style={{ zIndex: idx + 2 }}
+          >
+            <div className="ps-visual">
+              {item.imageUrl ? (
+                <img
+                  src={item.imageUrl}
+                  alt={item.title}
+                  loading={idx < 2 ? "eager" : "lazy"}
+                  decoding="async"
+                />
+              ) : (
+                <div className="ps-empty" aria-hidden="true" />
+              )}
+            </div>
 
-          return (
-            <ProjectCard
-              key={item._id}
-              item={item}
-              idx={idx}
-              isFaqOpen={isFaqOpen}
-              hasFaqs={hasFaqs}
-              activeQuestion={activeQuestion}
-              toggleQuestion={toggleQuestion}
-              toggleFaqPanel={toggleFaqPanel}
-              onFaqPanelRef={handleFaqPanelRef}
-              cardRef={(node) => (cardRefs.current[idx] = node)}
-            />
-          );
-        })}
+            <div className="ps-info">
+              <ProjectInfo
+                className="qq"
+                item={item}
+                hasFaqs={item.faqs?.length > 0}
+                isFaqOpen={openFaqId === item._id}
+                onOpenFaq={() => openFaq(item._id)}
+              />
+            </div>
+          </article>
+        ))}
+
+        {/* FAQ lives in its own drawer, so nothing scrolls inside the
+            pinned stage and window scroll stays in charge. */}
+        <aside
+          className={`ps-drawer${openFaqId ? " is-open" : ""}`}
+          aria-hidden={!openFaqId}
+          inert={!openFaqId}
+          role="dialog"
+          aria-label={
+            faqItem ? `${faqItem.title} case details` : "Case details"
+          }
+        >
+          <header className="ps-drawer-head">
+            <p>{faqItem?.title}</p>
+            <button
+              type="button"
+              onClick={() => setOpenFaqId(null)}
+              aria-label="Close case details"
+            >
+              Close
+            </button>
+          </header>
+          <div className="ps-drawer-body">
+            {faqItem && (
+              <ProjectFAQ
+                item={faqItem}
+                hasFaqs={faqItem.faqs?.length > 0}
+                isFaqOpen
+                activeQuestion={activeQuestion}
+                toggleQuestion={toggleQuestion}
+                onFaqPanelRef={() => {}}
+              />
+            )}
+          </div>
+        </aside>
       </div>
     </section>
   );

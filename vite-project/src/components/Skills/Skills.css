@@ -1,105 +1,307 @@
+/* Skills.css — replaces your old file.
+   Cards follow the MotionSites "Mindora" look: a natural green photo behind,
+   a tint that falls to black at the bottom, and frosted-glass panels on top.
+   Backdrop images live in /public/skills/ (skills-1.jpg ... skills-4.jpg). */
+
 .skills-section {
-  padding: 140px 0;
-  background: #0b0b0f;
+  --sk-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --sk-serif: var(
+    --font-serif,
+    "Iowan Old Style",
+    "Palatino Linotype",
+    Palatino,
+    Georgia,
+    serif
+  );
+
+  position: relative;
+  z-index: 2; /* sits above the hero so it can cover it */
+  background: #000; /* pure black: blends with the screen and the section below */
   color: #eaeaea;
+  /* soft edge so the section reads as lifting over the hero video */
+  box-shadow: 0 -30px 80px rgba(0, 0, 0, 0.55);
+}
+
+/* ---------- pinned headline ---------- */
+/* tall wrapper = the scroll distance the words take to appear */
+.skills-intro {
+  height: 170vh;
+}
+.skills-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  box-sizing: border-box;
+  padding: 0 clamp(20px, 5vw, 64px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  /* a faint green glow behind the words ties the headline to the cards */
+  background: radial-gradient(
+    60% 45% at 50% 55%,
+    rgba(34, 92, 58, 0.26),
+    transparent 72%
+  );
 }
 
 .skills-label {
-  text-transform: uppercase;
+  margin: 0 0 clamp(16px, 2.4vw, 28px);
+  font-family: var(--font-mono, inherit);
+  font-size: 0.72rem;
   letter-spacing: 0.2em;
-  font-size: 12px;
-  opacity: 0.6;
-  margin-bottom: 10px;
+  text-transform: uppercase;
+  color: var(--accent, #e8ff47);
+  opacity: 0; /* script reveals it */
+  will-change: transform, opacity;
 }
 
 .skills-title {
-  font-size: 42px;
+  margin: 0;
+  max-width: 13ch;
+  font-size: clamp(2.6rem, 8.5vw, 7rem);
   font-weight: 300;
-  margin-bottom: 60px;
-  letter-spacing: -0.02em;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+.skills-word {
+  display: inline-block;
+  margin-right: 0.24em;
+  opacity: 0.08; /* script reveals it */
+  will-change: transform, opacity, filter;
+}
+.skills-word:last-child {
+  margin-right: 0;
 }
 
-/* GRID */
+/* ---------- cards ---------- */
+.skills-body {
+  padding: 20px 0 56px;
+}
+
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 30px;
+  gap: 24px;
 }
 
-/* CARD */
 .skill-card {
-  padding: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(12px);
-  border-radius: 18px;
-  transition: all 0.35s ease;
   position: relative;
+  isolation: isolate; /* keeps the photo and tint layers behind the content */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 56px;
+  min-height: 420px;
+  padding: 28px;
   overflow: hidden;
+  background: #0c2417; /* shows while the photo loads */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
+  transition:
+    transform 0.45s var(--sk-ease),
+    border-color 0.35s ease;
 }
 
-/* subtle luxury glow */
-.skill-card::before {
+/* the natural photo, behind everything */
+.skill-bg {
+  position: absolute;
+  inset: -2%;
+  z-index: 0;
+  width: 104%;
+  height: 104%;
+  object-fit: cover;
+  pointer-events: none;
+  transition: transform 1.4s var(--sk-ease);
+}
+/* green tint on top that falls to black at the bottom edge */
+.skill-card::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    circle at top left,
-    rgba(255, 255, 255, 0.08),
-    transparent 60%
+  z-index: 1;
+  background: linear-gradient(
+    to bottom,
+    rgba(4, 22, 12, 0.22) 0%,
+    rgba(4, 22, 12, 0.34) 45%,
+    rgba(0, 0, 0, 0.82) 100%
   );
-  opacity: 0;
-  transition: 0.4s ease;
+  pointer-events: none;
 }
-
-.skill-card:hover::before {
-  opacity: 1;
-}
-
 .skill-card:hover {
   transform: translateY(-6px);
-  border-color: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+.skill-card:hover .skill-bg {
+  transform: scale(1.07);
 }
 
-/* TITLE */
+/* waiting to scroll into view */
+.skill-card:not(.is-in) {
+  opacity: 0;
+  transform: translateY(48px) scale(0.97);
+}
+/* card pops in; the right-hand column follows a beat later */
+.skill-card.is-in {
+  animation: skCardIn 0.9s var(--sk-ease) backwards;
+  animation-delay: calc((var(--c, 0) % 2) * 120ms);
+}
+@keyframes skCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(48px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- card text ---------- */
+.skill-head,
+.skill-items {
+  position: relative;
+  z-index: 2;
+}
+
+.skill-num {
+  display: block;
+  margin-bottom: 12px;
+  font-family: var(--font-mono, inherit);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.7);
+}
 .skill-title {
-  font-size: 14px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  margin-bottom: 18px;
-  opacity: 0.7;
+  margin: 0;
+  font-family: var(--sk-serif);
+  font-size: clamp(1.9rem, 2.7vw, 2.6rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: #fff;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
 }
 
-/* SKILLS */
+/* ---------- frosted glass panel holding the skills ---------- */
 .skill-items {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 16px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 10px 30px rgba(0, 0, 0, 0.25);
+}
+.skill-items:empty {
+  display: none;
 }
 
 .skill-item {
   font-size: 13px;
-  padding: 6px 10px;
+  padding: 7px 12px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  opacity: 0.85;
-  transition: 0.3s ease;
+  transition:
+    background 0.3s ease,
+    transform 0.3s ease,
+    border-color 0.3s ease;
 }
-
 .skill-item:hover {
-  opacity: 1;
-  transform: scale(1.05);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.26);
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: translateY(-2px);
 }
 
-/* RESPONSIVE */
+.skill-card:not(.is-in) .skill-item {
+  opacity: 0;
+}
+/* pills pop in one after another once their card is in */
+.skill-card.is-in .skill-item {
+  animation: skPillIn 0.6s var(--sk-ease) backwards;
+  animation-delay: calc(0.3s + var(--i, 0) * 45ms);
+}
+@keyframes skPillIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- mobile ---------- */
 @media (max-width: 768px) {
-  .skills-grid {
-    grid-template-columns: 1fr;
+  /* Headline sits near the top instead of the middle of a tall empty screen. */
+  .skills-intro {
+    height: calc(62vh + 55vh);
+    height: calc(62dvh + 55vh);
+    margin-bottom: -120px;
+  }
+  .skills-stage {
+    height: 62vh;
+    height: 62dvh;
+    justify-content: flex-start;
+    padding-top: clamp(84px, 13dvh, 116px);
+    background: radial-gradient(
+      70% 40% at 50% 40%,
+      rgba(34, 92, 58, 0.26),
+      transparent 72%
+    );
+  }
+  .skills-body {
+    padding: 0 0 36px;
   }
 
-  .skills-title {
-    font-size: 30px;
+  .skills-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .skill-card {
+    min-height: 360px;
+    gap: 44px;
+    padding: 22px;
+    border-radius: 20px;
+  }
+  .skill-title {
+    font-size: 2rem;
+  }
+}
+
+/* ---------- reduced motion: everything visible, nothing moves ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .skills-intro {
+    height: auto;
+    margin-bottom: 0;
+  }
+  .skills-stage {
+    position: static;
+    height: auto;
+    padding-block: 120px 40px;
+  }
+  .skill-card:not(.is-in) {
+    opacity: 1;
+    transform: none;
+  }
+  .skill-card:not(.is-in) .skill-item {
+    opacity: 1;
+  }
+  .skill-card.is-in,
+  .skill-card.is-in .skill-item {
+    animation: none;
+  }
+  .skill-bg {
+    transition: none;
   }
 }

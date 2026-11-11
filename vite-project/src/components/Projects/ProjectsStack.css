@@ -1,0 +1,503 @@
+/* ProjectsStack.css
+   All new classes use the ps- prefix.
+*/
+
+.ps-root {
+  --ps-bg: #000;
+  --ps-fg: #f4f4f2;
+  --ps-muted: #8d8d88;
+  --ps-line: rgba(255, 255, 255, 0.16);
+  --ps-gap: 12px;
+  --ps-radius: 0px;
+
+  --ps-h: 80vh;
+  --ps-top: calc((100vh - var(--ps-h)) / 2);
+
+  position: relative;
+  height: calc((var(--ps-count) - 1) * 100vh + var(--ps-h));
+  background: var(--ps-bg);
+  color: var(--ps-fg);
+}
+
+@supports (height: 100dvh) {
+  .ps-root {
+    --ps-h: 80dvh;
+    --ps-top: calc((100dvh - var(--ps-h)) / 2);
+    height: calc((var(--ps-count) - 1) * 100dvh + var(--ps-h));
+  }
+}
+
+/* =========================================
+   DESKTOP SECTION SIZE
+========================================= */
+
+@media (min-width: 761px) {
+  .ps-root {
+    --ps-h: max(45vh, 400px);
+    --ps-w: 1280px;
+    --ps-top: max(0px, calc((100vh - var(--ps-h)) / 2));
+
+    height: calc((var(--ps-count) - 1) * 100vh + var(--ps-h));
+  }
+}
+
+@supports (height: 100dvh) {
+  @media (min-width: 761px) {
+    .ps-root {
+      --ps-h: max(45dvh, 400px);
+      --ps-top: max(0px, calc((100dvh - var(--ps-h)) / 2));
+
+      height: calc((var(--ps-count) - 1) * 100dvh + var(--ps-h));
+    }
+  }
+}
+
+/* =========================================
+   STICKY STAGE
+========================================= */
+
+.ps-stage {
+  position: sticky;
+  top: var(--ps-top);
+
+  height: var(--ps-h);
+  width: min(100%, var(--ps-w, 100%));
+
+  margin-inline: auto;
+  box-sizing: border-box;
+
+  overflow-x: clip;
+}
+
+/* =========================================
+   PROJECT CARD
+========================================= */
+
+.ps-card {
+  position: absolute;
+  inset: 0;
+
+  box-sizing: border-box;
+
+  /* padding: 0 var(--ps-gap) var(--ps-gap); */
+
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.85fr);
+
+  gap: clamp(20px, 3vw, 40px);
+  align-items: center;
+
+  background: var(--ps-bg);
+
+
+
+  will-change: transform;
+
+  transition:
+    box-shadow 0.4s ease,
+    border-color 0.4s ease;
+
+
+
+}
+
+/* =========================================
+   PROJECT IMAGE
+========================================= */
+
+.ps-visual {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  min-width: 0;
+  max-width: none;
+  max-height: 100%;
+
+  justify-self: stretch;
+  align-self: center;
+
+  overflow: hidden;
+
+  background: #111;
+  border-radius: var(--ps-radius);
+  box-sizing: border-box;
+}
+
+.ps-visual img,
+.ps-empty {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  display: block;
+}
+
+.ps-empty {
+  background: linear-gradient(135deg, #1b1b1b, #0a0a0a);
+}
+
+/* =========================================
+   PROJECT INFORMATION
+========================================= */
+
+.ps-info {
+  width: 100%;
+  min-width: 0;
+
+  justify-self: stretch;
+  align-self: center;
+
+  box-sizing: border-box;
+}
+
+.ps-text {
+  align-self: center;
+
+  width: 100%;
+  min-width: 0;
+
+  padding: 0 12px;
+
+  box-sizing: border-box;
+}
+
+/* =========================================
+   TYPOGRAPHY
+========================================= */
+
+.ps-title {
+  color: var(--ps-fg);
+  font-size: clamp(1.8rem, 3vw, 3.4rem);
+  line-height: 1.05;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  max-width: 650px;
+  margin: 0;
+}
+
+.ps-desc {
+  color: var(--ps-muted);
+  font-size: clamp(0.9rem, 1vw, 1.05rem);
+  line-height: 1.7;
+  margin-top: 1.2rem;
+  max-width: 560px;
+}
+
+/* =========================================
+   PROJECT TAGS
+========================================= */
+
+.ps-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  margin-top: 1.5rem;
+}
+
+.ps-tags li {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 7px 11px;
+
+  border: 1px solid var(--ps-line);
+  border-radius: 999px;
+
+  color: var(--ps-muted);
+
+  font-family: "DM Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+}
+
+/* =========================================
+   PROJECT ACTIONS
+========================================= */
+
+.ps-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+
+  margin-top: 2rem;
+}
+
+.ps-actions a,
+.ps-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 44px;
+  padding: 0 18px;
+
+  border: 1px solid var(--ps-line);
+  border-radius: 0;
+
+  background: transparent;
+  color: var(--ps-fg);
+
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+
+  text-decoration: none;
+  cursor: pointer;
+
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.ps-actions a:hover,
+.ps-actions button:hover {
+  background: var(--ps-fg);
+  color: var(--ps-bg);
+  border-color: var(--ps-fg);
+}
+
+/* =========================================
+   FAQ DRAWER
+========================================= */
+
+.ps-drawer {
+  position: absolute;
+  z-index: 20;
+
+  top: 0;
+  right: 0;
+
+  width: min(480px, 100%);
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #101010;
+  border-left: 1px solid var(--ps-line);
+
+  transform: translateX(102%);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+
+  box-sizing: border-box;
+}
+
+.ps-drawer.is-open {
+  transform: translateX(0);
+}
+
+.ps-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding: 20px 24px;
+
+  border-bottom: 1px solid var(--ps-line);
+}
+
+.ps-drawer-head p {
+  margin: 0;
+
+  color: var(--ps-fg);
+
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.ps-drawer-head button {
+  padding: 8px 12px;
+
+  border: 1px solid var(--ps-line);
+
+  background: transparent;
+  color: var(--ps-fg);
+
+  font: inherit;
+  font-size: 0.75rem;
+
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.ps-drawer-head button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ps-drawer-body {
+  flex: 1;
+  min-height: 0;
+
+  overflow-y: auto;
+
+  padding: 24px;
+}
+
+/* =========================================
+   FAQ CONTENT
+========================================= */
+
+.ps-faq {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ps-faq-item {
+  border-bottom: 1px solid var(--ps-line);
+}
+
+.ps-faq-question {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding: 18px 0;
+
+  border: 0;
+
+  background: transparent;
+  color: var(--ps-fg);
+
+  text-align: left;
+  font: inherit;
+  font-size: 0.9rem;
+
+  cursor: pointer;
+}
+
+.ps-faq-answer {
+  padding: 0 0 18px;
+
+  color: var(--ps-muted);
+
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+
+/* =========================================
+   DESKTOP RESPONSIVENESS
+========================================= */
+
+@media (min-width: 761px) {
+  .ps-card {
+    grid-template-columns:
+      minmax(0, 1.3fr)
+      minmax(0, 0.8fr);
+
+    gap: clamp(24px, 3vw, 40px);
+
+    padding-left: 28px;
+    padding-right: 28px;
+    /* border: 2px solid red; */
+  }
+
+  .ps-visual {
+    width: 80%;
+    height: 100%;
+
+    max-width: none;
+
+    aspect-ratio: auto;
+  }
+
+  .ps-info {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (min-width: 1280px) {
+  .ps-card {
+    grid-template-columns:
+      minmax(0, 1.3fr)
+      minmax(0, 0.8fr);
+
+    gap: 48px;
+
+    padding-left: 36px;
+    padding-right: 36px;
+  }
+}
+
+/* =========================================
+   MOBILE LAYOUT
+========================================= */
+
+@media (max-width: 760px) {
+  .ps-card {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 2fr) minmax(0, 3fr);
+
+    /* gap: 10px; */
+
+    /* border: 2px solid red; */
+    /* display: grid !important; */
+    height: 100vh;
+  
+
+    padding: 0 var(--ps-gap) var(--ps-gap);
+  }
+
+  .ps-visual {
+    width: 100%;
+    max-width: none;
+
+    height: 70vh;
+    /* max-height: none; */
+
+    aspect-ratio: auto;
+
+    /* border: 2px solid white; */
+    /* padding-top: 4rem; */
+  }
+
+  .ps-info {
+    width: 100%;
+    height: 30vh;
+    min-width: 0;
+    /* border: 2px solid red; */
+    margin-top: -4rem;
+  }
+
+  .ps-text {
+    padding: 0 4px;
+  }
+
+  .ps-title {
+    font-size: 1.4rem;
+    max-width: none;
+  }
+
+  .ps-desc {
+    margin-top: 0.7rem;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+  }
+
+  .ps-tags {
+    display: none;
+  }
+
+  .ps-actions {
+    margin-top: 1rem;
+  }
+}

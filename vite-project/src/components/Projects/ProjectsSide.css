@@ -1,0 +1,163 @@
+/* ProjectsSide.css — NEW file. The animated header on the left of the
+   Projects section. Self-contained: it only needs the --ps-top, --ps-h and
+   --ps-w variables that ProjectsStack.css already defines on .ps-root. */
+
+.ps-side {
+  --ps-pop: cubic-bezier(0.34, 1.56, 0.64, 1); /* overshoot = the "pop" */
+  --ps-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* occupies the empty margin to the left of the centred block */
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: calc((100% - min(100%, var(--ps-w, 100%))) / 2);
+  display: none;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* pinned along with the block, same height, so it stays beside the cards */
+.ps-side-inner {
+  position: sticky;
+  top: var(--ps-top, 0px);
+  height: var(--ps-h, 80vh);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 4px 26px 4px 0; /* hugs the cards */
+  color: #fff;
+}
+
+/* ---------- rolling counter ---------- */
+.ps-count {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  opacity: 0;
+  transform: translateX(-18px);
+  transition:
+    opacity 0.6s ease 0.35s,
+    transform 0.8s var(--ps-pop) 0.35s;
+}
+.ps-roll {
+  height: 1.1em;
+  overflow: hidden;
+  font-family: var(--font-display, inherit);
+  font-size: clamp(1.4rem, 2vw, 2rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.ps-roll-track {
+  display: flex;
+  flex-direction: column;
+  /* --ps-i is set by the script: 0 for the first project, 1 for the second... */
+  transform: translateY(calc(var(--ps-i, 0) * -1.1em));
+  transition: transform 0.8s var(--ps-ease);
+}
+.ps-roll-track span {
+  display: block;
+  height: 1.1em;
+  line-height: 1.1;
+  text-align: right;
+}
+.ps-total {
+  font-family: var(--font-mono, inherit);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ---------- vertical label: letters pop in one by one ---------- */
+.ps-label {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.85);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg); /* reads bottom to top */
+}
+.ps-label span {
+  display: inline-block;
+  opacity: 0;
+  transform: scale(0.3);
+  filter: blur(4px);
+  transition:
+    opacity 0.5s ease,
+    transform 0.8s var(--ps-pop),
+    filter 0.5s ease;
+  transition-delay: calc(var(--l, 0) * 45ms);
+}
+
+/* ---------- progress line: fills as you scroll ---------- */
+.ps-line {
+  position: relative;
+  width: 1px;
+  height: clamp(60px, 14vh, 140px);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.2);
+  opacity: 0;
+  transition: opacity 0.6s ease 0.6s;
+}
+.ps-line i {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  transform-origin: top;
+  transform: scaleY(0); /* driven by scroll, no transition on purpose */
+}
+
+/* ---------- popped in ---------- */
+.ps-side.is-in .ps-count {
+  opacity: 1;
+  transform: none;
+}
+.ps-side.is-in .ps-label span {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+.ps-side.is-in .ps-line {
+  opacity: 1;
+}
+
+/* ---------- where it shows ---------- */
+/* needs about 80px of empty margin beside the block, which starts at 1280px wide */
+@media (min-width: 1280px) {
+  .ps-side {
+    display: block;
+  }
+  .ps-meta {
+    display: none;
+  }
+}
+
+/* smaller screens: no room on the left, so each card carries a small tag instead */
+.ps-meta {
+  margin: 0 0 14px;
+  font-family: var(--font-mono, inherit);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ps-count,
+  .ps-label span,
+  .ps-line {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+  .ps-roll-track {
+    transition: none;
+  }
+}
