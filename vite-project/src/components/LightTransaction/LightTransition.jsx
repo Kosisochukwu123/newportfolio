@@ -27,19 +27,33 @@ export default function LightTransition({
     let raf = 0;
     let running = false;
 
+    // The light starts rising as soon as this screen peeks into view (when its
+    // top edge is 85% of the way down), instead of after it has fully pinned.
+    // That removes the long black scroll before anything happens.
+    const START = 0.85;
+
     // measured fresh on every read, so layout shifts above never throw it off
     const read = () => {
-      const scrollable = root.offsetHeight - window.innerHeight;
-      if (scrollable <= 0) return 0;
-      return clamp(-root.getBoundingClientRect().top / scrollable, 0, 1);
+      const vh = window.innerHeight;
+      const top = root.getBoundingClientRect().top;
+      const pinned = Math.max(0, root.offsetHeight - vh); // distance it stays pinned
+      const total = vh * START + pinned;
+      return total > 0 ? clamp((vh * START - top) / total, 0, 1) : 0;
+    };
+
+    // While the screen is still sliding in, the light is lifted by the same
+    // amount, so it always rises from the true bottom edge of the window.
+    const setLift = () => {
+      const top = root.getBoundingClientRect().top;
+      root.style.setProperty("--lift", `${Math.max(0, top).toFixed(1)}px`);
     };
 
     const paint = (p) => {
       // phases: first a glow gathers at the bottom, then the horizon rises,
       // then it holds on full light for a moment before the screen scrolls away
-      const e = smooth(clamp((p - 0.1) / 0.78, 0, 1)); // how far the light has risen
-      const a = smooth(clamp(p / 0.2, 0, 1)) * (1 - e); // glow before it rises
-      const c = 1 - smooth(clamp((p - 0.86) / 0.12, 0, 1)); // text fades out at the very end
+      const e = smooth(clamp((p - 0.03) / 0.87, 0, 1)); // how far the light has risen
+      const a = smooth(clamp(p / 0.15, 0, 1)) * (1 - e); // glow before it rises
+      const c = 1 - smooth(clamp((p - 0.9) / 0.09, 0, 1)); // text fades out at the very end
       root.style.setProperty("--e", e.toFixed(4));
       root.style.setProperty("--a", a.toFixed(4));
       root.style.setProperty("--c", c.toFixed(4));
@@ -54,6 +68,7 @@ export default function LightTransition({
     };
 
     const onScroll = () => {
+      setLift();
       target = read();
       if (!running) {
         running = true;
@@ -69,6 +84,7 @@ export default function LightTransition({
       return;
     }
 
+    setLift();
     target = current = read();
     paint(current);
 

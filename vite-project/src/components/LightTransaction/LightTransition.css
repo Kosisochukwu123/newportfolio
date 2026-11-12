@@ -9,14 +9,14 @@
   --e: 0;
   --a: 0;
   --c: 1;
-  --lt-dark: black;
+  --lift: 0px; /* set by the script while the screen slides in */
+  --lt-dark: #000; /* pure black, same as the section above, so there is no seam */
   /* --lt-light is set from the `light` prop (default white) */
 
   position: relative;
   width: 100%;
-  height: 160vh; /* scroll runway: 60vh of pinned scrolling */
+  height: 140vh; /* scroll runway: 40vh of pinned scrolling (the light starts before that) */
   background: var(--lt-dark);
-  /* border: 2px solid red; */
 }
 .lt-sticky {
   position: sticky;
@@ -31,10 +31,13 @@
   isolation: isolate; /* keeps the text blend inside this screen */
 }
 
-/* a warm glow gathers at the bottom edge before the light rises */
+/* a warm glow gathers at the bottom edge before the light rises.
+   All the light layers are lifted by --lift while the screen is still sliding
+   in, so they start from the bottom of the window, not the bottom of the screen. */
 .lt-horizon {
   position: absolute;
   inset: 0;
+  translate: 0 calc(var(--lift) * -1);
   background: radial-gradient(
     60% 45% at 50% 100%,
     rgba(255, 238, 205, 0.55),
@@ -52,13 +55,10 @@
     rgba(255, 255, 255, 0.16) 0deg 2.5deg,
     transparent 2.5deg 9deg
   );
-  -webkit-mask-image: radial-gradient(
-    70% 90% at 50% 100%,
-    #000,
-    transparent 75%
-  );
-  mask-image: radial-gradient(70% 90% at 50% 100%, #000, transparent 75%);
+  -webkit-mask-image: radial-gradient(70% 90% at 50% 100%, #000, transparent 75%);
+          mask-image: radial-gradient(70% 90% at 50% 100%, #000, transparent 75%);
   opacity: calc(var(--a) * 0.8 + var(--e) * (1 - var(--e)) * 1.8);
+  translate: 0 calc(var(--lift) * -1);
   transform: rotate(calc(var(--e) * 16deg));
   transform-origin: 50% 100%;
   will-change: transform, opacity;
@@ -70,6 +70,7 @@
 .lt-halo {
   position: absolute;
   inset: 0;
+  translate: 0 calc(var(--lift) * -1);
   will-change: clip-path;
 }
 .lt-dome {
@@ -127,18 +128,11 @@
 
 /* phones: shorter runway, so there is less scrolling before the next section */
 @media (max-width: 760px) {
-  .lt-root {
-    height: 140vh;
-  }
+  .lt-root { height: 125vh; }
 }
 
 /* reduced motion: no pinning, just the finished light screen */
 @media (prefers-reduced-motion: reduce) {
-  .lt-root {
-    height: 50vh;
-  }
-  .lt-sticky {
-    position: relative;
-    height: 50vh;
-  }
+  .lt-root { height: 50vh; }
+  .lt-sticky { position: relative; height: 50vh; }
 }

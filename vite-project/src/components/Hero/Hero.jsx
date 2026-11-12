@@ -4,7 +4,7 @@ import "./Hero.css";
 // What the agency does, one word at a time. The headline reads
 // "<word> on your terms." and the word, icon and line below it change
 // together every INTERVAL ms.
-const INTERVAL = 2000;
+const INTERVAL = 3000;
 
 const ROTATOR = [
   {

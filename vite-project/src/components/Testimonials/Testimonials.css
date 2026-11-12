@@ -1,215 +1,420 @@
-/* Deliberate departure from the site's dark theme — a light "break"
-   section. All colors below are hard-coded (not the --bg/--text vars)
-   since this section intentionally doesn't follow the dark palette. */
+/* Testimonials.css — replaces your old file.
+   Built from the "Meet the flock" moment in the Kolibri template: a serif +
+   bold headline whose letters come in one by one, an oval sticker, and photo
+   "stickers" with name tags that pop in around it at different angles.
+   Light by default (it follows the light transition); add theme="dark" for dark. */
+
 .testimonials-section {
-  padding: 6rem 0;
-  background: #ffffff;
-  color: #111111;
-    margin-top: -6.5rem;
+  --tm-bg: #ffffff;
+  --tm-fg: #111111;
+  --tm-muted: #6b6b6b;
+  --tm-card: #ffffff;
+  --tm-line: #ececec;
+  --tm-shadow: 0 14px 32px rgba(0, 0, 0, 0.1);
+  --tm-pop: var(--accent, #e8ff47); /* name tags and the oval sticker */
+  --tm-pop-ink: #111111; /* text on the name tags */
+  --tm-serif: var(
+    --font-serif,
+    "Iowan Old Style",
+    "Palatino Linotype",
+    Palatino,
+    Georgia,
+    serif
+  );
+  --tm-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* overshoot = the "pop" */
+  --tm-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
-}
-
-.testimonials-section .section-label {
-  color: #6b6b6b;
-}
-
-.testimonials-section .section-title {
-  color: #111111;
-}
-
-.testimonials-section .accent {
-  color: var(--accent);
-}
-
-.testimonials-stage {
+  /* Pulled up under the light transition: the light screen is already white at
+     the bottom while it finishes, so the testimonials start arriving then,
+     instead of after the whole white screen has scrolled away. */
   position: relative;
-  margin-top: 4rem;
-  min-height: 620px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ── Phone — a normal, relatively-positioned element sitting in the
-     center of the stage, not stuck/floating ── */
-.phone-mockup {
-  position: relative;
-  width: 170px;
-  aspect-ratio: 1 / 2;
-  border-radius: 26px;
-  /* box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12); */
   z-index: 1;
-  overflow: hidden;
+  padding: 3rem 0 6rem;
+  margin-top: calc(-1 * clamp(4rem, 30vh, 20rem));
+  background: var(--tm-bg);
+  color: var(--tm-fg);
+  overflow-x: clip; /* cards fly in from the side without a sideways scrollbar */
+}
+.testimonials-section.tm-dark {
+  --tm-bg: #0b0b0c;
+  --tm-fg: #f4f1ea;
+  --tm-muted: #9a968d;
+  --tm-card: #151516;
+  --tm-line: #2a2a2c;
+  --tm-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
 }
 
-.phone-notch {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 46px;
-  height: 12px;
-  background: rgba(0, 0, 0, 0.35);
-  border-radius: 8px;
-  z-index: 2;
-
+/* ---------- stage: headline in the middle, cards around it ---------- */
+.tm-stage {
+  position: relative;
+  min-height: 700px;
+  display: grid;
+  place-items: center;
 }
 
-.phone-screen {
+.tm-head {
+  position: relative;
+  z-index: 1;
+  max-width: 620px;
+  padding: 0 12px;
+  text-align: center;
+}
+
+/* the small oval sticker, like the one beside the headline in the template */
+.tm-badge {
+  display: inline-block;
+  margin-bottom: 18px;
+  padding: 0.35rem 0.95rem;
+  font-family: var(--font-display, inherit);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--tm-pop-ink);
+  background: var(--tm-pop);
+  border-radius: 999px;
+  transform: rotate(-6deg);
+  opacity: 0;
+}
+.tm-kicker {
+  margin: 0 0 clamp(14px, 2vw, 22px);
+  font-family: var(--tm-serif);
+  font-size: clamp(0.95rem, 1.3vw, 1.15rem);
+  color: var(--tm-muted);
+  opacity: 0;
+}
+
+/* headline: serif / bold / serif, every letter its own piece */
+.tm-title {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.2em;
+  margin: 0;
+  font-size: clamp(2.3rem, 5.2vw, 4.8rem);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--tm-fg);
+}
+.tm-word {
+  display: inline-flex;
+}
+.tm-serif {
+  font-family: var(--tm-serif);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+.tm-bold {
+  font-family: var(--font-display, inherit);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.tm-letter {
+  display: inline-block;
+  opacity: 0;
+  transform-origin: 50% 100%;
+}
+
+.tm-sub {
+  margin: clamp(16px, 2vw, 24px) auto 0;
+  max-width: 34ch;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--tm-muted);
+  opacity: 0;
+}
+
+/* ---------- headline motion: plays when it scrolls into view ---------- */
+.tm-head.is-in .tm-badge {
+  animation: tmSticker 0.7s var(--tm-spring) 0.05s both;
+}
+.tm-head.is-in .tm-kicker {
+  animation: tmRise 0.7s var(--tm-ease) 0.15s both;
+}
+.tm-head.is-in .tm-letter {
+  animation: tmLetter 0.7s var(--tm-ease) both;
+  animation-delay: calc(0.25s + var(--l, 0) * 38ms);
+}
+.tm-head.is-in .tm-sub {
+  animation: tmRise 0.8s var(--tm-ease) 0.85s both;
+}
+@keyframes tmLetter {
+  from {
+    opacity: 0;
+    transform: translateY(0.45em) scaleY(1.3);
+    filter: blur(7px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+@keyframes tmRise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes tmSticker {
+  from {
+    opacity: 0;
+    transform: rotate(-24deg) scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-6deg) scale(1);
+  }
+}
+
+/* ---------- the cards ---------- */
+.tm-cards {
   position: absolute;
   inset: 0;
-  overflow: hidden;
+  pointer-events: none; /* only the cards themselves are clickable/hoverable */
+}
+.tm-card {
+  --rot: 0deg;
+  --fx: 0px; /* where the card starts from, relative to its place (set per slot) */
+  --fy: 0px;
+
+  position: absolute;
+  width: min(250px, 28%);
+  margin: 0;
+  padding: 10px 10px 16px;
+  background: var(--tm-card);
+  border: 1px solid var(--tm-line);
+  border-radius: 14px;
+  box-shadow: var(--tm-shadow);
+  pointer-events: auto;
+  transform: rotate(var(--rot));
+  transition:
+    transform 0.45s var(--tm-spring),
+    box-shadow 0.45s ease;
+  opacity: 0;
+}
+/* four slots around the headline, each with its own angle and entry direction */
+.tm-card.pos-1 {
+  top: 0;
+  left: 0;
+  --rot: -6deg;
+  --fx: 150px;
+  --fy: 120px;
+}
+.tm-card.pos-2 {
+  top: 2%;
+  right: 0;
+  --rot: 5deg;
+  --fx: -150px;
+  --fy: 120px;
+}
+.tm-card.pos-3 {
+  bottom: 0;
+  left: 3%;
+  --rot: 4deg;
+  --fx: 150px;
+  --fy: -120px;
+}
+.tm-card.pos-4 {
+  bottom: 2%;
+  right: 3%;
+  --rot: -4deg;
+  --fx: -150px;
+  --fy: -120px;
 }
 
-.phone-screen-image {
+/* pops out from the middle toward its corner: spinning, shrunk, blurred, then lands */
+.tm-card.is-in {
+  opacity: 1;
+  animation: tmPop 0.95s var(--tm-spring) backwards;
+  animation-delay: calc(0.35s + var(--i, 0) * 130ms);
+}
+@keyframes tmPop {
+  from {
+    opacity: 0;
+    transform: translate(var(--fx), var(--fy)) rotate(calc(var(--rot) * 4))
+      scale(0.5);
+    filter: blur(8px);
+  }
+  60% {
+    filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(var(--rot));
+    filter: none;
+  }
+}
+
+/* picking one up: it straightens, grows and comes to the front */
+.tm-card.is-in:hover {
+  z-index: 5;
+  transform: rotate(0deg) scale(1.04) translateY(-4px);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.2);
+}
+
+/* the photo, with the name tag stuck over its corner */
+.tm-photo {
+  position: relative;
+  aspect-ratio: 5 / 4;
+  overflow: hidden;
+  border-radius: 8px;
+  background: linear-gradient(145deg, #f3d9a8, #e8a96b);
+  display: grid;
+  place-items: center;
+}
+.tm-photo[data-tone="1"] {
+  background: linear-gradient(145deg, #cfe3c6, #86b08a);
+}
+.tm-photo[data-tone="2"] {
+  background: linear-gradient(145deg, #cfd9f0, #8c9fd4);
+}
+.tm-photo[data-tone="3"] {
+  background: linear-gradient(145deg, #f0cfd6, #d58c9e);
+}
+.tm-photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
+.tm-initial {
+  font-family: var(--tm-serif);
+  font-size: 3.4rem;
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.45);
+}
 
-/* ── Cards — scattered around the phone at different angles, like
-     notes pinned around a central photo ── */
-.testimonials-cards {
+.tm-name {
   position: absolute;
-  inset: 0;
+  left: 8px;
+  bottom: 8px;
+  padding: 0.28rem 0.75rem;
+  font-family: var(--font-display, inherit);
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--tm-pop-ink);
+  background: var(--tm-pop);
+  border-radius: 999px;
+  transform: rotate(-4deg);
+  transform-origin: left bottom;
+}
+/* the tag pops on just after its card lands */
+.tm-card.is-in .tm-name {
+  animation: tmSticker 0.6s var(--tm-spring) backwards;
+  animation-delay: calc(0.35s + var(--i, 0) * 130ms + 0.45s);
 }
 
-.testimonial-card {
-  position: absolute;
-  width: min(280px, 42%);
-  background: #ffffff;
-  border: 1px solid #ececec;
-  border-radius: var(--radius);
-  padding: 1.4rem 1.6rem;
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.1);
-  z-index: 2;
-  opacity: 0;
-  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Four preset scatter positions, cycling by index (pos-1..pos-4) —
-   each with its own resting rotation. The reveal transform (below)
-   starts from an exaggerated version of that same angle/offset. */
-.testimonial-card.pos-1 {
-  top: 4%;
-  left: 2%;
-  --rot: -7deg;
-}
-.testimonial-card.pos-2 {
-  top: 8%;
-  right: 3%;
-  --rot: 5deg;
-}
-.testimonial-card.pos-3 {
-  bottom: 6%;
-  left: 8%;
-  --rot: 4deg;
-}
-.testimonial-card.pos-4 {
-  bottom: 2%;
-  right: 6%;
-  --rot: -5deg;
-}
-
-.testimonial-card {
-  transform: translateY(40px) rotate(var(--rot, 0deg)) scale(0.92);
-}
-
-.testimonial-card.in-view {
-  opacity: 1;
-  transform: translateY(0) rotate(var(--rot, 0deg)) scale(1);
-}
-
-.testimonial-quote-mark {
-  position: absolute;
-  top: -0.2rem;
-  left: 1.1rem;
-  font-family: var(--font-display);
-  font-size: 3.5rem;
-  line-height: 1;
-  color: var(--accent);
-  opacity: 0.3;
-  pointer-events: none;
-}
-
-.testimonial-quote {
-  font-size: 0.88rem;
+.tm-quote {
+  margin: 14px 4px 0;
+  font-size: 0.86rem;
   line-height: 1.6;
-  color: #222222;
-  margin-bottom: 1.1rem;
-  position: relative;
-  z-index: 1;
+  color: var(--tm-fg);
 }
-
-.testimonial-author {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.testimonial-photo {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid #e2e2e2;
-}
-
-.testimonial-photo-empty {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f2f2f2;
-  color: #999999;
-  font-family: var(--font-display);
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-.testimonial-name {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 0.88rem;
-  color: #111111;
-}
-
-.testimonial-role {
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
+.tm-role {
+  margin: 10px 4px 0;
+  font-family: var(--font-mono, inherit);
+  font-size: 0.64rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--accent);
-  margin-top: 2px;
+  color: var(--tm-muted);
 }
 
-/* ── Mobile: collapse to a simple stacked list, no scatter/rotation ── */
+/* ---------- dots to flip through more than four ---------- */
+.tm-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+.tm-dots button {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  background: transparent;
+  border: 1.5px solid var(--tm-muted);
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    background 0.25s,
+    transform 0.25s;
+}
+.tm-dots button.is-active {
+  background: var(--tm-fg);
+  border-color: var(--tm-fg);
+  transform: scale(1.2);
+}
+.tm-dots button:focus-visible {
+  outline: 2px solid var(--tm-fg);
+  outline-offset: 3px;
+}
+
+/* ---------- mobile: a stacked list, each card pops as you reach it ---------- */
 @media (max-width: 860px) {
-  .testimonials-stage {
+  .testimonials-section {
+    padding: 2.5rem 0 4.5rem;
+    margin-top: -20vh;
+  }
+
+  .tm-stage {
     display: block;
     min-height: 0;
   }
-
-  .phone-mockup {
-    width: min(240px, 55vw);
-    margin: 0 auto 2rem;
+  .tm-head {
+    margin: 0 auto 2.4rem;
   }
 
-  .testimonials-cards {
+  .tm-cards {
     position: static;
+    display: grid;
+    gap: 22px;
   }
-
-  .testimonial-card {
+  .tm-card {
     position: static;
     width: 100%;
-    margin-bottom: 1.1rem;
-    transform: translateY(30px) rotate(0deg) scale(1);
+    max-width: 440px;
+    margin: 0 auto;
+    --rot: -1.5deg;
+    --fx: -40px;
+    --fy: 40px;
   }
+  .tm-card:nth-child(even) {
+    --rot: 1.5deg;
+    --fx: 40px;
+  }
+  .tm-card.is-in {
+    animation-delay: 0.05s;
+  }
+  .tm-card.is-in .tm-name {
+    animation-delay: 0.45s;
+  }
+}
 
-  .testimonial-card.in-view {
-    transform: translateY(0) rotate(0deg) scale(1);
+/* ---------- reduced motion: everything simply there ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .tm-badge,
+  .tm-kicker,
+  .tm-letter,
+  .tm-sub,
+  .tm-card {
+    opacity: 1;
+  }
+  .tm-badge {
+    transform: rotate(-6deg);
+  }
+  .tm-head.is-in .tm-badge,
+  .tm-head.is-in .tm-kicker,
+  .tm-head.is-in .tm-letter,
+  .tm-head.is-in .tm-sub,
+  .tm-card.is-in,
+  .tm-card.is-in .tm-name {
+    animation: none;
+  }
+  .tm-card {
+    transition: none;
   }
 }
