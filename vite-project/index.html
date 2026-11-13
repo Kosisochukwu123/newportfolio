@@ -1,72 +1,115 @@
+
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="./public//GHStudios-logo-preview.png" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/png"
+      href="/GHStudios-logo-preview.png"
+    />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
+    <!-- Video preload -->
+    <link
+      rel="preload"
+      href="/hero-video.mp4"
+      as="video"
+      type="video/mp4"
+    />
 
-  <link rel="preload" href="/hero-video.mp4" as="video" type="video/mp4" />
+    <!-- Primary SEO -->
+    <title>
+      GH Studios | Web Development, UI/UX Design & Software Engineering
+    </title>
 
-  <!-- Primary SEO -->
-  <title>GH Studios — Web Development, UI/UX &amp; Backend Engineering, CyberSecurity Studio</title>
-  <meta name="description"
-    content="GH Studios is a development studio building web applications, UI/UX design, backend systems, cybersecurity and APIs. Explore our case studies and start a project with us." />
-  <link rel="canonical" href="https://ghstudios.com/" />
-  <meta name="robots" content="index, follow" />
-  <meta name="author" content="GH Studios" />
-  <meta name="theme-color" content="#0b0b0c" />
-  <meta name="keywords"
-    content="GH Studios, web development studio, UI/UX design, backend systems, API development, cyber security,software agency" />
+    <meta
+      name="description"
+      content="GH Studios is a digital development studio building modern websites, custom web applications, UI/UX experiences, backend systems and APIs. Explore our work and start your next project with us."
+    />
 
+    <link rel="canonical" href="https://www.ghstudios.online/" />
 
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="GH Studios" />
+    <meta name="theme-color" content="#0b0b0c" />
 
-  <!-- Open Graph (Facebook, LinkedIn, Slack previews, etc.) -->
-  <meta property="og:type" content="website" />
-  <meta property="og:title"
-    content="GH Studios — Web Development, UI/UX &amp; Backend Engineering, CyberSecurity Studio" />
-  <meta property="og:description"
-    content="We build web applications, UI/UX design, backend systems, and APIs. See our work and start a project." />
-  <meta property="og:url" content="https://ghstudios.com/" />
-  <meta property="og:image" content="https://ghstudios.com/og-image.png" />
-  <meta property="og:site_name" content="GH Studios" />
-  <meta property="og:locale" content="en_US" />
+    <meta
+      name="keywords"
+      content="GH Studios, web development company, website development, custom web applications, UI UX design, software development, backend development, API development, digital solutions, Nigeria"
+    />
 
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="GH Studios" />
 
+    <meta
+      property="og:title"
+      content="GH Studios | Digital Experiences Built With Purpose"
+    />
 
-  <!-- Twitter / X Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title"
-    content="GH Studios — Web Development, UI/UX &amp; Backend Engineering, CyberSecurity Studio" />
-  <meta name="twitter:description"
-    content="We build web applications, UI/UX design, backend systems, cybersecurity and APIs. See our work and start a project." />
-  <meta name="twitter:image" content="https://ghstudios.com/og-image.png" />
+    <meta
+      property="og:description"
+      content="We design and develop modern websites, custom web applications, backend systems and digital experiences that help businesses grow."
+    />
 
+    <meta
+      property="og:url"
+      content="https://www.ghstudios.online/"
+    />
 
+    <meta
+      property="og:image"
+      content="https://www.ghstudios.online/GHStudios-logo-preview.png"
+    />
 
-  <!-- Structured data: helps Google understand GH Studios as a business
-         and can surface a knowledge-panel-style rich result -->
-  <script type="application/ld+json">
-{
-  "@context":"https://schema.org",
-  "@type":"ProfessionalService",
-  "name":"GH Studios",
-  "url":"https://ghstudios.online/",
-  "description":"GH Studios builds web applications and digital products."
-}
-</script>
+    <meta property="og:image:alt" content="GH Studios company logo" />
+    <meta property="og:locale" content="en_US" />
 
-</head>
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
 
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
-</body>
+    <meta
+      name="twitter:title"
+      content="GH Studios | Digital Experiences Built With Purpose"
+    />
 
+    <meta
+      name="twitter:description"
+      content="Modern websites, custom applications, UI/UX design and backend engineering by GH Studios."
+    />
+
+    <meta
+      name="twitter:image"
+      content="https://www.ghstudios.online/GHStudios-logo-preview.png"
+    />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "GH Studios",
+        "url": "https://www.ghstudios.online/",
+        "logo": "https://www.ghstudios.online/GHStudios-logo-preview.png",
+        "description": "GH Studios is a digital development studio specializing in web development, custom web applications, UI/UX design, backend engineering and digital solutions."
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
