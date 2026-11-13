@@ -79,26 +79,18 @@ function Icon({ name }) {
 // content, so nothing jumps when it arrives.
 function HeroSkeleton() {
   return (
-    <>
-      <div className="hero-content" aria-busy="true" aria-label="Loading">
-        <span className="hs hs-label" />
-        <span className="hs hs-icon" />
-        <span className="hs hs-h1 hs-h1-a" />
-        <span className="hs hs-h1 hs-h1-b" />
-        <span className="hs hs-p" />
-        <span className="hs hs-p hs-p-short" />
-        <div className="hs-row">
-          <span className="hs hs-btn" />
-          <span className="hs hs-btn" />
-        </div>
+    <div className="hero-content" aria-busy="true" aria-label="Loading">
+      <span className="hs hs-label" />
+      <span className="hs hs-icon" />
+      <span className="hs hs-h1 hs-h1-a" />
+      <span className="hs hs-h1 hs-h1-b" />
+      <span className="hs hs-p" />
+      <span className="hs hs-p hs-p-short" />
+      <div className="hs-row">
+        <span className="hs hs-btn" />
+        <span className="hs hs-btn" />
       </div>
-      <div className="hero-stats hs-stats">
-        <span className="hs hs-stat-lead" />
-        <span className="hs hs-stat" />
-        <span className="hs hs-stat" />
-        <span className="hs hs-stat" />
-      </div>
-    </>
+    </div>
   );
 }
 
@@ -126,7 +118,10 @@ export default function Hero({ profile = {}, loading }) {
   // Rotate word + icon + line together. Clicking a step restarts the timer.
   useEffect(() => {
     if (showSkeleton || reduceMotion) return;
-    const t = setTimeout(() => setIdx((i) => (i + 1) % ROTATOR.length), INTERVAL);
+    const t = setTimeout(
+      () => setIdx((i) => (i + 1) % ROTATOR.length),
+      INTERVAL,
+    );
     return () => clearTimeout(t);
   }, [idx, showSkeleton, reduceMotion]);
 
@@ -156,12 +151,6 @@ export default function Hero({ profile = {}, loading }) {
         ? "is-prev"
         : "";
 
-  const stats = [
-    { num: profile.projectsShipped || "20+", label: "Projects shipped" },
-    { num: profile.clientsServed || "10+", label: "Clients served" },
-    { num: profile.yearsExperience || "3+", label: "Years experience" },
-  ];
-
   return (
     <section
       className="hero"
@@ -169,7 +158,7 @@ export default function Hero({ profile = {}, loading }) {
       ref={heroRef}
       style={{ "--hero-ms": `${INTERVAL}ms` }}
     >
-      {/* 🎬 VIDEO BACKGROUND (replaces the coloured gradients of the reference) */}
+      {/* 🎬 VIDEO BACKGROUND */}
       <div className="hero-video-wrapper">
         <video
           className="hero-video"
@@ -189,88 +178,85 @@ export default function Hero({ profile = {}, loading }) {
         {showSkeleton ? (
           <HeroSkeleton />
         ) : (
-          <>
-            <div className="hero-content hero-enter">
-              <p className="hero-greeting">
-                <span className="mono-tag">We are {profile.name || "GH Studios"}</span>
-              </p>
+          <div className="hero-content hero-enter">
+            <p className="hero-greeting">
+              <span className="mono-tag">
+                We are {profile.name || "GH Studios"}
+              </span>
+            </p>
 
-              {/* icon changes with the word */}
-              <div className="hero-icon" aria-hidden="true">
-                {ROTATOR.map((r, i) => (
-                  <span
-                    key={r.word}
-                    className={`hero-icon-face ${stateOf(i)}`}
-                    style={{
-                      background: `linear-gradient(145deg, ${r.from}, ${r.to})`,
-                      boxShadow: `inset 0 2px 0 rgba(255,255,255,.55), 0 16px 44px -10px ${r.to}`,
-                    }}
-                  >
-                    <Icon name={r.icon} />
-                  </span>
-                ))}
-              </div>
-
-              <h1 className="hero-title">
-                <span className="hero-sr">
-                  Build, design, secure and animate on your terms.
+            {/* icon changes with the word */}
+            <div className="hero-icon" aria-hidden="true">
+              {ROTATOR.map((r, i) => (
+                <span
+                  key={r.word}
+                  className={`hero-icon-face ${stateOf(i)}`}
+                  style={{
+                    background: `linear-gradient(145deg, ${r.from}, ${r.to})`,
+                    boxShadow: `inset 0 2px 0 rgba(255,255,255,.55), 0 16px 44px -10px ${r.to}`,
+                  }}
+                >
+                  <Icon name={r.icon} />
                 </span>
-                <span className="hero-rot" aria-hidden="true">
-                  {ROTATOR.map((r, i) => (
-                    <span key={r.word} className={`hero-word ${stateOf(i)}`}>
-                      {r.word}
-                    </span>
-                  ))}
-                </span>
-                <span className="hero-rest" aria-hidden="true">
-                  on your terms.
-                </span>
-              </h1>
-
-              {/* one line per word, in step with the headline */}
-              <div className="hero-lines" aria-hidden="true">
-                {ROTATOR.map((r, i) => (
-                  <p key={r.word} className={`hero-line ${stateOf(i)}`}>
-                    {r.line}
-                  </p>
-                ))}
-              </div>
-
-              <div className="hero-steps">
-                {ROTATOR.map((r, i) => (
-                  <button
-                    key={r.word}
-                    type="button"
-                    className={`hero-step${i === idx ? " is-active" : ""}`}
-                    onClick={() => setIdx(i)}
-                    aria-label={`Show: ${r.word}`}
-                    aria-current={i === idx}
-                  >
-                    <i />
-                  </button>
-                ))}
-              </div>
-
-              <div className="hero-cta">
-                <a href="#cases" className="btn btn-primary">
-                  View our work
-                </a>
-                <a href="/contact" className="btn btn-outline">
-                  Start a project
-                </a>
-              </div>
-            </div>
-
-            <div className="hero-stats hero-enter">
-              <p className="hero-stats-lead">Great work isn&rsquo;t made alone.</p>
-              {stats.map((s) => (
-                <div className="hero-stat" key={s.label}>
-                  <span className="hero-stat-num">{s.num}</span>
-                  <span className="hero-stat-label">{s.label}</span>
-                </div>
               ))}
             </div>
-          </>
+
+            <h1 className="hero-title">
+              <span className="hero-sr">
+                GH Studios builds websites, custom web applications and digital
+                experiences for businesses.
+              </span>
+              <span className="hero-rot" aria-hidden="true">
+                {ROTATOR.map((r, i) => (
+                  <span key={r.word} className={`hero-word ${stateOf(i)}`}>
+                    {r.word}
+                  </span>
+                ))}
+              </span>
+              <span className="hero-rest" aria-hidden="true">
+                on your terms.
+              </span>
+            </h1>
+
+            {/* one line per word, in step with the headline */}
+            <div className="hero-lines" aria-hidden="true">
+              {ROTATOR.map((r, i) => (
+                <p key={r.word} className={`hero-line ${stateOf(i)}`}>
+                  {r.line}
+                </p>
+              ))}
+            </div>
+
+            <p className="hero-description">
+  GH Studios is a digital development studio creating modern websites,
+  custom web applications and software solutions through thoughtful
+  design and engineering.
+</p>
+
+            <div className="hero-steps">
+              {ROTATOR.map((r, i) => (
+                <button
+                  key={r.word}
+                  type="button"
+                  className={`hero-step${i === idx ? " is-active" : ""}`}
+                  onClick={() => setIdx(i)}
+                  aria-label={`Show: ${r.word}`}
+                  aria-current={i === idx}
+                >
+                  <i />
+                </button>
+              ))}
+            </div>
+
+            <div className="hero-cta">
+              <a href="#cases" className="btn btn-primary">
+                View our work
+              </a>
+              <a href="/contact" className="btn btn-outline">
+                Start a project
+              </a>
+            </div>
+          </div>
         )}
       </div>
     </section>

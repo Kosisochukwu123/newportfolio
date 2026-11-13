@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 
@@ -9,6 +8,9 @@ import Loader from "./components/Loader/Loader";
 import GatedPage from "./utils/pageReady";
 import AdvancedScrollRestoration from "./components/AdvancedScrollRestoration";
 import LazySection from "./components/LazySection";
+const Services = lazy(() => import("./components/Services/Services"));
+
+import SEO from "./components/SEO/SEO";
 
 import { fetchWithCache } from "./utils/Cache";
 import { initSmoothScroll, getLenis } from "./utils/smoothScroll";
@@ -19,7 +21,7 @@ import "./styles/globals.css";
 const About = lazy(() => import("./components/About/About"));
 const Projects = lazy(() => import("./components/Projects/Projects"));
 const Testimonials = lazy(
-  () => import("./components/Testimonials/Testimonials")
+  () => import("./components/Testimonials/Testimonials"),
 );
 const Footer = lazy(() => import("./components/Footer/Footer"));
 const Contact = lazy(() => import("./components/Contact/Contact"));
@@ -27,7 +29,7 @@ const Team = lazy(() => import("./components/Team/Team"));
 const TeamJoin = lazy(() => import("./components/Team/TeamJoin"));
 const Resume = lazy(() => import("./components/Resume/Resume"));
 const LightTransition = lazy(
-  () => import("./components/LightTransaction/LightTransition")
+  () => import("./components/LightTransaction/LightTransition"),
 );
 
 const API = import.meta.env.VITE_API_URL || "/api";
@@ -42,6 +44,10 @@ function HomeSections({ profile, projects, skills, testimonials }) {
 
       <LazySection>
         <Skills skills={skills} />
+      </LazySection>
+
+      <LazySection>
+        <Services />
       </LazySection>
 
       <LazySection>
@@ -171,6 +177,7 @@ export default function App() {
 
   return (
     <div className="app">
+      <SEO />
       <div ref={cursorRef} className="cursor-glow" aria-hidden="true" />
 
       <Navbar profile={profile} />
@@ -218,10 +225,7 @@ export default function App() {
       </Suspense>
 
       {!appReady && (
-        <Loader
-          dataReady={dataReady}
-          onComplete={handleLoaderComplete}
-        />
+        <Loader dataReady={dataReady} onComplete={handleLoaderComplete} />
       )}
     </div>
   );
