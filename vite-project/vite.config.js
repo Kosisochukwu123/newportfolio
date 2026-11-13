@@ -1,16 +1,13 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tsconfigPaths from 'vite-tsconfig-paths'
+
+import { defineConfig } from "vite";
+import { reactRouter } from "@react-router/dev/vite";
 
 export default defineConfig({
-  plugins: [react(), tsconfigPaths()],
+  plugins: [reactRouter()],
 
-  // Force Vite 8 to use the stable bundler + minifier
   build: {
-    rollupOptions: {
-      // This helps avoid Rolldown issues
-    },
-    minify: 'esbuild',        // Use esbuild instead of lightningcss
-    cssMinify: 'esbuild'
-  }
-})
+    rollupOptions: {},
+    minify: "esbuild",
+    cssMinify: "esbuild",
+  },
+});
