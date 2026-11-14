@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 import { usePageReady } from "../../utils/pageReady";
 import "./Contact.css";
 
 // const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-const API = import.meta.env.VITE_API_URL || "/api";
+const API = (import.meta.env.VITE_API_URL || "/api").replace(/\/+$/, "");
 
 // Characters chosen to avoid ambiguous look-alikes (0/O, 1/I)
 const CAPTCHA_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -24,20 +27,28 @@ const HOW_FOUND_OPTIONS = [
   "Other",
 ];
 
-export default function Contact() {
+export default function Contact({ profile: profileData }) {
   const notifyReady = usePageReady();
 
-  const [profile, setProfile] = useState({
-    email: "yourname@email.com",
-    location: "Your City, Country",
+  // const [profile, setProfile] = useState({
+  //   email: "yourname@email.com",
+  //   location: "Your City, Country",
+  //   timezone: "WAT / UTC+1",
+  //   availableForWork: true,
+  //   socials: [
+  //     { label: "GitHub",      url: "https://github.com/yourusername" },
+  //     { label: "LinkedIn",    url: "https://linkedin.com/in/yourusername" },
+  //     { label: "Twitter / X", url: "https://twitter.com/yourusername" },
+  //   ],
+  // });
+
+  const profile = profileData || {
+    email: "",
+    location: "",
     timezone: "WAT / UTC+1",
     availableForWork: true,
-    socials: [
-      { label: "GitHub",      url: "https://github.com/yourusername" },
-      { label: "LinkedIn",    url: "https://linkedin.com/in/yourusername" },
-      { label: "Twitter / X", url: "https://twitter.com/yourusername" },
-    ],
-  });
+    socials: [],
+  };
 
   const [form, setForm] = useState({
     name: "",
@@ -51,7 +62,7 @@ export default function Contact() {
 
   const [status, setStatus] = useState(null); // "sending" | "sent" | "error"
 
-  const [captcha, setCaptcha]           = useState(() => generateCaptcha());
+  const [captcha, setCaptcha] = useState("GH123");
   const [captchaInput, setCaptchaInput] = useState("");
   const [captchaError, setCaptchaError] = useState(false);
 
@@ -62,12 +73,9 @@ export default function Contact() {
   };
 
   useEffect(() => {
-    fetch(`${API}/profile`)
-      .then((r) => r.json())
-      .then((d) => { if (d.success) setProfile(d.data); })
-      .catch(() => {})
-      .finally(() => notifyReady());
-  }, []);
+    setCaptcha(generateCaptcha());
+    notifyReady();
+  }, [notifyReady]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -82,7 +90,7 @@ export default function Contact() {
 
     setStatus("sending");
     try {
-      const res  = await fetch(`${API}/contact`, {
+      const res = await fetch(`${API}/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -127,123 +135,155 @@ export default function Contact() {
               </div>
 
               <form className="contact-form" onSubmit={handleSubmit}>
-              <div className="contact-form-row">
-                <input
-                  className="contact-input"
-                  placeholder="Your name"
-                  value={form.name}
-                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                  required
-                />
-                <input
-                  className="contact-input"
-                  type="email"
-                  placeholder="Your email"
-                  value={form.email}
-                  onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                  required
-                />
-              </div>
-
-              <input
-                className="contact-input"
-                placeholder="Subject"
-                value={form.subject}
-                onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))}
-              />
-
-              <textarea
-                className="contact-input contact-textarea"
-                placeholder="Your message..."
-                value={form.message}
-                onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
-                required
-              />
-
-              {/* Optional referral details */}
-              <p className="form-section-label">Optional</p>
-
-              <select
-                className="contact-input contact-select"
-                value={form.howFound}
-                onChange={(e) => setForm((f) => ({ ...f, howFound: e.target.value }))}
-              >
-                <option value="">How did you find us?</option>
-                {HOW_FOUND_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-              </select>
-
-              <div className="contact-form-row">
-                <input
-                  className="contact-input"
-                  placeholder="Referral code (optional)"
-                  value={form.referralCode}
-                  onChange={(e) => setForm((f) => ({ ...f, referralCode: e.target.value }))}
-                />
-                <input
-                  className="contact-input"
-                  placeholder="Referred by (optional)"
-                  value={form.referredBy}
-                  onChange={(e) => setForm((f) => ({ ...f, referredBy: e.target.value }))}
-                />
-              </div>
-
-              {/* CAPTCHA */}
-              <div className="captcha-wrap">
-                <div className="captcha-box">
-                  <div className="captcha-code" aria-hidden="true">
-                    {captcha.split("").map((ch, i) => (
-                      <span
-                        key={i}
-                        style={{
-                          transform: `rotate(${((i * 37) % 17) - 8}deg) translateY(${((i * 13) % 7) - 3}px)`,
-                        }}
-                      >
-                        {ch}
-                      </span>
-                    ))}
-                  </div>
-                  <button
-                    type="button"
-                    className="captcha-refresh"
-                    onClick={refreshCaptcha}
-                    aria-label="Get a new code"
-                    title="Get a new code"
-                  >
-                    ⟳
-                  </button>
+                <div className="contact-form-row">
+                  <input
+                    className="contact-input"
+                    placeholder="Your name"
+                    value={form.name}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, name: e.target.value }))
+                    }
+                    required
+                  />
+                  <input
+                    className="contact-input"
+                    type="email"
+                    placeholder="Your email"
+                    value={form.email}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, email: e.target.value }))
+                    }
+                    required
+                  />
                 </div>
+
                 <input
                   className="contact-input"
-                  placeholder="Enter the code above"
-                  value={captchaInput}
-                  onChange={(e) => {
-                    setCaptchaInput(e.target.value);
-                    setCaptchaError(false);
-                  }}
+                  placeholder="Subject"
+                  value={form.subject}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, subject: e.target.value }))
+                  }
+                />
+
+                <textarea
+                  className="contact-input contact-textarea"
+                  placeholder="Your message..."
+                  value={form.message}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, message: e.target.value }))
+                  }
                   required
                 />
-                {captchaError && (
-                  <p className="form-error">That code didn't match — try the new one.</p>
-                )}
-              </div>
 
-              <button
-                type="submit"
-                className="btn btn-primary contact-btn"
-                disabled={status === "sending"}
-              >
-                {status === "sending" ? "Sending…" : "Send Message →"}
-              </button>
-              {status === "sent"  && <p className="form-success">✓ Message sent! I'll get back to you soon.</p>}
-              {status === "error" && <p className="form-error">Something went wrong. Try emailing directly.</p>}
+                {/* Optional referral details */}
+                <p className="form-section-label">Optional</p>
+
+                <select
+                  className="contact-input contact-select"
+                  value={form.howFound}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, howFound: e.target.value }))
+                  }
+                >
+                  <option value="">How did you find us?</option>
+                  {HOW_FOUND_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+
+                <div className="contact-form-row">
+                  <input
+                    className="contact-input"
+                    placeholder="Referral code (optional)"
+                    value={form.referralCode}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, referralCode: e.target.value }))
+                    }
+                  />
+                  <input
+                    className="contact-input"
+                    placeholder="Referred by (optional)"
+                    value={form.referredBy}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, referredBy: e.target.value }))
+                    }
+                  />
+                </div>
+
+                {/* CAPTCHA */}
+                <div className="captcha-wrap">
+                  <div className="captcha-box">
+                    <div className="captcha-code" aria-hidden="true">
+                      {captcha.split("").map((ch, i) => (
+                        <span
+                          key={i}
+                          style={{
+                            transform: `rotate(${((i * 37) % 17) - 8}deg) translateY(${((i * 13) % 7) - 3}px)`,
+                          }}
+                        >
+                          {ch}
+                        </span>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      className="captcha-refresh"
+                      onClick={refreshCaptcha}
+                      aria-label="Get a new code"
+                      title="Get a new code"
+                    >
+                      ⟳
+                    </button>
+                  </div>
+                  <input
+                    className="contact-input"
+                    placeholder="Enter the code above"
+                    value={captchaInput}
+                    onChange={(e) => {
+                      setCaptchaInput(e.target.value);
+                      setCaptchaError(false);
+                    }}
+                    required
+                  />
+                  {captchaError && (
+                    <p className="form-error">
+                      That code didn't match — try the new one.
+                    </p>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  className="btn btn-primary contact-btn"
+                  disabled={status === "sending"}
+                >
+                  {status === "sending" ? "Sending…" : "Send Message →"}
+                </button>
+                {status === "sent" && (
+                  <p className="form-success">
+                    ✓ Message sent! I'll get back to you soon.
+                  </p>
+                )}
+                {status === "error" && (
+                  <p className="form-error">
+                    Something went wrong. Try emailing directly.
+                  </p>
+                )}
               </form>
             </div>
 
             <div className="social-links">
               {(profile.socials || []).map((s) => (
-                <a key={s.label} href={s.url} target="_blank" rel="noreferrer" className="social-link">
+                <a
+                  key={s.label}
+                  href={s.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="social-link"
+                >
                   {s.label} ↗
                 </a>
               ))}
@@ -252,14 +292,21 @@ export default function Contact() {
 
           <div className="contact-card">
             <p className="contact-card-label">Current availability</p>
-            <div className={`availability-badge ${profile.availableForWork ? "" : "unavailable"}`}>
+            <div
+              className={`availability-badge ${profile.availableForWork ? "" : "unavailable"}`}
+            >
               <span className="pulse-dot" />
-              {profile.availableForWork ? "Open to opportunities" : "Not available right now"}
+              {profile.availableForWork
+                ? "Open to opportunities"
+                : "Not available right now"}
             </div>
             <div className="contact-details">
               {[
-                { key: "Email",    val: "Kosiogbunuko@gmail.com" },
-                { key: "Location", val: "Uyo, Nigeria" },
+                { key: "Email", val: profile.email || "Contact us by email" },
+                {
+                  key: "Location",
+                  val: profile.location || "Location not specified",
+                },
                 { key: "Timezone", val: profile.timezone },
                 { key: "Response", val: "Within 24 hours" },
               ].map(({ key, val }) => (

@@ -9,58 +9,23 @@ import {
 
 export function meta() {
   return [
-    {
-      title:
-        "GH Studios | Web Development, UI/UX Design & Software Engineering",
-    },
-    {
-      name: "description",
-      content:
-        "GH Studios is a digital development studio building modern websites, custom web applications, UI/UX experiences, backend systems and APIs. Explore our work and start your next project with us.",
-    },
-    { name: "robots", content: "index, follow" },
     { name: "author", content: "GH Studios" },
     { name: "theme-color", content: "#0b0b0c" },
     { property: "og:type", content: "website" },
     { property: "og:site_name", content: "GH Studios" },
     {
-      property: "og:title",
-      content: "GH Studios | Digital Experiences Built With Purpose",
-    },
-    {
-      property: "og:description",
-      content:
-        "We design and develop modern websites, custom web applications, backend systems and digital experiences that help businesses grow.",
-    },
-    {
-      property: "og:url",
-      content: "https://www.ghstudios.online/",
-    },
-    {
       property: "og:image",
-      content:
-        "https://www.ghstudios.online/GHStudios-logo-preview.png",
+      content: "https://www.ghstudios.online/GHStudios-logo-preview.png",
     },
     { property: "og:image:alt", content: "GH Studios company logo" },
     { property: "og:locale", content: "en_US" },
     { name: "twitter:card", content: "summary_large_image" },
     {
-      name: "twitter:title",
-      content: "GH Studios | Digital Experiences Built With Purpose",
-    },
-    {
-      name: "twitter:description",
-      content:
-        "Modern websites, custom applications, UI/UX design and backend engineering by GH Studios.",
-    },
-    {
       name: "twitter:image",
-      content:
-        "https://www.ghstudios.online/GHStudios-logo-preview.png",
+      content: "https://www.ghstudios.online/GHStudios-logo-preview.png",
     },
   ];
 }
-
 
 export function links() {
   return [
@@ -113,8 +78,6 @@ export default function Root() {
   return <Outlet />;
 }
 
-
-
 export function HydrateFallback() {
   return (
     <div
@@ -131,5 +94,3 @@ export function HydrateFallback() {
     </div>
   );
 }
-
-

@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import Loader from "../components/Loader/Loader";
 
 const PageReadyContext = createContext(() => {});
@@ -23,7 +29,7 @@ export default function GatedPage({ children }) {
     return () => clearTimeout(fallback);
   }, []);
 
-  const notifyReady = () => setReady(true);
+  const notifyReady = useCallback(() => setReady(true), []);
 
   return (
     <PageReadyContext.Provider value={notifyReady}>

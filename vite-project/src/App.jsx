@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 
@@ -8,16 +9,13 @@ import Loader from "./components/Loader/Loader";
 import GatedPage from "./utils/pageReady";
 import AdvancedScrollRestoration from "./components/AdvancedScrollRestoration";
 import LazySection from "./components/LazySection";
-const Services = lazy(() => import("./components/Services/Services"));
 
-import SEO from "./components/SEO/SEO";
-
-import { fetchWithCache } from "./utils/Cache";
 import { initSmoothScroll, getLenis } from "./utils/smoothScroll";
 
 import "./styles/globals.css";
 
 // Lazy-loaded components
+const Services = lazy(() => import("./components/Services/Services"));
 const About = lazy(() => import("./components/About/About"));
 const Projects = lazy(() => import("./components/Projects/Projects"));
 const Testimonials = lazy(
@@ -32,12 +30,12 @@ const LightTransition = lazy(
   () => import("./components/LightTransaction/LightTransition"),
 );
 
-const API = import.meta.env.VITE_API_URL || "/api";
-
-const getData = (endpoint) =>
-  fetch(`${API}/${endpoint}`).then((res) => res.json());
-
-function HomeSections({ profile, projects, skills, testimonials }) {
+function HomeSections({
+  profile,
+  projects,
+  skills,
+  testimonials,
+}) {
   return (
     <>
       <Hero profile={profile} />
@@ -106,29 +104,47 @@ function ScrollToHash() {
   return null;
 }
 
-export default function App() {
+export default function App({ initialData = {} }) {
   const cursorRef = useRef(null);
 
-  const [dataReady, setDataReady] = useState(false);
-
-  const [appReady, setAppReady] = useState(() => {
-    return sessionStorage.getItem("loaderShown") === "true";
-  });
-
-  const [profile, setProfile] = useState({
-    name: "Loading...",
+  // Data has already been retrieved by the React Router loader.
+  const profile = initialData.profile || {
+    name: "GH Studios",
     tagline: "",
     heroBio: "",
     terminalLines: [],
     availableForWork: true,
-  });
+    socials: [],
+  };
 
-  const [projects, setProjects] = useState([]);
-  const [skills, setSkills] = useState([]);
-  const [testimonials, setTestimonials] = useState([]);
+  const projects = initialData.projects || [];
+  const skills = initialData.skills || [];
+  const testimonials = initialData.testimonials || [];
+  const team = initialData.team || [];
+
+  // The route loader has completed before this component renders.
+  const [dataReady] = useState(true);
+
+  // Always begin with the same state on server and browser.
+  const [appReady, setAppReady] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem("loaderShown") === "true") {
+        setAppReady(true);
+      }
+    } catch {
+      // Continue normally if sessionStorage is unavailable.
+    }
+  }, []);
 
   const handleLoaderComplete = () => {
-    sessionStorage.setItem("loaderShown", "true");
+    try {
+      sessionStorage.setItem("loaderShown", "true");
+    } catch {
+      // The loader can still complete without sessionStorage.
+    }
+
     setAppReady(true);
   };
 
@@ -144,41 +160,27 @@ export default function App() {
       `;
     };
 
-    window.addEventListener("pointermove", move, { passive: true });
+    window.addEventListener("pointermove", move, {
+      passive: true,
+    });
 
     return () => {
       window.removeEventListener("pointermove", move);
     };
   }, []);
 
-  // Fetch website data
-  useEffect(() => {
-    Promise.all([
-      fetchWithCache("profile", () => getData("profile")),
-      fetchWithCache("projects", () => getData("projects")),
-      fetchWithCache("skills", () => getData("skills")),
-      fetchWithCache("testimonials", () => getData("testimonials")),
-    ])
-      .then(([profileRes, projectRes, skillsRes, testimonialsRes]) => {
-        if (profileRes.success) setProfile(profileRes.data);
-        if (projectRes.success) setProjects(projectRes.data);
-        if (skillsRes.success) setSkills(skillsRes.data);
-        if (testimonialsRes.success) {
-          setTestimonials(testimonialsRes.data);
-        }
-      })
-      .finally(() => setDataReady(true));
-  }, []);
-
-  // Initialize smooth scrolling
+  // Initialize smooth scrolling.
   useEffect(() => {
     initSmoothScroll();
   }, []);
 
   return (
     <div className="app">
-      <SEO />
-      <div ref={cursorRef} className="cursor-glow" aria-hidden="true" />
+      <div
+        ref={cursorRef}
+        className="cursor-glow"
+        aria-hidden="true"
+      />
 
       <Navbar profile={profile} />
 
@@ -213,19 +215,25 @@ export default function App() {
             path="/team"
             element={
               <GatedPage key="team">
-                <Team />
+                <Team members={team} />
               </GatedPage>
             }
           />
 
           <Route path="/resume" element={<Resume />} />
 
-          <Route path="/join/:token" element={<TeamJoin />} />
+          <Route
+            path="/join/:token"
+            element={<TeamJoin />}
+          />
         </Routes>
       </Suspense>
 
       {!appReady && (
-        <Loader dataReady={dataReady} onComplete={handleLoaderComplete} />
+        <Loader
+          dataReady={dataReady}
+          onComplete={handleLoaderComplete}
+        />
       )}
     </div>
   );
