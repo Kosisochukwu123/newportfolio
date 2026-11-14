@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { getLenis } from "../../utils/smoothScroll";
@@ -5,20 +6,18 @@ import BugReportModal from "./BugReportModal";
 import "./Footer.css";
 
 const API = import.meta.env.VITE_API_URL || "/api";
-// Where the newsletter form sends the email. Change this to your real route.
 const NEWSLETTER_ENDPOINT = `${API}/newsletter`;
 
-// Defaults use your real details. Pass a `company` prop to override any of them.
 const DEFAULT_COMPANY = {
   name: "GH Studios",
   email: "Kosiogbunuko@gmail.com",
   location: "Uyo, Nigeria",
-  timeZone: "Africa/Lagos",
-  available: true, // shows "Available for new projects" (false: "Fully booked")
+  timezone: "Africa/Lagos",
+  availableForWork: true,
   socials: [
-    { label: "GitHub", href: "#" }, // put your real links here
-    { label: "LinkedIn", href: "#" },
-    { label: "Instagram", href: "#" },
+    { label: "GitHub", url: "#" },
+    { label: "LinkedIn", url: "#" },
+    { label: "Instagram", url: "#" },
   ],
 };
 
@@ -29,7 +28,8 @@ const NAV = [
   { label: "Team", to: "/team" },
   { label: "Contact", to: "/contact" },
 ];
-const SERVICES = [
+
+const DEFAULT_SERVICES = [
   "Web Development",
   "Cyber Security",
   "Backend Systems",
@@ -37,34 +37,56 @@ const SERVICES = [
   "Videography & Motion",
 ];
 
-const formatTime = (timeZone) =>
-  new Intl.DateTimeFormat("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-    timeZone,
-  }).format(new Date());
+const formatTime = (timeZone) => {
+  try {
+    return new Intl.DateTimeFormat("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone,
+    }).format(new Date());
+  } catch {
+    return "";
+  }
+};
 
 const NEWSLETTER_MESSAGES = {
   invalid: "Please enter a valid email address.",
   error: "Something went wrong. Please try again.",
-  done: "You\u2019re on the list. Thank you!",
+  done: "You’re on the list. Thank you!",
 };
 
 export default function Footer({ company = {} }) {
-  const c = { ...DEFAULT_COMPANY, ...company };
+  const c = {
+    ...DEFAULT_COMPANY,
+    ...company,
+    socials: company.socials ?? DEFAULT_COMPANY.socials,
+  };
+
+  const available = c.availableForWork ?? c.available ?? true;
+  const timezone = c.timezone || c.timeZone || DEFAULT_COMPANY.timezone;
+
+  const socials = (c.socials || [])
+    .map((social) => ({
+      ...social,
+      href: social.url || social.href || "",
+    }))
+    .filter((social) => social.href);
+
+  const services =
+    c.services?.length > 0 ? c.services : DEFAULT_SERVICES;
 
   const footerRef = useRef(null);
   const [inView, setInView] = useState(false);
   const [bugModalOpen, setBugModalOpen] = useState(false);
-  const [time, setTime] = useState(() => formatTime(c.timeZone));
+  const [time, setTime] = useState(() => formatTime(timezone));
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState("idle"); // idle | loading | invalid | error | done
+  const [status, setStatus] = useState("idle");
 
-  // Everything rises in once, when the footer first scrolls into view.
   useEffect(() => {
     const el = footerRef.current;
     if (!el) return;
+
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -74,37 +96,48 @@ export default function Footer({ company = {} }) {
       },
       { threshold: 0.12 },
     );
+
     io.observe(el);
     return () => io.disconnect();
   }, []);
 
-  // Live local time next to the location.
   useEffect(() => {
-    const id = setInterval(() => setTime(formatTime(c.timeZone)), 30000);
+    const updateTime = () => setTime(formatTime(timezone));
+
+    updateTime();
+    const id = setInterval(updateTime, 30000);
+
     return () => clearInterval(id);
-  }, [c.timeZone]);
+  }, [timezone]);
 
   const scrollToTop = () => {
     const lenis = getLenis();
+
     if (lenis) lenis.scrollTo(0);
     else window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const subscribe = async (e) => {
     e.preventDefault();
+
     const value = email.trim();
+
     if (!/^\S+@\S+\.\S+$/.test(value)) {
       setStatus("invalid");
       return;
     }
+
     setStatus("loading");
+
     try {
       const res = await fetch(NEWSLETTER_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: value }),
       });
+
       if (!res.ok) throw new Error("Request failed");
+
       setEmail("");
       setStatus("done");
     } catch {
@@ -112,20 +145,33 @@ export default function Footer({ company = {} }) {
     }
   };
 
-  // each block rises in a little after the one before it
-  const rise = (n) => ({ className: "ft-rise", style: { "--d": n } });
+  const rise = (n) => ({
+    className: "ft-rise",
+    style: { "--d": n },
+  });
 
   return (
-    <footer ref={footerRef} className={`footer${inView ? " is-in" : ""}`}>
+    <footer
+      ref={footerRef}
+      className={`footer${inView ? " is-in" : ""}`}
+    >
       <div className="footer-container">
-        {/* Top */}
         <div className="footer-top">
           <div className="footer-left">
             <div {...rise(0)}>
               <p className="footer-status">
-                <span className={`footer-dot${c.available ? "" : " is-off"}`} aria-hidden="true" />
-                {c.available ? "Available for new projects" : "Fully booked right now"}
-                <span className="footer-status-sep" aria-hidden="true">·</span>
+                <span
+                  className={`footer-dot${available ? "" : " is-off"}`}
+                  aria-hidden="true"
+                />
+                {available
+                  ? "Available for new projects"
+                  : "Fully booked right now"}
+
+                <span className="footer-status-sep" aria-hidden="true">
+                  ·
+                </span>
+
                 <span className="footer-time">
                   {c.location} {time}
                 </span>
@@ -146,14 +192,26 @@ export default function Footer({ company = {} }) {
             <div className="footer-buttons ft-rise" style={{ "--d": 3 }}>
               <Link to="/contact" className="btn btn-primary footer-cta">
                 Start a project
-                <span className="footer-cta-arrow" aria-hidden="true">→</span>
+                <span className="footer-cta-arrow" aria-hidden="true">
+                  →
+                </span>
               </Link>
+
               <button
                 type="button"
                 className="btn btn-outline footer-bug"
                 onClick={() => setBugModalOpen(true)}
               >
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  aria-hidden="true"
+                >
                   <path d="M9 7a3 3 0 0 1 6 0M8 10h8v5a4 4 0 0 1-8 0zM4 12h4M16 12h4M5 19l3-2M19 19l-3-2M5 6l3 2M19 6l-3 2" />
                 </svg>
                 Report a bug
@@ -161,37 +219,53 @@ export default function Footer({ company = {} }) {
             </div>
           </div>
 
-          {/* right side */}
           <div className="footer-right">
-            <nav className="footer-block ft-rise" style={{ "--d": 2 }} aria-label="Footer navigation">
+            <nav
+              className="footer-block ft-rise"
+              style={{ "--d": 2 }}
+              aria-label="Footer navigation"
+            >
               <h4>Navigation</h4>
-              {NAV.map((l) => (
-                <Link key={l.label} to={l.to} className="footer-link">
-                  {l.label}
+
+              {NAV.map((link) => (
+                <Link
+                  key={link.label}
+                  to={link.to}
+                  className="footer-link"
+                >
+                  {link.label}
                 </Link>
               ))}
             </nav>
 
             <div className="footer-block ft-rise" style={{ "--d": 3 }}>
               <h4>Services</h4>
-              {SERVICES.map((s) => (
-                <Link key={s} to="/contact" className="footer-link">
-                  {s}
+
+              {services.map((service, index) => (
+                <Link
+                  key={`${service}-${index}`}
+                  to="/contact"
+                  className="footer-link"
+                >
+                  {service}
                 </Link>
               ))}
             </div>
 
             <div className="footer-block ft-rise" style={{ "--d": 4 }}>
               <h4>Contact</h4>
-              <a href={`mailto:${c.email}`} className="footer-link">
-                {c.email}
-              </a>
+
+              {c.email && (
+                <a href={`mailto:${c.email}`} className="footer-link">
+                  {c.email}
+                </a>
+              )}
+
               <p className="footer-plain">{c.location}</p>
             </div>
           </div>
         </div>
 
-        {/* Newsletter */}
         <div className="footer-newsletter ft-rise" style={{ "--d": 4 }}>
           <div>
             <h3>Subscribe to updates</h3>
@@ -199,10 +273,15 @@ export default function Footer({ company = {} }) {
           </div>
 
           <div className="newsletter-side">
-            <form className="newsletter-form" onSubmit={subscribe} noValidate>
+            <form
+              className="newsletter-form"
+              onSubmit={subscribe}
+              noValidate
+            >
               <label htmlFor="footer-email" className="ft-sr">
                 Email address
               </label>
+
               <input
                 id="footer-email"
                 type="email"
@@ -212,22 +291,38 @@ export default function Footer({ company = {} }) {
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  if (status !== "idle" && status !== "loading") setStatus("idle");
+
+                  if (status !== "idle" && status !== "loading") {
+                    setStatus("idle");
+                  }
                 }}
                 aria-invalid={status === "invalid"}
                 disabled={status === "loading"}
               />
-              <button type="submit" aria-label="Subscribe" disabled={status === "loading"}>
-                {status === "loading" ? <span className="ft-spinner" aria-hidden="true" /> : "→"}
+
+              <button
+                type="submit"
+                aria-label="Subscribe"
+                disabled={status === "loading"}
+              >
+                {status === "loading" ? (
+                  <span className="ft-spinner" aria-hidden="true" />
+                ) : (
+                  "→"
+                )}
               </button>
             </form>
-            <p className={`newsletter-msg is-${status}`} role="status" aria-live="polite">
+
+            <p
+              className={`newsletter-msg is-${status}`}
+              role="status"
+              aria-live="polite"
+            >
               {NEWSLETTER_MESSAGES[status] || ""}
             </p>
           </div>
         </div>
 
-        {/* bottom */}
         <div className="footer-bottom ft-rise" style={{ "--d": 5 }}>
           <p>
             &copy; {new Date().getFullYear()} {c.name}
@@ -235,13 +330,16 @@ export default function Footer({ company = {} }) {
 
           <div className="footer-bottom-right">
             <div className="footer-socials">
-              {c.socials
-                .filter((s) => s.href)
-                .map((s) => (
-                  <a key={s.label} href={s.href} target="_blank" rel="noreferrer">
-                    {s.label}
-                  </a>
-                ))}
+              {socials.map((social, index) => (
+                <a
+                  key={`${social.label}-${index}`}
+                  href={social.href}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {social.label}
+                </a>
+              ))}
             </div>
 
             <button
@@ -251,22 +349,29 @@ export default function Footer({ company = {} }) {
               aria-label="Back to top"
             >
               <span>Back to top</span>
-              <span className="footer-back-to-top-arrow" aria-hidden="true">↑</span>
+              <span className="footer-back-to-top-arrow" aria-hidden="true">
+                ↑
+              </span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* giant company name: the letters rise in, and it is cropped at the bottom edge */}
       <div className="footer-brand" aria-hidden="true">
-        {[...c.name].map((ch, i) => (
-          <span key={i} className="footer-brand-letter" style={{ "--l": i }}>
+        {[...c.name].map((ch, index) => (
+          <span
+            key={index}
+            className="footer-brand-letter"
+            style={{ "--l": index }}
+          >
             {ch === " " ? "\u00A0" : ch}
           </span>
         ))}
       </div>
 
-      {bugModalOpen && <BugReportModal onClose={() => setBugModalOpen(false)} />}
+      {bugModalOpen && (
+        <BugReportModal onClose={() => setBugModalOpen(false)} />
+      )}
     </footer>
   );
 }

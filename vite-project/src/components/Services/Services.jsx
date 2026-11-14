@@ -1,44 +1,38 @@
 
 import "./Services.css";
 
-const services = [
+const DEFAULT_SERVICES = [
   {
-    number: "01",
     title: "Web Development",
     description:
       "Modern, responsive websites and web applications designed to give your business a strong digital presence and turn visitors into customers.",
     tag: "Websites & Web Apps",
   },
   {
-    number: "02",
     title: "UI/UX Design",
     description:
       "Thoughtful digital experiences built around your users, combining intuitive navigation, clear interfaces and purposeful visual design.",
     tag: "Research & Interface Design",
   },
   {
-    number: "03",
     title: "Backend Systems",
     description:
       "Reliable server-side systems, database architecture and business logic that keep your applications secure, organized and scalable.",
     tag: "Systems & Architecture",
   },
   {
-    number: "04",
     title: "API Development",
     description:
       "Well-structured APIs that connect your applications, services and data, making your digital products work together seamlessly.",
     tag: "Integration & Connectivity",
   },
   {
-    number: "05",
     title: "Cloud Deployment",
     description:
       "Deployment and configuration of your applications so they can run reliably online, with the infrastructure needed to grow.",
     tag: "Hosting & Infrastructure",
   },
   {
-    number: "06",
     title: "Performance Optimization",
     description:
       "Improving website speed, responsiveness and technical efficiency to create smoother experiences across devices.",
@@ -46,7 +40,31 @@ const services = [
   },
 ];
 
-export default function Services() {
+function getServices(profileServices) {
+  if (!Array.isArray(profileServices) || profileServices.length === 0) {
+    return DEFAULT_SERVICES;
+  }
+
+  return profileServices.map((service, index) => {
+    const existing = DEFAULT_SERVICES.find(
+      (item) =>
+        item.title.toLowerCase() === String(service).trim().toLowerCase(),
+    );
+
+    return {
+      number: String(index + 1).padStart(2, "0"),
+      title: service,
+      description:
+        existing?.description ||
+        "We provide tailored solutions in this area, combining thoughtful design and reliable engineering to meet your business needs.",
+      tag: existing?.tag || "Digital Solutions",
+    };
+  });
+}
+
+export default function Services({ profile = {} }) {
+  const services = getServices(profile.services);
+
   return (
     <section
       id="services"
@@ -72,10 +90,15 @@ export default function Services() {
         </div>
 
         <div className="services-grid">
-          {services.map((service) => (
-            <article className="service-card" key={service.number}>
+          {services.map((service, index) => (
+            <article
+              className="service-card"
+              key={`${service.title}-${index}`}
+            >
               <div className="service-card-top">
-                <span className="service-number">{service.number}</span>
+                <span className="service-number">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
 
                 <span className="service-arrow" aria-hidden="true">
                   ↗

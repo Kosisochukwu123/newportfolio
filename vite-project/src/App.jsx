@@ -45,9 +45,9 @@ function HomeSections({ profile, projects, skills, testimonials }) {
       <LazySection>
         <Skills skills={skills} />
       </LazySection>
-
+      
       <LazySection>
-        <Services />
+        <Services profile={profile} />
       </LazySection>
 
       <LazySection>

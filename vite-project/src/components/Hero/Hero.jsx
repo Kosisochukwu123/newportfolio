@@ -1,9 +1,7 @@
+
 import { useEffect, useRef, useState } from "react";
 import "./Hero.css";
 
-// What the agency does, one word at a time. The headline reads
-// "<word> on your terms." and the word, icon and line below it change
-// together every INTERVAL ms.
 const INTERVAL = 3000;
 
 const ROTATOR = [
@@ -37,7 +35,7 @@ const ROTATOR = [
   },
 ];
 
-const SKELETON_TIMEOUT = 6000; // show real content anyway if data never arrives
+const SKELETON_TIMEOUT = 6000;
 
 function Icon({ name }) {
   const p = {
@@ -48,18 +46,21 @@ function Icon({ name }) {
     strokeLinecap: "round",
     strokeLinejoin: "round",
   };
+
   if (name === "build")
     return (
       <svg {...p}>
         <path d="M9 7l-5 5 5 5M15 7l5 5-5 5M13.5 5l-3 14" />
       </svg>
     );
+
   if (name === "design")
     return (
       <svg {...p}>
         <path d="M12 3l2.2 6.3L21 12l-6.8 2.7L12 21l-2.2-6.3L3 12l6.8-2.7z" />
       </svg>
     );
+
   if (name === "secure")
     return (
       <svg {...p}>
@@ -67,6 +68,7 @@ function Icon({ name }) {
         <path d="M9 12l2 2 4-4" />
       </svg>
     );
+
   return (
     <svg {...p}>
       <circle cx="12" cy="12" r="9" />
@@ -75,8 +77,6 @@ function Icon({ name }) {
   );
 }
 
-// Placeholder shown while the profile data loads: same layout as the real
-// content, so nothing jumps when it arrives.
 function HeroSkeleton() {
   return (
     <div className="hero-content" aria-busy="true" aria-label="Loading">
@@ -98,45 +98,57 @@ export default function Hero({ profile = {}, loading }) {
   const heroRef = useRef(null);
   const [idx, setIdx] = useState(0);
   const [timedOut, setTimedOut] = useState(false);
+
   const [reduceMotion] = useState(
     () =>
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
 
-  // Skeleton while data loads. Pass `loading` from the parent if you have it,
-  // otherwise an empty profile counts as "still loading".
   const isLoading = loading ?? Object.keys(profile).length === 0;
   const showSkeleton = isLoading && !timedOut;
 
+  const companyName = profile.name || "GH Studios";
+  const tagline = profile.tagline || "on your terms.";
+  const heroBio =
+    profile.heroBio ||
+    "GH Studios is a digital development studio creating modern websites, custom web applications and software solutions through thoughtful design and engineering.";
+
   useEffect(() => {
     if (!isLoading) return;
+
     const t = setTimeout(() => setTimedOut(true), SKELETON_TIMEOUT);
+
     return () => clearTimeout(t);
   }, [isLoading]);
 
-  // Rotate word + icon + line together. Clicking a step restarts the timer.
   useEffect(() => {
     if (showSkeleton || reduceMotion) return;
+
     const t = setTimeout(
       () => setIdx((i) => (i + 1) % ROTATOR.length),
       INTERVAL,
     );
+
     return () => clearTimeout(t);
   }, [idx, showSkeleton, reduceMotion]);
 
-  // The hero holds still (sticky) while the next section slides up over it;
-  // once it is fully covered, hide it so it can't show through later sections.
   useEffect(() => {
     const el = heroRef.current;
     if (!el) return;
+
     const update = () => {
-      const covered = window.scrollY > el.offsetTop + el.offsetHeight + 20;
+      const covered =
+        window.scrollY > el.offsetTop + el.offsetHeight + 20;
+
       el.style.visibility = covered ? "hidden" : "visible";
     };
+
     update();
+
     window.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);
+
     return () => {
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
@@ -158,7 +170,6 @@ export default function Hero({ profile = {}, loading }) {
       ref={heroRef}
       style={{ "--hero-ms": `${INTERVAL}ms` }}
     >
-      {/* 🎬 VIDEO BACKGROUND */}
       <div className="hero-video-wrapper">
         <video
           className="hero-video"
@@ -170,6 +181,7 @@ export default function Hero({ profile = {}, loading }) {
         >
           <source src="/hero-video.mp4" type="video/mp4" />
         </video>
+
         <div className="hero-overlay" />
         <div className="hero-fade-bottom" />
       </div>
@@ -180,12 +192,9 @@ export default function Hero({ profile = {}, loading }) {
         ) : (
           <div className="hero-content hero-enter">
             <p className="hero-greeting">
-              <span className="mono-tag">
-                We are {profile.name || "GH Studios"}
-              </span>
+              <span className="mono-tag">We are {companyName}</span>
             </p>
 
-            {/* icon changes with the word */}
             <div className="hero-icon" aria-hidden="true">
               {ROTATOR.map((r, i) => (
                 <span
@@ -203,35 +212,38 @@ export default function Hero({ profile = {}, loading }) {
 
             <h1 className="hero-title">
               <span className="hero-sr">
-                GH Studios builds websites, custom web applications and digital
-                experiences for businesses.
+                {companyName} builds websites, custom web applications and
+                digital experiences for businesses. {tagline}
               </span>
+
               <span className="hero-rot" aria-hidden="true">
                 {ROTATOR.map((r, i) => (
-                  <span key={r.word} className={`hero-word ${stateOf(i)}`}>
+                  <span
+                    key={r.word}
+                    className={`hero-word ${stateOf(i)}`}
+                  >
                     {r.word}
                   </span>
                 ))}
               </span>
+
               <span className="hero-rest" aria-hidden="true">
-                on your terms.
+                {tagline}
               </span>
             </h1>
 
-            {/* one line per word, in step with the headline */}
             <div className="hero-lines" aria-hidden="true">
               {ROTATOR.map((r, i) => (
-                <p key={r.word} className={`hero-line ${stateOf(i)}`}>
+                <p
+                  key={r.word}
+                  className={`hero-line ${stateOf(i)}`}
+                >
                   {r.line}
                 </p>
               ))}
             </div>
 
-            <p className="hero-description">
-  GH Studios is a digital development studio creating modern websites,
-  custom web applications and software solutions through thoughtful
-  design and engineering.
-</p>
+            <p className="hero-description">{heroBio}</p>
 
             <div className="hero-steps">
               {ROTATOR.map((r, i) => (
@@ -252,6 +264,7 @@ export default function Hero({ profile = {}, loading }) {
               <a href="#cases" className="btn btn-primary">
                 View our work
               </a>
+
               <a href="/contact" className="btn btn-outline">
                 Start a project
               </a>

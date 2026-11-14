@@ -1,3 +1,4 @@
+
 .avatar-wrap {
   display: flex;
   gap: 1rem;
@@ -28,24 +29,53 @@
   object-fit: cover;
 }
 
-.form-input {
+.form-input,
+.form-textarea {
   width: 100%;
-  padding: 0.6rem;
-  margin-bottom: 0.6rem;
+  padding: 0.65rem;
+  margin-bottom: 0.65rem;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--bg);
   color: var(--text);
+  font: inherit;
+  box-sizing: border-box;
 }
 
 .form-textarea {
-  width: 100%;
   min-height: 90px;
-  padding: 0.6rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
+  resize: vertical;
+}
+
+.profile-field-label {
+  display: block;
+  margin: 0.65rem 0 0.35rem;
   color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.profile-array-row,
+.profile-social-row,
+.profile-milestone {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin-bottom: 0.5rem;
+}
+
+.profile-array-row > .form-input,
+.profile-array-row > .form-textarea,
+.profile-social-row > .form-input,
+.profile-milestone > .form-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-array-row > button,
+.profile-social-row > button,
+.profile-milestone > button {
+  flex-shrink: 0;
 }
 
 .toggle-row {
@@ -53,4 +83,23 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 1rem;
+  gap: 1rem;
+}
+
+.profile-page .admin-card {
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 600px) {
+  .profile-array-row,
+  .profile-social-row,
+  .profile-milestone {
+    flex-direction: column;
+  }
+
+  .profile-array-row > button,
+  .profile-social-row > button,
+  .profile-milestone > button {
+    align-self: flex-start;
+  }
 }
