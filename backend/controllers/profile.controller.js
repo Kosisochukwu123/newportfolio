@@ -3,40 +3,96 @@ const { cloudinary, uploadToCloudinary } = require("../config/cloudinary");
 
 const getOrCreateProfile = async () => {
   let profile = await Profile.findOne();
-  if (!profile) profile = await Profile.create({});
+
+  if (!profile) {
+    profile = await Profile.create({});
+  }
+
   return profile;
 };
 
-// GET /api/profile  (public)
+// GET /api/profile — public
 const getProfile = async (req, res) => {
   const profile = await getOrCreateProfile();
-  res.json({ success: true, data: profile });
+
+  res.json({
+    success: true,
+    data: profile,
+  });
 };
 
-// PUT /api/profile  (protected)
+// PUT /api/profile — protected
 const updateProfile = async (req, res) => {
-  const allowed = [
-    "name", "tagline", "heroBio", "terminalLines", "availableForWork",
-    "aboutBio", "yearsExperience", "projectsShipped",
-    "email", "location", "timezone", "socials",
-    "resumeUrl", "metaTitle", "metaDescription",
+  const allowedFields = [
+    // Company identity
+    "name",
+    "tagline",
+
+    // Hero
+    "heroBio",
+    "availableForWork",
+
+    // About
+    "aboutHeadline",
+    "aboutDescription",
+    "aboutBio",
+    "mission",
+    "vision",
+
+    // Statistics
+    "yearsExperience",
+    "projectsShipped",
+    "clientsServed",
+
+    // Services and milestones
+    "services",
+    "milestones",
+
+    // Contact
+    "email",
+    "phone",
+    "location",
+    "timezone",
+
+    // Socials
+    "socials",
+
+    // SEO
+    "metaTitle",
+    "metaDescription",
+    "ogImageUrl",
+
+    // Legacy compatibility
+    "terminalLines",
+    "resumeUrl",
   ];
 
   const updates = {};
-  allowed.forEach((key) => {
-    if (req.body[key] !== undefined) updates[key] = req.body[key];
+
+  allowedFields.forEach((field) => {
+    if (req.body[field] !== undefined) {
+      updates[field] = req.body[field];
+    }
   });
 
   const profile = await Profile.findOneAndUpdate(
     {},
     { $set: updates },
-    { new: true, upsert: true, runValidators: true }
+    {
+      new: true,
+      upsert: true,
+      runValidators: true,
+      setDefaultsOnInsert: true,
+    },
   );
 
-  res.json({ success: true, data: profile });
+  res.json({
+    success: true,
+    data: profile,
+  });
 };
 
-// POST /api/profile/avatar  (protected — multipart)
+// POST /api/profile/avatar — protected
 const uploadAvatar = async (req, res) => {
   if (!req.file) {
     res.status(400);
@@ -45,19 +101,33 @@ const uploadAvatar = async (req, res) => {
 
   const profile = await getOrCreateProfile();
 
-  // Remove old image from Cloudinary
-  if (profile.avatarPublicId) {
-    await cloudinary.uploader.destroy(profile.avatarPublicId).catch(() => {});
-  }
+  // Upload the replacement before deleting the previous image.
+  const { url, publicId } = await uploadToCloudinary(
+    req.file.path,
+    "gh-studios/brand",
+  );
 
-  // Upload temp file → Cloudinary
-  const { url, publicId } = await uploadToCloudinary(req.file.path, "portfolio/avatar");
+  const previousPublicId = profile.avatarPublicId;
 
   profile.avatarUrl = url;
   profile.avatarPublicId = publicId;
+
   await profile.save();
 
-  res.json({ success: true, avatarUrl: profile.avatarUrl, data: profile });
+  // Delete the old image only after the new one has been saved.
+  if (previousPublicId) {
+    await cloudinary.uploader.destroy(previousPublicId).catch(() => {});
+  }
+
+  res.json({
+    success: true,
+    avatarUrl: profile.avatarUrl,
+    data: profile,
+  });
 };
 
-module.exports = { getProfile, updateProfile, uploadAvatar };
+module.exports = {
+  getProfile,
+  updateProfile,
+  uploadAvatar,
+};

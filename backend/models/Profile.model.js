@@ -2,82 +2,95 @@ const mongoose = require("mongoose");
 
 const socialSchema = new mongoose.Schema(
   {
-    label: {
-      type: String,
-      required: true,
-    },
-    url: {
-      type: String,
-      required: true,
-    },
+    label: { type: String, trim: true, required: true },
+    url: { type: String, trim: true, required: true },
+  },
+  { _id: false },
+);
+
+const milestoneSchema = new mongoose.Schema(
+  {
+    year: { type: String, trim: true, default: "" },
+    label: { type: String, trim: true, default: "" },
   },
   { _id: false },
 );
 
 const profileSchema = new mongoose.Schema(
   {
-    // HERO
+    // COMPANY IDENTITY
     name: {
       type: String,
-      default: "Your Company",
+      trim: true,
+      default: "GH Studios",
     },
-
     tagline: {
       type: String,
-      default: "Building modern digital experiences",
+      trim: true,
+      default: "",
     },
 
+    // HOMEPAGE HERO
     heroBio: {
       type: String,
-      default:
-        "We design and build scalable web products, platforms, and digital experiences for businesses and startups.",
+      default: "",
     },
-
-    terminalLines: {
-      type: [String],
-      default: [
-        "Web Applications",
-        "UI/UX Design",
-        "Cloud Infrastructure",
-        "MERN Stack Solutions",
-      ],
-    },
-
     availableForWork: {
       type: Boolean,
       default: true,
     },
 
-    // ABOUT
+    // COMPANY ABOUT
+    aboutHeadline: {
+      type: String,
+      default: "",
+    },
+    aboutDescription: {
+      type: String,
+      default: "",
+    },
     aboutBio: {
       type: [String],
-      default: [
-        "We are a digital product studio focused on creating modern, scalable solutions.",
-        "Our team specializes in building high-performance applications and meaningful user experiences.",
-        "We combine strategy, design, and engineering to deliver products that solve real problems.",
-      ],
+      default: [],
     },
-
-    yearsExperience: {
+    mission: {
       type: String,
-      default: "5+",
+      default: "",
     },
-
-    projectsShipped: {
-      type: String,
-      default: "100+",
-    },
-
-    clientsServed: {
-      type: String,
-      default: "50+",
-    },
-
-    avatarUrl: {
+    vision: {
       type: String,
       default: "",
     },
 
+    // COMPANY STATISTICS
+    yearsExperience: {
+      type: String,
+      default: "",
+    },
+    projectsShipped: {
+      type: String,
+      default: "",
+    },
+    clientsServed: {
+      type: String,
+      default: "",
+    },
+
+    // SERVICES AND MILESTONES
+    services: {
+      type: [String],
+      default: [],
+    },
+    milestones: {
+      type: [milestoneSchema],
+      default: [],
+    },
+
+    // BRAND IMAGE
+    avatarUrl: {
+      type: String,
+      default: "",
+    },
     avatarPublicId: {
       type: String,
       default: "",
@@ -86,38 +99,54 @@ const profileSchema = new mongoose.Schema(
     // CONTACT
     email: {
       type: String,
-      default: "contact@company.com",
+      trim: true,
+      default: "",
     },
-
+    phone: {
+      type: String,
+      trim: true,
+      default: "",
+    },
     location: {
       type: String,
-      default: "Global",
+      trim: true,
+      default: "",
     },
-
     timezone: {
       type: String,
-      default: "UTC",
+      trim: true,
+      default: "",
     },
 
+    // SOCIAL MEDIA
     socials: {
       type: [socialSchema],
       default: [],
     },
 
-    // META
-    resumeUrl: {
+    // SEO AND SHARING
+    metaTitle: {
+      type: String,
+      trim: true,
+      default: "GH Studios",
+    },
+    metaDescription: {
+      type: String,
+      default: "",
+    },
+    ogImageUrl: {
       type: String,
       default: "",
     },
 
-    metaTitle: {
-      type: String,
-      default: "Your Company",
+    // LEGACY FIELDS — retained to avoid breaking older code/data
+    terminalLines: {
+      type: [String],
+      default: [],
     },
-
-    metaDescription: {
+    resumeUrl: {
       type: String,
-      default: "Modern digital products and web solutions",
+      default: "",
     },
   },
   {
