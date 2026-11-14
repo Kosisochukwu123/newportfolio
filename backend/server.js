@@ -43,6 +43,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://newportfolio-231g.onrender.com",
   "https://newportfolio-sand-five.vercel.app",
+  "https://newportfolio-rcbgi6cvm-kosisochukwu123s-projects.vercel.app",
   "https://ghstudios.online",
   "https://www.ghstudios.online",
   "https://gh-studios.vercel.app",
