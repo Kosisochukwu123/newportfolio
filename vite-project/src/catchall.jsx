@@ -89,10 +89,8 @@ const PAGE_METADATA = {
   },
 };
 
-
 export function meta({ location }) {
-  const pathname =
-    location.pathname.replace(/\/+$/, "") || "/";
+  const pathname = location.pathname.replace(/\/+$/, "") || "/";
 
   const isInvitationPage = pathname.startsWith("/join/");
 
@@ -146,7 +144,6 @@ export function meta({ location }) {
     },
   ];
 }
-
 
 export default function CatchAll() {
   const initialData = useLoaderData();
