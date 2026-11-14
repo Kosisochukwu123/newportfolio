@@ -1,56 +1,424 @@
-.avatar-wrap {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
+.company-profile-page {
+  width: 100%;
+  max-width: 1500px;
 }
 
-.avatar-box {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
+.company-profile-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.profile-eyebrow,
+.profile-section-number {
+  display: block;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.55rem;
+}
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  align-items: start;
+  gap: 1.25rem;
+}
+
+.profile-navigation {
+  position: sticky;
+  top: 1rem;
+  padding: 1rem;
+}
+
+.profile-navigation-heading {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.67rem;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.85rem;
+}
+
+.profile-navigation-link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.7rem 0.55rem;
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.profile-navigation-link:hover {
   background: var(--bg-elevated);
+  color: var(--text);
+}
+
+.profile-navigation-link span {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+}
+
+.profile-navigation-note {
+  border-top: 1px solid var(--border);
+  padding-top: 0.9rem;
+  margin-top: 0.8rem;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  line-height: 1.6;
+}
+
+.profile-content {
+  min-width: 0;
+}
+
+.profile-section {
+  scroll-margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 1.35rem;
+}
+
+.profile-section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.35rem;
+}
+
+.profile-section-heading h2 {
+  margin: 0 0 0.35rem;
+  color: var(--text);
+  font-size: 1.12rem;
+  font-weight: 650;
+}
+
+.profile-section-heading p {
+  margin: 0;
+  max-width: 620px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.profile-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  padding: 1rem;
+  margin-bottom: 1.4rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+
+.profile-logo-preview {
+  width: 88px;
+  height: 88px;
+  flex: 0 0 88px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-elevated);
+  color: var(--accent);
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.profile-logo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.profile-logo-actions {
+  min-width: 0;
+}
+
+.profile-logo-actions strong {
+  display: block;
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+.profile-logo-actions p {
+  margin: 0.3rem 0 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.profile-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1rem;
+}
+
+.profile-field {
+  min-width: 0;
+  margin-bottom: 1rem;
+}
+
+.profile-field .form-input,
+.profile-field .form-textarea {
+  margin-bottom: 0;
+  box-sizing: border-box;
+}
+
+.profile-large-textarea {
+  min-height: 125px;
+}
+
+.profile-availability {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.profile-availability strong,
+.profile-availability small {
+  display: block;
+}
+
+.profile-availability strong {
+  color: var(--text);
+  font-size: 0.84rem;
+}
+
+.profile-availability small {
+  margin-top: 0.25rem;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.profile-availability input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.profile-subheading {
+  margin-top: 1.3rem;
+  margin-bottom: 0.25rem;
+  color: var(--text);
+  font-size: 0.88rem;
+  font-weight: 650;
+}
+
+.profile-help {
+  margin: 0 0 0.9rem;
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  line-height: 1.5;
+}
+
+.profile-repeat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.profile-repeat-item,
+.profile-inline-item,
+.profile-milestone-item,
+.profile-social-item {
+  min-width: 0;
+  padding: 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.profile-repeat-item textarea {
+  box-sizing: border-box;
+  margin-bottom: 0.4rem;
+}
+
+.profile-inline-item,
+.profile-milestone-item,
+.profile-social-item {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.8rem;
+}
+
+.profile-inline-item .form-input {
+  margin-bottom: 0;
+}
+
+.profile-milestone-item .form-group,
+.profile-social-item .form-group {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.profile-milestone-item .form-input,
+.profile-social-item .form-input {
+  margin-bottom: 0;
+}
+
+.profile-remove-button {
+  flex: 0 0 auto;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: #e47777;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.profile-remove-button:hover {
+  background: rgba(228, 119, 119, 0.08);
+  border-color: rgba(228, 119, 119, 0.35);
+}
+
+.profile-add-button {
+  margin-top: 0.85rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--accent);
+  font-size: 0.78rem;
   cursor: pointer;
   transition: 0.2s ease;
 }
 
-.avatar-box:hover {
-  transform: scale(1.03);
+.profile-add-button:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
 }
 
-.avatar-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.form-input {
-  width: 100%;
-  padding: 0.6rem;
-  margin-bottom: 0.6rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
-  color: var(--text);
-}
-
-.form-textarea {
-  width: 100%;
-  min-height: 90px;
-  padding: 0.6rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
-  color: var(--text);
-}
-
-.toggle-row {
+.profile-bottom-save {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-top: 1rem;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.2rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--bg-elevated);
+}
+
+.profile-bottom-save strong {
+  color: var(--text);
+  font-size: 0.86rem;
+}
+
+.profile-bottom-save p {
+  margin: 0.3rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.profile-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.profile-spinner {
+  width: 17px;
+  height: 17px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: profile-spin 0.7s linear infinite;
+}
+
+@keyframes profile-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 900px) {
+  .profile-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-navigation {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.2rem;
+  }
+
+  .profile-navigation-heading,
+  .profile-navigation-note {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .company-profile-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .profile-top-save {
+    width: 100%;
+  }
+
+  .profile-section {
+    padding: 1rem;
+  }
+
+  .profile-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-navigation {
+    grid-template-columns: 1fr 1fr;
+    padding: 0.75rem;
+  }
+
+  .profile-navigation-link {
+    font-size: 0.72rem;
+  }
+
+  .profile-milestone-item,
+  .profile-social-item {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .profile-remove-button {
+    align-self: flex-start;
+  }
+
+  .profile-bottom-save {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .profile-bottom-save .btn-admin {
+    width: 100%;
+  }
+
+  .profile-brand-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
