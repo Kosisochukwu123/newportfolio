@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -36,7 +35,7 @@ const PAGE_METADATA = {
 
 function updateMeta(attribute, name, content) {
   let element = document.head.querySelector(
-    `meta[${attribute}="${name}"]`
+    `meta[${attribute}="${name}"]`,
   );
 
   if (!element) {
@@ -48,13 +47,20 @@ function updateMeta(attribute, name, content) {
   element.setAttribute("content", content);
 }
 
-export default function SEO() {
+function removeMeta(attribute, name) {
+  document.head
+    .querySelector(`meta[${attribute}="${name}"]`)
+    ?.remove();
+}
+
+export default function SEO({ profile = {} }) {
   const location = useLocation();
 
   useEffect(() => {
     const pathname =
       location.pathname.replace(/\/+$/, "") || "/";
 
+    const isHomePage = pathname === "/";
     const isInvitationPage = pathname.startsWith("/join/");
 
     const metadata = PAGE_METADATA[pathname] || {
@@ -64,29 +70,54 @@ export default function SEO() {
       index: false,
     };
 
+    const title =
+      isHomePage && profile.metaTitle?.trim()
+        ? profile.metaTitle.trim()
+        : metadata.title;
+
+    const description =
+      isHomePage && profile.metaDescription?.trim()
+        ? profile.metaDescription.trim()
+        : metadata.description;
+
+    const image =
+      isHomePage && profile.ogImageUrl?.trim()
+        ? profile.ogImageUrl.trim()
+        : "";
+
     const canonical = `${SITE_URL}${pathname}`;
 
-    document.title = metadata.title;
+    document.title = title;
 
-    updateMeta("name", "description", metadata.description);
+    updateMeta("name", "description", description);
 
     updateMeta(
       "name",
       "robots",
       isInvitationPage || !metadata.index
         ? "noindex, nofollow"
-        : "index, follow"
+        : "index, follow",
     );
 
-    updateMeta("property", "og:title", metadata.title);
-    updateMeta("property", "og:description", metadata.description);
+    updateMeta("property", "og:title", title);
+    updateMeta("property", "og:description", description);
     updateMeta("property", "og:url", canonical);
 
-    updateMeta("name", "twitter:title", metadata.title);
-    updateMeta("name", "twitter:description", metadata.description);
+    updateMeta("name", "twitter:title", title);
+    updateMeta("name", "twitter:description", description);
+
+    if (image) {
+      updateMeta("property", "og:image", image);
+      updateMeta("name", "twitter:image", image);
+      updateMeta("name", "twitter:card", "summary_large_image");
+    } else {
+      removeMeta("property", "og:image");
+      removeMeta("name", "twitter:image");
+      updateMeta("name", "twitter:card", "summary");
+    }
 
     let canonicalLink = document.head.querySelector(
-      'link[rel="canonical"]'
+      'link[rel="canonical"]',
     );
 
     if (!canonicalLink) {
@@ -97,10 +128,14 @@ export default function SEO() {
 
     canonicalLink.setAttribute(
       "href",
-      isInvitationPage ? `${SITE_URL}/` : canonical
+      isInvitationPage ? `${SITE_URL}/` : canonical,
     );
-
-  }, [location.pathname]);
+  }, [
+    location.pathname,
+    profile.metaTitle,
+    profile.metaDescription,
+    profile.ogImageUrl,
+  ]);
 
   return null;
 }

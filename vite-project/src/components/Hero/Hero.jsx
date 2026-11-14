@@ -1,8 +1,12 @@
-
 import { useEffect, useRef, useState } from "react";
 import "./Hero.css";
 
 const INTERVAL = 3000;
+
+const COMPANY_NAME = "GH Studios";
+const TAGLINE = "on your terms.";
+const HERO_BIO =
+  "GH Studios is a digital development studio creating modern websites, custom web applications and software solutions through thoughtful design and engineering.";
 
 const ROTATOR = [
   {
@@ -34,8 +38,6 @@ const ROTATOR = [
     line: "Videography and motion graphics that make people stop scrolling.",
   },
 ];
-
-const SKELETON_TIMEOUT = 6000;
 
 function Icon({ name }) {
   const p = {
@@ -77,27 +79,9 @@ function Icon({ name }) {
   );
 }
 
-function HeroSkeleton() {
-  return (
-    <div className="hero-content" aria-busy="true" aria-label="Loading">
-      <span className="hs hs-label" />
-      <span className="hs hs-icon" />
-      <span className="hs hs-h1 hs-h1-a" />
-      <span className="hs hs-h1 hs-h1-b" />
-      <span className="hs hs-p" />
-      <span className="hs hs-p hs-p-short" />
-      <div className="hs-row">
-        <span className="hs hs-btn" />
-        <span className="hs hs-btn" />
-      </div>
-    </div>
-  );
-}
-
-export default function Hero({ profile = {}, loading }) {
+export default function Hero() {
   const heroRef = useRef(null);
   const [idx, setIdx] = useState(0);
-  const [timedOut, setTimedOut] = useState(false);
 
   const [reduceMotion] = useState(
     () =>
@@ -105,25 +89,8 @@ export default function Hero({ profile = {}, loading }) {
       window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
 
-  const isLoading = loading ?? Object.keys(profile).length === 0;
-  const showSkeleton = isLoading && !timedOut;
-
-  const companyName = profile.name || "GH Studios";
-  const tagline = profile.tagline || "on your terms.";
-  const heroBio =
-    profile.heroBio ||
-    "GH Studios is a digital development studio creating modern websites, custom web applications and software solutions through thoughtful design and engineering.";
-
   useEffect(() => {
-    if (!isLoading) return;
-
-    const t = setTimeout(() => setTimedOut(true), SKELETON_TIMEOUT);
-
-    return () => clearTimeout(t);
-  }, [isLoading]);
-
-  useEffect(() => {
-    if (showSkeleton || reduceMotion) return;
+    if (reduceMotion) return;
 
     const t = setTimeout(
       () => setIdx((i) => (i + 1) % ROTATOR.length),
@@ -131,7 +98,7 @@ export default function Hero({ profile = {}, loading }) {
     );
 
     return () => clearTimeout(t);
-  }, [idx, showSkeleton, reduceMotion]);
+  }, [idx, reduceMotion]);
 
   useEffect(() => {
     const el = heroRef.current;
@@ -187,90 +154,86 @@ export default function Hero({ profile = {}, loading }) {
       </div>
 
       <div className="container hero-inner">
-        {showSkeleton ? (
-          <HeroSkeleton />
-        ) : (
-          <div className="hero-content hero-enter">
-            <p className="hero-greeting">
-              <span className="mono-tag">We are {companyName}</span>
-            </p>
+        <div className="hero-content hero-enter">
+          <p className="hero-greeting">
+            <span className="mono-tag">We are {COMPANY_NAME}</span>
+          </p>
 
-            <div className="hero-icon" aria-hidden="true">
+          <div className="hero-icon" aria-hidden="true">
+            {ROTATOR.map((r, i) => (
+              <span
+                key={r.word}
+                className={`hero-icon-face ${stateOf(i)}`}
+                style={{
+                  background: `linear-gradient(145deg, ${r.from}, ${r.to})`,
+                  boxShadow: `inset 0 2px 0 rgba(255,255,255,.55), 0 16px 44px -10px ${r.to}`,
+                }}
+              >
+                <Icon name={r.icon} />
+              </span>
+            ))}
+          </div>
+
+          <h1 className="hero-title">
+            <span className="hero-sr">
+              {COMPANY_NAME} builds websites, custom web applications and
+              digital experiences for businesses. {TAGLINE}
+            </span>
+
+            <span className="hero-rot" aria-hidden="true">
               {ROTATOR.map((r, i) => (
                 <span
                   key={r.word}
-                  className={`hero-icon-face ${stateOf(i)}`}
-                  style={{
-                    background: `linear-gradient(145deg, ${r.from}, ${r.to})`,
-                    boxShadow: `inset 0 2px 0 rgba(255,255,255,.55), 0 16px 44px -10px ${r.to}`,
-                  }}
+                  className={`hero-word ${stateOf(i)}`}
                 >
-                  <Icon name={r.icon} />
+                  {r.word}
                 </span>
               ))}
-            </div>
+            </span>
 
-            <h1 className="hero-title">
-              <span className="hero-sr">
-                {companyName} builds websites, custom web applications and
-                digital experiences for businesses. {tagline}
-              </span>
+            <span className="hero-rest" aria-hidden="true">
+              {TAGLINE}
+            </span>
+          </h1>
 
-              <span className="hero-rot" aria-hidden="true">
-                {ROTATOR.map((r, i) => (
-                  <span
-                    key={r.word}
-                    className={`hero-word ${stateOf(i)}`}
-                  >
-                    {r.word}
-                  </span>
-                ))}
-              </span>
-
-              <span className="hero-rest" aria-hidden="true">
-                {tagline}
-              </span>
-            </h1>
-
-            <div className="hero-lines" aria-hidden="true">
-              {ROTATOR.map((r, i) => (
-                <p
-                  key={r.word}
-                  className={`hero-line ${stateOf(i)}`}
-                >
-                  {r.line}
-                </p>
-              ))}
-            </div>
-
-            <p className="hero-description">{heroBio}</p>
-
-            <div className="hero-steps">
-              {ROTATOR.map((r, i) => (
-                <button
-                  key={r.word}
-                  type="button"
-                  className={`hero-step${i === idx ? " is-active" : ""}`}
-                  onClick={() => setIdx(i)}
-                  aria-label={`Show: ${r.word}`}
-                  aria-current={i === idx}
-                >
-                  <i />
-                </button>
-              ))}
-            </div>
-
-            <div className="hero-cta">
-              <a href="#cases" className="btn btn-primary">
-                View our work
-              </a>
-
-              <a href="/contact" className="btn btn-outline">
-                Start a project
-              </a>
-            </div>
+          <div className="hero-lines" aria-hidden="true">
+            {ROTATOR.map((r, i) => (
+              <p
+                key={r.word}
+                className={`hero-line ${stateOf(i)}`}
+              >
+                {r.line}
+              </p>
+            ))}
           </div>
-        )}
+
+          <p className="hero-description">{HERO_BIO}</p>
+
+          <div className="hero-steps">
+            {ROTATOR.map((r, i) => (
+              <button
+                key={r.word}
+                type="button"
+                className={`hero-step${i === idx ? " is-active" : ""}`}
+                onClick={() => setIdx(i)}
+                aria-label={`Show: ${r.word}`}
+                aria-current={i === idx}
+              >
+                <i />
+              </button>
+            ))}
+          </div>
+
+          <div className="hero-cta">
+            <a href="#cases" className="btn btn-primary">
+              View our work
+            </a>
+
+            <a href="/contact" className="btn btn-outline">
+              Start a project
+            </a>
+          </div>
+        </div>
       </div>
     </section>
   );

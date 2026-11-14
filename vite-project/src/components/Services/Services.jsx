@@ -1,7 +1,6 @@
-
 import "./Services.css";
 
-const DEFAULT_SERVICES = [
+const SERVICES = [
   {
     title: "Web Development",
     description:
@@ -40,31 +39,7 @@ const DEFAULT_SERVICES = [
   },
 ];
 
-function getServices(profileServices) {
-  if (!Array.isArray(profileServices) || profileServices.length === 0) {
-    return DEFAULT_SERVICES;
-  }
-
-  return profileServices.map((service, index) => {
-    const existing = DEFAULT_SERVICES.find(
-      (item) =>
-        item.title.toLowerCase() === String(service).trim().toLowerCase(),
-    );
-
-    return {
-      number: String(index + 1).padStart(2, "0"),
-      title: service,
-      description:
-        existing?.description ||
-        "We provide tailored solutions in this area, combining thoughtful design and reliable engineering to meet your business needs.",
-      tag: existing?.tag || "Digital Solutions",
-    };
-  });
-}
-
-export default function Services({ profile = {} }) {
-  const services = getServices(profile.services);
-
+export default function Services() {
   return (
     <section
       id="services"
@@ -75,7 +50,6 @@ export default function Services({ profile = {} }) {
         <div className="services-heading">
           <div className="services-intro">
             <p className="section-label">What we do</p>
-
             <h2 id="services-title" className="section-title">
               Solutions built around
               <span className="accent"> your next move.</span>
@@ -90,10 +64,10 @@ export default function Services({ profile = {} }) {
         </div>
 
         <div className="services-grid">
-          {services.map((service, index) => (
+          {SERVICES.map((service, index) => (
             <article
               className="service-card"
-              key={`${service.title}-${index}`}
+              key={service.title}
             >
               <div className="service-card-top">
                 <span className="service-number">
