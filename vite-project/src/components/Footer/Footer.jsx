@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { getLenis } from "../../utils/smoothScroll";
@@ -73,8 +72,7 @@ export default function Footer({ company = {} }) {
     }))
     .filter((social) => social.href);
 
-  const services =
-    c.services?.length > 0 ? c.services : DEFAULT_SERVICES;
+  const services = c.services?.length > 0 ? c.services : DEFAULT_SERVICES;
 
   const footerRef = useRef(null);
   const [inView, setInView] = useState(false);
@@ -145,185 +143,197 @@ export default function Footer({ company = {} }) {
     }
   };
 
+  // a soft lime glow follows the cursor over the dark card (CSS variables, no re-render)
+  const onHeroMove = (e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    e.currentTarget.style.setProperty("--fx", `${e.clientX - r.left}px`);
+    e.currentTarget.style.setProperty("--fy", `${e.clientY - r.top}px`);
+  };
+
   const rise = (n) => ({
     className: "ft-rise",
     style: { "--d": n },
   });
 
+  // the services line is shown twice, so the scrolling loop has no gap
+  const marquee = [...services, ...services];
+
   return (
-    <footer
-      ref={footerRef}
-      className={`footer${inView ? " is-in" : ""}`}
-    >
+    <footer ref={footerRef} className={`footer${inView ? " is-in" : ""}`}>
       <div className="footer-container">
-        <div className="footer-top">
-          <div className="footer-left">
-            <div {...rise(0)}>
-              <p className="footer-status">
-                <span
-                  className={`footer-dot${available ? "" : " is-off"}`}
-                  aria-hidden="true"
-                />
-                {available
-                  ? "Available for new projects"
-                  : "Fully booked right now"}
+        {/* ---------- dark call-to-action card ---------- */}
+        <div className="footer-hero ft-rise" style={{ "--d": 0 }} onMouseMove={onHeroMove}>
+          <div className="footer-hero-grid">
+            <div className="footer-left">
+              <div {...rise(1)}>
+                <p className="footer-status">
+                  <span
+                    className={`footer-dot${available ? "" : " is-off"}`}
+                    aria-hidden="true"
+                  />
+                  {available ? "Available for new projects" : "Fully booked right now"}
 
-                <span className="footer-status-sep" aria-hidden="true">
-                  ·
-                </span>
+                  <span className="footer-status-sep" aria-hidden="true">
+                    ·
+                  </span>
 
-                <span className="footer-time">
-                  {c.location} {time}
-                </span>
+                  <span className="footer-time">
+                    {c.location} {time}
+                  </span>
+                </p>
+              </div>
+
+              <h2 className="footer-heading ft-rise" style={{ "--d": 2 }}>
+                Let&rsquo;s build something
+                <span className="footer-accent"> great.</span>
+              </h2>
+
+              <p className="footer-description ft-rise" style={{ "--d": 3 }}>
+                Looking for web development, cybersecurity solutions, backend
+                systems, or digital product design? Let&rsquo;s create something
+                users actually remember.
               </p>
-            </div>
 
-            <h2 className="footer-heading ft-rise" style={{ "--d": 1 }}>
-              Let&rsquo;s build something
-              <span className="footer-accent"> great.</span>
-            </h2>
+              <div className="footer-buttons ft-rise" style={{ "--d": 4 }}>
+                <Link to="/contact" className="btn btn-primary footer-cta">
+                  Start a project
+                  <span className="footer-cta-arrow" aria-hidden="true">
+                    →
+                  </span>
+                </Link>
 
-            <p className="footer-description ft-rise" style={{ "--d": 2 }}>
-              Looking for web development, cybersecurity solutions, backend
-              systems, or digital product design? Let&rsquo;s create something
-              users actually remember.
-            </p>
-
-            <div className="footer-buttons ft-rise" style={{ "--d": 3 }}>
-              <Link to="/contact" className="btn btn-primary footer-cta">
-                Start a project
-                <span className="footer-cta-arrow" aria-hidden="true">
-                  →
-                </span>
-              </Link>
-
-              <button
-                type="button"
-                className="btn btn-outline footer-bug"
-                onClick={() => setBugModalOpen(true)}
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  width="16"
-                  height="16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  aria-hidden="true"
+                <button
+                  type="button"
+                  className="btn btn-outline footer-bug"
+                  onClick={() => setBugModalOpen(true)}
                 >
-                  <path d="M9 7a3 3 0 0 1 6 0M8 10h8v5a4 4 0 0 1-8 0zM4 12h4M16 12h4M5 19l3-2M19 19l-3-2M5 6l3 2M19 6l-3 2" />
-                </svg>
-                Report a bug
-              </button>
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="16"
+                    height="16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M9 7a3 3 0 0 1 6 0M8 10h8v5a4 4 0 0 1-8 0zM4 12h4M16 12h4M5 19l3-2M19 19l-3-2M5 6l3 2M19 6l-3 2" />
+                  </svg>
+                  Report a bug
+                </button>
+              </div>
             </div>
+
+            {/* newsletter, now inside the dark card */}
+            {/* <div className="footer-newsletter ft-rise" style={{ "--d": 4 }}>
+              <h3>Subscribe to updates</h3>
+              <p>Product launches, case studies and development notes.</p>
+
+              <form className="newsletter-form" onSubmit={subscribe} noValidate>
+                <label htmlFor="footer-email" className="ft-sr">
+                  Email address
+                </label>
+
+                <input
+                  id="footer-email"
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  placeholder="Email address"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+
+                    if (status !== "idle" && status !== "loading") {
+                      setStatus("idle");
+                    }
+                  }}
+                  aria-invalid={status === "invalid"}
+                  disabled={status === "loading"}
+                />
+
+                <button
+                  type="submit"
+                  aria-label="Subscribe"
+                  disabled={status === "loading"}
+                >
+                  {status === "loading" ? (
+                    <span className="ft-spinner" aria-hidden="true" />
+                  ) : (
+                    "→"
+                  )}
+                </button>
+              </form>
+
+              <p
+                className={`newsletter-msg is-${status}`}
+                role="status"
+                aria-live="polite"
+              >
+                {NEWSLETTER_MESSAGES[status] || ""}
+              </p>
+            </div> */}
           </div>
 
-          <div className="footer-right">
-            <nav
-              className="footer-block ft-rise"
-              style={{ "--d": 2 }}
-              aria-label="Footer navigation"
-            >
-              <h4>Navigation</h4>
-
-              {NAV.map((link) => (
-                <Link
-                  key={link.label}
-                  to={link.to}
-                  className="footer-link"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-
-            <div className="footer-block ft-rise" style={{ "--d": 3 }}>
-              <h4>Services</h4>
-
-              {services.map((service, index) => (
-                <Link
-                  key={`${service}-${index}`}
-                  to="/contact"
-                  className="footer-link"
-                >
+          {/* slow scrolling line of services */}
+          <div className="footer-marquee" aria-hidden="true">
+            <div className="footer-marquee-track">
+              {marquee.map((service, index) => (
+                <span key={`${service}-${index}`}>
                   {service}
-                </Link>
+                  <i>✦</i>
+                </span>
               ))}
             </div>
-
-            <div className="footer-block ft-rise" style={{ "--d": 4 }}>
-              <h4>Contact</h4>
-
-              {c.email && (
-                <a href={`mailto:${c.email}`} className="footer-link">
-                  {c.email}
-                </a>
-              )}
-
-              <p className="footer-plain">{c.location}</p>
-            </div>
           </div>
         </div>
 
-        <div className="footer-newsletter ft-rise" style={{ "--d": 4 }}>
-          <div>
-            <h3>Subscribe to updates</h3>
-            <p>Product launches, case studies and development notes.</p>
-          </div>
+        {/* ---------- links, on white ---------- */}
+        <div className="footer-links">
+          <nav
+            className="footer-block ft-rise"
+            style={{ "--d": 3 }}
+            aria-label="Footer navigation"
+          >
+            <h4>Navigation</h4>
 
-          <div className="newsletter-side">
-            <form
-              className="newsletter-form"
-              onSubmit={subscribe}
-              noValidate
-            >
-              <label htmlFor="footer-email" className="ft-sr">
-                Email address
-              </label>
+            {NAV.map((link) => (
+              <Link key={link.label} to={link.to} className="footer-link">
+                {link.label}
+              </Link>
+            ))}
+          </nav>
 
-              <input
-                id="footer-email"
-                type="email"
-                inputMode="email"
-                autoComplete="email"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
+          <div className="footer-block ft-rise" style={{ "--d": 4 }}>
+            <h4>Services</h4>
 
-                  if (status !== "idle" && status !== "loading") {
-                    setStatus("idle");
-                  }
-                }}
-                aria-invalid={status === "invalid"}
-                disabled={status === "loading"}
-              />
-
-              <button
-                type="submit"
-                aria-label="Subscribe"
-                disabled={status === "loading"}
+            {services.map((service, index) => (
+              <Link
+                key={`${service}-${index}`}
+                to="/contact"
+                className="footer-link"
               >
-                {status === "loading" ? (
-                  <span className="ft-spinner" aria-hidden="true" />
-                ) : (
-                  "→"
-                )}
-              </button>
-            </form>
+                {service}
+              </Link>
+            ))}
+          </div>
 
-            <p
-              className={`newsletter-msg is-${status}`}
-              role="status"
-              aria-live="polite"
-            >
-              {NEWSLETTER_MESSAGES[status] || ""}
-            </p>
+          <div className="footer-block footer-block-contact ft-rise" style={{ "--d": 5 }}>
+            <h4>Say hello</h4>
+
+            {c.email && (
+              <a href={`mailto:${c.email}`} className="footer-mail">
+                {c.email}
+                <span aria-hidden="true">↗</span>
+              </a>
+            )}
+
+            <p className="footer-plain">{c.location}</p>
           </div>
         </div>
 
-        <div className="footer-bottom ft-rise" style={{ "--d": 5 }}>
+        {/* ---------- bottom bar ---------- */}
+        <div className="footer-bottom ft-rise" style={{ "--d": 6 }}>
           <p>
             &copy; {new Date().getFullYear()} {c.name}
           </p>
@@ -338,6 +348,7 @@ export default function Footer({ company = {} }) {
                   rel="noreferrer"
                 >
                   {social.label}
+                  <span aria-hidden="true">↗</span>
                 </a>
               ))}
             </div>
@@ -369,9 +380,7 @@ export default function Footer({ company = {} }) {
         ))}
       </div>
 
-      {bugModalOpen && (
-        <BugReportModal onClose={() => setBugModalOpen(false)} />
-      )}
+      {bugModalOpen && <BugReportModal onClose={() => setBugModalOpen(false)} />}
     </footer>
   );
 }
