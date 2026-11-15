@@ -41,6 +41,7 @@ connectDB();
 const allowedOrigins = [
   "http://localhost:5175",
   "http://localhost:5173",
+  "http://localhost:4173",
   "https://newportfolio-231g.onrender.com",
   "https://newportfolio-sand-five.vercel.app",
   "https://newportfolio-rcbgi6cvm-kosisochukwu123s-projects.vercel.app",
