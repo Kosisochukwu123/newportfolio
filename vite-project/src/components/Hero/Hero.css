@@ -30,29 +30,42 @@
   position: absolute;
   inset: 0;
   z-index: 0;
+  overflow: hidden;
 }
 
-.hero-video {
+/* Visible immediately while the video loads */
+.hero-poster {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  animation: heroVideoIn 1.8s ease forwards;
-}
-@keyframes heroVideoIn {
-  from {
-    transform: scale(1.08);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+  transform: scale(1.08);
 }
 
+/* Video stays hidden until playback actually starts */
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1);
+  transition:
+    opacity 0.9s ease,
+    transform 1.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero-video.is-ready {
+  opacity: 1;
+  transform: scale(1);
+}
 /* keeps the text readable */
 .hero-overlay {
   position: absolute;
   inset: 0;
+  z-index: 2;
   background:
     linear-gradient(90deg, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0.18) 65%),
     rgba(0, 0, 0, 0.34);
@@ -381,7 +394,6 @@
     transition: none;
   }
 }
-
 
 /* Permanent agency description */
 .hero-description {

@@ -82,6 +82,8 @@ function Icon({ name }) {
 export default function Hero() {
   const heroRef = useRef(null);
   const [idx, setIdx] = useState(0);
+  const [videoReady, setVideoReady] = useState(false);
+
 
   const [reduceMotion] = useState(
     () =>
@@ -105,8 +107,7 @@ export default function Hero() {
     if (!el) return;
 
     const update = () => {
-      const covered =
-        window.scrollY > el.offsetTop + el.offsetHeight + 20;
+      const covered = window.scrollY > el.offsetTop + el.offsetHeight + 20;
 
       el.style.visibility = covered ? "hidden" : "visible";
     };
@@ -138,13 +139,26 @@ export default function Hero() {
       style={{ "--hero-ms": `${INTERVAL}ms` }}
     >
       <div className="hero-video-wrapper">
+        {/* Immediate background while the video loads */}
+        <img
+          className="hero-poster"
+          src="/hero-poster.webp"
+          alt=""
+          aria-hidden="true"
+          fetchPriority="high"
+          decoding="async"
+        />
+
+        {/* Background video fades in once playback begins */}
         <video
-          className="hero-video"
+          className={`hero-video ${videoReady ? "is-ready" : ""}`}
           autoPlay
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
+          poster="/hero-poster.webp"
+          onPlaying={() => setVideoReady(true)}
         >
           <source src="/hero-video.mp4" type="video/mp4" />
         </video>
@@ -182,10 +196,7 @@ export default function Hero() {
 
             <span className="hero-rot" aria-hidden="true">
               {ROTATOR.map((r, i) => (
-                <span
-                  key={r.word}
-                  className={`hero-word ${stateOf(i)}`}
-                >
+                <span key={r.word} className={`hero-word ${stateOf(i)}`}>
                   {r.word}
                 </span>
               ))}
@@ -198,10 +209,7 @@ export default function Hero() {
 
           <div className="hero-lines" aria-hidden="true">
             {ROTATOR.map((r, i) => (
-              <p
-                key={r.word}
-                className={`hero-line ${stateOf(i)}`}
-              >
+              <p key={r.word} className={`hero-line ${stateOf(i)}`}>
                 {r.line}
               </p>
             ))}

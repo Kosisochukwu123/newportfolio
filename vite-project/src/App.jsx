@@ -37,6 +37,7 @@ const API = import.meta.env.VITE_API_URL || "/api";
 const getData = (endpoint) =>
   fetch(`${API}/${endpoint}`).then((res) => res.json());
 
+
 function HomeSections({ profile, projects, skills, testimonials }) {
   return (
     <>
@@ -45,33 +46,46 @@ function HomeSections({ profile, projects, skills, testimonials }) {
       <LazySection>
         <Skills skills={skills} />
       </LazySection>
-      
+
       <LazySection>
-        <Services profile={profile} />
+        <Suspense fallback={null}>
+          <Services profile={profile} />
+        </Suspense>
       </LazySection>
 
       <LazySection>
-        <Projects projects={projects} />
+        <Suspense fallback={null}>
+          <Projects projects={projects} />
+        </Suspense>
       </LazySection>
 
       <LazySection>
-        <LightTransition />
+        <Suspense fallback={null}>
+          <LightTransition />
+        </Suspense>
       </LazySection>
 
       <LazySection>
-        <Testimonials testimonials={testimonials} />
+        <Suspense fallback={null}>
+          <Testimonials testimonials={testimonials} />
+        </Suspense>
       </LazySection>
 
       <LazySection>
-        <About profile={profile} />
+        <Suspense fallback={null}>
+          <About profile={profile} />
+        </Suspense>
       </LazySection>
 
       <LazySection>
-        <Footer company={profile} />
+        <Suspense fallback={null}>
+          <Footer company={profile} />
+        </Suspense>
       </LazySection>
     </>
   );
 }
+
 
 function ScrollToHash() {
   const location = useLocation();
@@ -108,8 +122,6 @@ function ScrollToHash() {
 
 export default function App() {
   const cursorRef = useRef(null);
-
-  const [dataReady, setDataReady] = useState(false);
 
   const [appReady, setAppReady] = useState(() => {
     return sessionStorage.getItem("loaderShown") === "true";
@@ -151,23 +163,31 @@ export default function App() {
     };
   }, []);
 
-  // Fetch website data
+  // Fetch website data independently.
+  // API requests update their sections when ready but never block the homepage.
   useEffect(() => {
-    Promise.all([
-      fetchWithCache("profile", () => getData("profile")),
-      fetchWithCache("projects", () => getData("projects")),
-      fetchWithCache("skills", () => getData("skills")),
-      fetchWithCache("testimonials", () => getData("testimonials")),
-    ])
-      .then(([profileRes, projectRes, skillsRes, testimonialsRes]) => {
-        if (profileRes.success) setProfile(profileRes.data);
-        if (projectRes.success) setProjects(projectRes.data);
-        if (skillsRes.success) setSkills(skillsRes.data);
-        if (testimonialsRes.success) {
-          setTestimonials(testimonialsRes.data);
+    let cancelled = false;
+
+    const loadData = async (key, endpoint, setData) => {
+      try {
+        const result = await fetchWithCache(key, () => getData(endpoint));
+
+        if (!cancelled && result?.success) {
+          setData(result.data);
         }
-      })
-      .finally(() => setDataReady(true));
+      } catch (error) {
+        console.error(`[GH Studios] Failed to load ${endpoint}:`, error);
+      }
+    };
+
+    loadData("profile", "profile", setProfile);
+    loadData("projects", "projects", setProjects);
+    loadData("skills", "skills", setSkills);
+    loadData("testimonials", "testimonials", setTestimonials);
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Initialize smooth scrolling
@@ -225,7 +245,7 @@ export default function App() {
       </Suspense>
 
       {!appReady && (
-        <Loader dataReady={dataReady} onComplete={handleLoaderComplete} />
+        <Loader dataReady={true} fast onComplete={handleLoaderComplete} />
       )}
     </div>
   );

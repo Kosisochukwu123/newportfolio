@@ -1,5 +1,16 @@
-
 /* Navbar.css — GH Studios floating glass navbar */
+
+/* These let the glare follow the cursor with a slight lag (see .nb-links). */
+@property --mx {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+@property --my {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
 
 .nb {
   --nb-fg: #f4f4f2;
@@ -9,6 +20,8 @@
   --nb-accent: #f4f4f2;
   --nb-ease: cubic-bezier(0.76, 0, 0.24, 1);
   --nb-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --nb-spring: cubic-bezier(0.34, 1.2, 0.64, 1); /* a touch of overshoot */
+  --nb-logo-h: 50px; /* LOGO SIZE on laptop (it eases down a little on scroll) */
 
   position: fixed;
   top: 0;
@@ -32,16 +45,27 @@
   gap: 24px;
 }
 
+/* ---------- logo + name ---------- */
 .nb-logo {
   display: inline-flex;
   align-items: center;
+  gap: 12px;
   line-height: 0;
+  text-decoration: none;
 }
-
 .nb-logo img {
   display: block;
   width: auto;
-  height: calc(34px - 8px * var(--scroll-progress, 0));
+  height: calc(var(--nb-logo-h) - 10px * var(--scroll-progress, 0));
+}
+.nb-brand {
+  font-family: var(--font-display, inherit);
+  font-size: calc(1.2rem - 0.12rem * var(--scroll-progress, 0));
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  color: var(--nb-fg);
 }
 
 /* Desktop navigation */
@@ -51,6 +75,11 @@
 }
 
 .nb-links {
+  /* set by the script: where the sliding pill is, and where the glare is */
+  --hl-x: 0px;
+  --hl-w: 0px;
+  --hl-o: 0;
+
   position: absolute;
   top: 50%;
   left: 50%;
@@ -58,9 +87,11 @@
   transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
-  gap: 26px;
+  gap: calc(26px - 6px * var(--scroll-progress, 0));
   margin: 0;
-  padding: 9px 28px;
+  /* the pill tightens a little as you scroll */
+  padding: calc(9px - 2px * var(--scroll-progress, 0))
+    calc(28px - 6px * var(--scroll-progress, 0));
   list-style: none;
 
   background: rgba(255, 255, 255, 0.07);
@@ -72,10 +103,58 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
     0 8px 32px rgba(0, 0, 0, 0.28);
+
+  /* the glare trails the cursor a fraction late: that lag is what reads as glass */
+  transition:
+    --mx 0.22s ease-out,
+    --my 0.22s ease-out;
+}
+
+/* glare that follows the cursor across the glass */
+.nb-links::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    140px circle at var(--mx) var(--my),
+    rgba(255, 255, 255, 0.18),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.nb-links:hover::before {
+  opacity: 1;
 }
 
 .nb-links li {
   position: relative;
+  z-index: 1;
+}
+
+/* the sliding pill behind the links */
+.nb-links li.nb-hl {
+  position: absolute;
+  z-index: 0;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  width: var(--hl-w);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.13);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 4px 14px rgba(0, 0, 0, 0.18);
+  opacity: var(--hl-o);
+  transform: translate3d(var(--hl-x), 0, 0);
+  pointer-events: none;
+  transition:
+    transform 0.55s var(--nb-spring),
+    width 0.55s var(--nb-spring),
+    opacity 0.25s ease;
 }
 
 .nb-link {
@@ -91,12 +170,19 @@
   background: none;
   border: 0;
   cursor: pointer;
-  transition: color 0.25s;
+  transition:
+    color 0.25s,
+    transform 0.2s var(--nb-ease-out);
 }
 
 .nb-link:hover,
 .nb-link.is-active {
   color: var(--nb-fg);
+}
+
+/* a small press-in when you click */
+.nb-link:active {
+  transform: scale(0.94);
 }
 
 .nb-link:focus-visible {
@@ -112,20 +198,6 @@
   margin-right: 0.55em;
   font-size: 0.85em;
   opacity: 0.45;
-}
-
-/* Active dot */
-
-.nb-link.is-active::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -2px;
-  width: 4px;
-  height: 4px;
-  margin-left: -2px;
-  border-radius: 50%;
-  background: var(--nb-accent);
 }
 
 /* Connect dropdown */
@@ -145,16 +217,16 @@
   transform: translateY(1px) rotate(225deg);
 }
 
-/* Larger desktop dropdown panel */
+/* Desktop dropdown panel (one link) */
 
 .nb-dd-menu {
   position: absolute;
   top: calc(100% + 18px);
   left: 50%;
   z-index: 4;
-  width: 230px;
-  margin: 0 0 0 -115px;
-  padding: 12px;
+  width: 190px;
+  margin: 0 0 0 -95px;
+  padding: 10px;
   list-style: none;
 
   background: rgba(14, 14, 14, 0.88);
@@ -225,10 +297,6 @@
   color: #fff;
 }
 
-.nb-dd-menu .nb-link.is-active::after {
-  display: none;
-}
-
 .nb-dd-menu .nb-num {
   display: inline-block;
   min-width: 24px;
@@ -270,7 +338,7 @@
     background 0.25s,
     color 0.25s,
     border-color 0.25s,
-    transform 0.25s;
+    transform 0.25s var(--nb-spring);
 }
 
 .nb-btn-solid {
@@ -285,6 +353,10 @@
   transform: translateY(-2px);
 }
 
+.nb-btn-solid:active {
+  transform: scale(0.95);
+}
+
 .nb-btn-arrow {
   display: inline-block;
   font-size: 1rem;
@@ -296,6 +368,54 @@
   transform: translate(3px, -3px);
 }
 
+.nb-btn-short {
+  display: none;
+}
+
+/* Mid-size laptops: shorter button text and a slightly tighter pill, so the
+   pill and the button never touch */
+@media (min-width: 900px) and (max-width: 1180px) {
+  .nb-btn-long {
+    display: none;
+  }
+  .nb-btn-short {
+    display: inline;
+  }
+  .nb-links {
+    gap: 18px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+/* Page-load entrance: the logo, pill and button drop in one after another */
+@keyframes nbDrop {
+  from {
+    opacity: 0;
+    translate: 0 -14px;
+  }
+}
+@keyframes nbPill {
+  from {
+    opacity: 0;
+    translate: 0 -16px;
+    scale: 0.94;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .nb-logo {
+    animation: nbDrop 0.8s var(--nb-ease-out) 0.05s backwards;
+  }
+}
+@media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+  .nb-links {
+    animation: nbPill 0.9s var(--nb-ease-out) 0.15s backwards;
+  }
+  .nb-cta {
+    animation: nbDrop 0.8s var(--nb-ease-out) 0.3s backwards;
+  }
+}
+
 /* Mobile toggle */
 
 .nb-toggle {
@@ -305,6 +425,14 @@
 /* Mobile / tablet navigation */
 
 @media (max-width: 899px) {
+  .nb {
+    --nb-logo-h: 36px;
+  }
+
+  .nb-brand {
+    font-size: 1.05rem;
+  }
+
   .nb-toggle {
     display: inline-flex;
     align-items: center;
@@ -418,6 +546,7 @@
     position: static;
     z-index: auto;
     transform: none;
+    animation: none;
 
     display: flex;
     flex-direction: column;
@@ -431,6 +560,12 @@
     border: 0;
     border-radius: 0;
     box-shadow: none;
+  }
+
+  /* the sliding pill and the glare are laptop-only */
+  .nb-links li.nb-hl,
+  .nb-links::before {
+    display: none;
   }
 
   .nb-links li {
@@ -454,8 +589,8 @@
     color: var(--nb-fg);
   }
 
-  .nb-link.is-active::after {
-    display: none;
+  .nb-link:active {
+    transform: none;
   }
 
   .nb-link.is-active .nb-num {
@@ -483,7 +618,7 @@
     transition-delay: calc(0.35s + var(--i, 0) * 0.07s);
   }
 
-  /* Team and Contact appear as normal links on mobile */
+  /* Our Team appears as a normal link on mobile */
 
   .nb-dd-trigger {
     display: none;
@@ -547,6 +682,7 @@
     position: static;
     z-index: auto;
     flex-wrap: wrap;
+    animation: none;
 
     opacity: 0;
     transform: translateY(16px);
@@ -567,6 +703,13 @@
 
   .nb-btn {
     padding: 0.85rem 1.2rem;
+  }
+}
+
+/* Very small phones: logo only, so the Menu button always fits */
+@media (max-width: 360px) {
+  .nb-brand {
+    display: none;
   }
 }
 
