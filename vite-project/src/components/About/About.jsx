@@ -47,9 +47,7 @@ export default function About() {
       canvasRef.current,
     ].forEach((el) => el && observer.observe(el));
 
-    timelineRefs.current.forEach(
-      (el) => el && observer.observe(el),
-    );
+    timelineRefs.current.forEach((el) => el && observer.observe(el));
 
     return () => observer.disconnect();
   }, []);
@@ -64,8 +62,14 @@ export default function About() {
           </h2>
 
           <p className="about-lede">
-            A small studio shaping calm, considered software — from first
-            sketch to shipped product.
+            A small studio shaping calm, considered software — from first sketch
+            to shipped product.
+          </p>
+
+          <p className="about-founder">
+            Founded by <strong>Ogbunuko Kosisochukwu</strong>, GH Studios brings
+            together thoughtful design, engineering and technology to build
+            meaningful digital products.
           </p>
         </div>
 
@@ -74,9 +78,7 @@ export default function About() {
             <div className="who-we-are-card reveal" ref={cardRef}>
               <div className="who-we-are-header">
                 <p className="who-we-are-label">Who We Are</p>
-                <span className="who-we-are-badge">
-                  Studio · Est. 2024
-                </span>
+                <span className="who-we-are-badge">Studio · Est. 2024</span>
               </div>
 
               <ul className="who-we-are-list">
@@ -103,9 +105,7 @@ export default function About() {
             <div className="about-stats reveal" ref={statsRef}>
               {STATS.map((stat, index) => (
                 <div className="stat" key={stat.label}>
-                  <span className="stat-index">
-                    0{index + 1}
-                  </span>
+                  <span className="stat-index">0{index + 1}</span>
                   <span className="stat-num">{stat.num}</span>
                   <span className="stat-label">{stat.label}</span>
                 </div>
@@ -141,13 +141,9 @@ export default function About() {
                   <div className="timeline-dot-inner" />
                 </div>
 
-                <span className="timeline-year">
-                  {milestone.year}
-                </span>
+                <span className="timeline-year">{milestone.year}</span>
 
-                <span className="timeline-label">
-                  {milestone.label}
-                </span>
+                <span className="timeline-label">{milestone.label}</span>
               </div>
             ))}
           </div>

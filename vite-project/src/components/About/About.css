@@ -50,6 +50,20 @@
   margin: 0;
 }
 
+
+.about-founder {
+  margin: 1.25rem 0 0;
+  color: #777777;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  max-width: 52ch;
+}
+
+.about-founder strong {
+  color: #111111;
+  font-weight: 700;
+}
+
 /* ── Two columns: who we are + numbers | the live window ── */
 .about-grid {
   display: grid;

@@ -3,7 +3,6 @@ import { Routes, Route, useLocation } from "react-router-dom";
 
 import Navbar from "./components/Navbar/Navbar";
 import Hero from "./components/Hero/Hero";
-import Skills from "./components/Skills/Skills";
 import Loader from "./components/Loader/Loader";
 import GatedPage from "./utils/pageReady";
 import AdvancedScrollRestoration from "./components/AdvancedScrollRestoration";
@@ -38,14 +37,10 @@ const getData = (endpoint) =>
   fetch(`${API}/${endpoint}`).then((res) => res.json());
 
 
-function HomeSections({ profile, projects, skills, testimonials }) {
+function HomeSections({ profile, projects, testimonials }) {
   return (
     <>
       <Hero profile={profile} />
-
-      <LazySection>
-        <Skills skills={skills} />
-      </LazySection>
 
       <LazySection>
         <Suspense fallback={null}>
