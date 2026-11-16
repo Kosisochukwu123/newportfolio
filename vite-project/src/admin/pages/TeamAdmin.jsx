@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../utils/api"; // adjust path to match your admin folder structure
 import { useToast } from "../hooks/useToast";
 import Toast from "../components/Toast";
+import { clearCached } from "../../utils/Cache";
 
 const STATUS_LABEL = {
   invited: "Invite sent — awaiting response",
@@ -64,6 +65,7 @@ export default function TeamAdmin() {
   const approve = async (id) => {
     try {
       await api.put(`/team/admin/${id}/approve`);
+      clearCached("team");
       show("Member approved — now live");
       load();
     } catch (e) {
@@ -74,6 +76,7 @@ export default function TeamAdmin() {
   const reject = async (id) => {
     try {
       await api.put(`/team/admin/${id}/reject`);
+      clearCached("team");
       show("Submission rejected");
       load();
     } catch (e) {
@@ -85,6 +88,7 @@ export default function TeamAdmin() {
     if (!confirm("Delete this invite/member? This cannot be undone.")) return;
     try {
       await api.delete(`/team/admin/${id}`);
+      clearCached("team");
       show("Removed");
       load();
     } catch (e) {
@@ -137,6 +141,7 @@ export default function TeamAdmin() {
       // JSON.stringify-ing the FormData into "{}") and lets the
       // browser set the multipart boundary itself.
       await api.put(`/team/admin/${id}`, formData, true);
+      clearCached("team");
       show("Member updated");
       cancelEdit();
       load();

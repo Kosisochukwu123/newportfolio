@@ -1,3 +1,4 @@
+
 import Lenis from "lenis";
 
 let lenis = null;
@@ -9,6 +10,8 @@ export function initSmoothScroll() {
     autoRaf: true,
     smoothWheel: true,
     syncTouch: false,
+    wheelMultiplier: 1,
+    lerp: 0.12,
   });
 
   window.lenis = lenis;

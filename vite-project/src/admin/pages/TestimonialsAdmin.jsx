@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { api } from "../utils/api";
 import { useToast } from "../hooks/useToast";
 import Toast from "../components/Toast";
+import { clearCached } from "../../utils/Cache";
 
 const empty = { name: "", role: "", quote: "", published: true, photoFile: null };
 
@@ -34,6 +35,7 @@ export default function TestimonialsAdmin() {
       if (form.photoFile) fd.append("photo", form.photoFile);
 
       await api.post("/testimonials/admin", fd, true);
+      clearCached("testimonials");
       setForm(empty);
       await load();
       show("Testimonial added");
@@ -49,6 +51,7 @@ export default function TestimonialsAdmin() {
       const fd = new FormData();
       fd.append("published", String(!t.published));
       await api.put(`/testimonials/admin/${t._id}`, fd, true);
+      clearCached("testimonials");
       await load();
       show(t.published ? "Hidden from site" : "Now visible on site");
     } catch (e) {
@@ -60,6 +63,7 @@ export default function TestimonialsAdmin() {
     if (!confirm("Delete this testimonial?")) return;
     try {
       await api.delete(`/testimonials/admin/${id}`);
+      clearCached("testimonials");
       await load();
       show("Testimonial deleted");
     } catch (e) {

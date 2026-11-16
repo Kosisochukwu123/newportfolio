@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { usePageReady } from "../../utils/pageReady";
+import { fetchWithCache } from "../../utils/Cache";
 import "./Team.css";
+import { cachePublicImages } from "../../utils/offlineImages";
 
 const API = import.meta.env.VITE_API_URL || "/api";
 
@@ -12,22 +14,54 @@ export default function Team() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetch(`${API}/team`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.success) {
-          setMembers(d.data);
-        } else {
+    let cancelled = false;
+
+    const loadTeam = async () => {
+      try {
+        const result = await fetchWithCache(
+          "team",
+          async () => {
+            const response = await fetch(`${API}/team`);
+
+            if (!response.ok) {
+              throw new Error(`Failed to fetch team: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (!data?.success) {
+              throw new Error(data?.message || "Failed to load team");
+            }
+
+            return data;
+          },
+          24 * 60 * 60 * 1000,
+        );
+
+        if (!cancelled && result?.success) {
+          cachePublicImages(result.data || []);
+          setMembers(result.data || []);
+          setError(false);
+        }
+      } catch (error) {
+        console.error("[GH Studios] Failed to load team:", error);
+
+        if (!cancelled) {
           setError(true);
         }
-      })
-      .catch(() => {
-        setError(true);
-      })
-      .finally(() => {
-        setLoading(false);
-        notifyReady();
-      });
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+          notifyReady();
+        }
+      }
+    };
+
+    loadTeam();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (

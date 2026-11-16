@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { api } from "../utils/api";
 import { useToast } from "../hooks/useToast";
 import Toast from "../components/Toast";
+import { clearCached } from "../../utils/Cache";
 
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
@@ -115,7 +116,7 @@ export default function ProjectEditor() {
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
-
+      clearCached("projects");
       show("Project saved!");
       if (isNew) {
         setTimeout(() => {
@@ -160,6 +161,8 @@ export default function ProjectEditor() {
         order: form.faqs.length,
       });
 
+      clearCached("projects");
+
       set("faqs", res.data.data || []);
 
       setNewFaq({
@@ -192,6 +195,8 @@ export default function ProjectEditor() {
         answer: editFaq.answer,
       });
 
+      clearCached("projects");
+
       set("faqs", res.data.data || []);
 
       setEditFaq(null);
@@ -216,6 +221,8 @@ export default function ProjectEditor() {
 
     try {
       const res = await api.delete(`/projects/${id}/faqs/${faq._id}`);
+
+      clearCached("projects");
 
       set("faqs", res.data.data || []);
 

@@ -11,6 +11,8 @@ const Services = lazy(() => import("./components/Services/Services"));
 
 import SEO from "./components/SEO/SEO";
 
+import { cachePublicImages } from "./utils/offlineImages";
+
 import { fetchWithCache } from "./utils/Cache";
 import { initSmoothScroll, getLenis } from "./utils/smoothScroll";
 
@@ -33,9 +35,23 @@ const LightTransition = lazy(
 
 const API = import.meta.env.VITE_API_URL || "/api";
 
-const getData = (endpoint) =>
-  fetch(`${API}/${endpoint}`).then((res) => res.json());
+const PUBLIC_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
+const getData = async (endpoint) => {
+  const response = await fetch(`${API}/${endpoint}`);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${endpoint}: ${response.status}`);
+  }
+
+  const result = await response.json();
+
+  if (!result?.success) {
+    throw new Error(result?.message || `Failed to load ${endpoint}`);
+  }
+
+  return result;
+};
 
 function HomeSections({ profile, projects, testimonials }) {
   return (
@@ -80,7 +96,6 @@ function HomeSections({ profile, projects, testimonials }) {
     </>
   );
 }
-
 
 function ScrollToHash() {
   const location = useLocation();
@@ -165,9 +180,14 @@ export default function App() {
 
     const loadData = async (key, endpoint, setData) => {
       try {
-        const result = await fetchWithCache(key, () => getData(endpoint));
+        const result = await fetchWithCache(
+          key,
+          () => getData(endpoint),
+          PUBLIC_CACHE_TTL,
+        );
 
         if (!cancelled && result?.success) {
+          cachePublicImages(result.data);
           setData(result.data);
         }
       } catch (error) {

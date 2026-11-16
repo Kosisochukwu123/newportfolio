@@ -12,7 +12,7 @@ import "./ProjectsIntro.css";
 // dead scrolling before the next block starts moving.
 const HOLD_EDGE = 0.18; // laptop: 18% at each end
 const HOLD_EDGE_MOBILE = 0.05; // phones: 5%
-const FOLLOW = 0.14; // 0..1, lower = floatier
+const FOLLOW = 0.28; // 0..1, lower = floatier
 
 const smooth = (t) => t * t * (3 - 2 * t);
 
@@ -88,31 +88,38 @@ export default function Projects({ projects = [] }) {
     // The stage pins `stickyTop` px from the top of the screen, so progress
     // starts when the root reaches that offset.
     let stickyTop = 0;
+    let scrollable = 0;
     // How far (px) a waiting card sits below its resting spot: enough that
     // its top edge, shadow included, is past the bottom of the screen. Every
     // card therefore rises from the true bottom edge.
     let startOffset = 0;
     let edge = HOLD_EDGE;
     const measure = () => {
+      const root = rootRef.current;
       const stage = stageRef.current;
-      if (!stage) return;
+      if (!root || !stage) return;
+
       edge = window.matchMedia("(max-width: 760px)").matches
         ? HOLD_EDGE_MOBILE
         : HOLD_EDGE;
+
       stickyTop = parseFloat(getComputedStyle(stage).top) || 0;
       startOffset = window.innerHeight - stickyTop + 80;
+
+      // Cache section dimensions instead of reading them on every scroll.
+      scrollable = Math.max(0, root.offsetHeight - stage.offsetHeight);
     };
 
     const readTarget = () => {
       const root = rootRef.current;
-      const stage = stageRef.current;
-      if (!root || !stage) return 0;
-      const scrollable = root.offsetHeight - stage.offsetHeight;
+      if (!root) return 0;
+
       const scrolled = clamp(
         stickyTop - root.getBoundingClientRect().top,
         0,
         scrollable,
       );
+
       return scrollable > 0 ? (scrolled / scrollable) * (slides - 1) : 0;
     };
 
@@ -151,7 +158,7 @@ export default function Projects({ projects = [] }) {
     const tick = () => {
       const prev = current;
       current += (target - current) * FOLLOW;
-      if (Math.abs(target - current) < 0.001) current = target;
+      if (Math.abs(target - current) < 0.005) current = target;
       // Big jumps (anchor links, scrollbar drags) need a full pass so the
       // cards we skip over don't keep stale styles.
       paint(current, Math.abs(current - prev) > 0.8);

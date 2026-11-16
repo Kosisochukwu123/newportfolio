@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../utils/api";
 import { useToast } from "../hooks/useToast";
 import Toast from "../components/Toast";
+import { clearCached } from "../../utils/Cache";
 
 export default function ProjectsPage() {
   const { show, toast } = useToast();
@@ -29,9 +30,9 @@ export default function ProjectsPage() {
       fd.append("published", String(!p.published));
 
       await api.put(`/projects/${p._id}`, fd, true);
+      clearCached("projects");
 
       show(`Project ${!p.published ? "published" : "unpublished"}`);
-
       load();
     } catch (e) {
       show(e.message, "error");
@@ -43,6 +44,7 @@ export default function ProjectsPage() {
 
     try {
       await api.delete(`/projects/${id}`);
+      clearCached("projects");
 
       show("Project deleted");
 

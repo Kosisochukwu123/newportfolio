@@ -1,0 +1,81 @@
+/* SocialIcon.css — round logo buttons. On hover the button fills with the
+   platform's own colour (set per icon by SocialIcon.jsx) and lifts a little,
+   and the platform's name pops out above it. Works on dark backgrounds; for a
+   white background, change --si-line and --si-fg below. */
+.social-icon {
+  --si-line: rgba(255, 255, 255, 0.16);
+  --si-fg: #f4f4f2;
+  --si-bg: rgba(255, 255, 255, 0.06);
+
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--si-line);
+  border-radius: 50%;
+  background: var(--si-bg);
+  color: var(--si-fg);
+  font-size: 1.05rem;
+  text-decoration: none;
+  isolation: isolate;
+  transition:
+    color 0.25s,
+    border-color 0.25s,
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s;
+}
+/* the brand colour fills in from the middle */
+.social-icon::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--brand);
+  transform: scale(0);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.social-icon:hover,
+.social-icon:focus-visible {
+  color: var(--brand-ink);
+  border-color: transparent;
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px -12px rgba(0, 0, 0, 0.5);
+}
+.social-icon:hover::before,
+.social-icon:focus-visible::before {
+  transform: scale(1);
+}
+.social-icon:active {
+  transform: translateY(-1px) scale(0.94);
+}
+.social-icon:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+/* the name that pops out above the button */
+.social-icon-tip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  padding: 0.3rem 0.65rem;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111111;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.68rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 6px) scale(0.9);
+  transition:
+    opacity 0.2s,
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.social-icon:hover .social-icon-tip,
+.social-icon:focus-visible .social-icon-tip {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}

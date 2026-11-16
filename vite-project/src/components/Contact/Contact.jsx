@@ -1,6 +1,14 @@
-
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import {
+  FaEnvelope,
+  FaLocationDot,
+  FaClock,
+  FaBolt,
+  FaCheck,
+  FaCopy,
+} from "react-icons/fa6";
 import { usePageReady } from "../../utils/pageReady";
+import SocialIcon from "./SocialIcon"; // fix the path to where you put SocialIcon.jsx
 import "./Contact.css";
 
 const API = import.meta.env.VITE_API_URL || "/api";
@@ -9,52 +17,81 @@ const CAPTCHA_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 
 function generateCaptcha(length = 5) {
   let out = "";
-
   for (let i = 0; i < length; i++) {
-    out += CAPTCHA_CHARS[
-      Math.floor(Math.random() * CAPTCHA_CHARS.length)
-    ];
+    out += CAPTCHA_CHARS[Math.floor(Math.random() * CAPTCHA_CHARS.length)];
   }
-
   return out;
 }
 
-const HOW_FOUND_OPTIONS = [
-  "Google / Search Engine",
-  "Social Media",
-  "Referral",
-  "Friend / Colleague",
-  "Other",
+// the headline, one entry per word (accent = lime)
+const TITLE = [
+  { text: "Let\u2019s" },
+  { text: "build" },
+  { text: "something" },
+  { text: "together", accent: true },
 ];
+
+const EMPTY_FORM = { name: "", email: "", subject: "", message: "" };
+
+// "14:32" in the studio's time zone, or "" if the saved value is not a real time zone
+const timeIn = (timeZone) => {
+  if (!timeZone) return "";
+  try {
+    return new Intl.DateTimeFormat("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone,
+    }).format(new Date());
+  } catch {
+    return "";
+  }
+};
+
+// One input with a label that floats up when you type
+function Field({ id, label, textarea = false, ...props }) {
+  const Tag = textarea ? "textarea" : "input";
+  return (
+    <label className={`ct-field${textarea ? " is-area" : ""}`} htmlFor={id}>
+      <Tag id={id} placeholder=" " {...props} />
+      <span>{label}</span>
+      <i className="ct-field-bar" aria-hidden="true" />
+    </label>
+  );
+}
 
 export default function Contact({ profile = {} }) {
   const notifyReady = usePageReady();
+  const sectionRef = useRef(null);
+  const copyTimer = useRef(0);
 
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-    howFound: "",
-    referralCode: "",
-    referredBy: "",
-  });
-
-  const [status, setStatus] = useState(null);
-
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [status, setStatus] = useState(null); // null | sending | sent | error
   const [captcha, setCaptcha] = useState(() => generateCaptcha());
   const [captchaInput, setCaptchaInput] = useState("");
   const [captchaError, setCaptchaError] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [time, setTime] = useState(() => timeIn(profile.timezone));
 
   useEffect(() => {
     notifyReady();
   }, [notifyReady]);
+
+  // live clock for the studio's time zone
+  useEffect(() => {
+    const id = setInterval(() => setTime(timeIn(profile.timezone)), 30000);
+    return () => clearInterval(id);
+  }, [profile.timezone]);
+
+  useEffect(() => () => clearTimeout(copyTimer.current), []);
 
   const refreshCaptcha = () => {
     setCaptcha(generateCaptcha());
     setCaptchaInput("");
     setCaptchaError(false);
   };
+
+  const setField = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -72,25 +109,13 @@ export default function Contact({ profile = {} }) {
       const res = await fetch(`${API}/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(form), // name, email, subject, message
       });
-
       const data = await res.json();
-
       if (!data.success) throw new Error(data.message);
 
       setStatus("sent");
-
-      setForm({
-        name: "",
-        email: "",
-        subject: "",
-        message: "",
-        howFound: "",
-        referralCode: "",
-        referredBy: "",
-      });
-
+      setForm(EMPTY_FORM);
       refreshCaptcha();
     } catch {
       setStatus("error");
@@ -98,120 +123,163 @@ export default function Contact({ profile = {} }) {
     }
   };
 
-  const socials = Array.isArray(profile.socials)
-    ? profile.socials
-    : [];
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(profile.email);
+      setCopied(true);
+      clearTimeout(copyTimer.current);
+      copyTimer.current = setTimeout(() => setCopied(false), 1800);
+    } catch {
+      /* clipboard not available: the mailto link still works */
+    }
+  };
 
-  const contactDetails = [
-    { key: "Email", val: profile.email || "Email not provided" },
-    { key: "Location", val: profile.location || "Location not provided" },
-    { key: "Timezone", val: profile.timezone || "Timezone not provided" },
-    { key: "Response", val: "Within 24 hours" },
-  ];
+  // a soft light follows the cursor over the page (CSS variables, no re-render)
+  const onMove = (e) => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty("--sx", `${e.clientX - r.left}px`);
+    el.style.setProperty("--sy", `${e.clientY - r.top}px`);
+  };
+
+  const socials = Array.isArray(profile.socials)
+    ? profile.socials.filter((s) => s.url || s.href)
+    : [];
+  const available = profile.availableForWork !== false;
+
+  // only rows that have a value are shown
+  const methods = [
+    profile.email && { key: "email", Icon: FaEnvelope, label: "Email", value: profile.email, copy: true },
+    profile.location && { key: "loc", Icon: FaLocationDot, label: "Location", value: profile.location, ping: true },
+    (profile.timezone || time) && {
+      key: "time",
+      Icon: FaClock,
+      label: "Local time",
+      value: time ? `${time}${profile.timezone ? ` · ${profile.timezone}` : ""}` : profile.timezone,
+    },
+    { key: "resp", Icon: FaBolt, label: "Response", value: "Within 24 hours" },
+  ].filter(Boolean);
 
   return (
-    <section id="contact" className="contact-section">
-      <div className="container">
-        <div className="contact-inner">
-          <div className="contact-text">
-            <h2 className="section-title">
-              Let's build something <span className="accent">together</span>
-            </h2>
+    <section id="contact" className="contact-section ct" ref={sectionRef} onMouseMove={onMove}>
+      {/* background: drifting glows, a dot grid and a light that follows the cursor */}
+      <div className="ct-bg" aria-hidden="true">
+        <span className="ct-blob ct-blob1" />
+        <span className="ct-blob ct-blob2" />
+        <span className="ct-blob ct-blob3" />
+        <span className="ct-dots" />
+        <span className="ct-spot" />
+      </div>
 
-            <p>
-              Whether you have a project in mind, need a full-stack developer to
-              join your team, or just want to talk tech— my inbox is open.
-            </p>
+      <div className="container ct-inner">
+        {/* ---------- left: who, where, how to reach us ---------- */}
+        <div className="ct-left">
+          <p className={`ct-status ct-rise${available ? "" : " is-off"}`} style={{ "--d": 0 }}>
+            <span className="ct-dot" aria-hidden="true" />
+            {available ? "Open to new projects" : "Not available right now"}
+          </p>
 
-            <div className="contact-form-card">
-              <div className="contact-form-logo">
-                <img src="/GHStudios-logo-preview.png" alt="GH Studios" />
+          <h1 className="ct-title" aria-label={TITLE.map((w) => w.text).join(" ")}>
+            {TITLE.map((w, i) => (
+              <span className="ct-word" key={w.text} aria-hidden="true">
+                <span className={`ct-word-in${w.accent ? " is-accent" : ""}`} style={{ "--w": i }}>
+                  {w.text}
+                </span>
+              </span>
+            ))}
+          </h1>
+
+          <p className="ct-lede ct-rise" style={{ "--d": 4 }}>
+            Whether you have a project in mind, need a team to build it, or just want to talk
+            tech, our inbox is open.
+          </p>
+
+          <ul className="ct-methods">
+            {methods.map(({ key, Icon, label, value, copy, ping }, i) => (
+              <li className="ct-method ct-rise" key={key} style={{ "--d": 5 + i }}>
+                <span className={`ct-method-icon${ping ? " has-ping" : ""}`}>
+                  <Icon aria-hidden="true" />
+                </span>
+                <span className="ct-method-text">
+                  <span className="ct-method-label">{label}</span>
+                  {copy ? (
+                    <a className="ct-method-value is-link" href={`mailto:${value}`}>
+                      {value}
+                    </a>
+                  ) : (
+                    <span className="ct-method-value">{value}</span>
+                  )}
+                </span>
+                {copy && (
+                  <button
+                    type="button"
+                    className={`ct-copy${copied ? " is-done" : ""}`}
+                    onClick={copyEmail}
+                    aria-label="Copy email address"
+                  >
+                    {copied ? <FaCheck aria-hidden="true" /> : <FaCopy aria-hidden="true" />}
+                    <span>{copied ? "Copied" : "Copy"}</span>
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+
+          {socials.length > 0 && (
+            <div className="ct-socials ct-rise" style={{ "--d": 9 }}>
+              <p className="ct-socials-label">Find us online</p>
+              <div className="ct-socials-row">
+                {socials.map((s, i) => (
+                  <SocialIcon key={`${s.label}-${i}`} social={s} />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ---------- right: the form ---------- */}
+        <div className="ct-card ct-rise ct-card-in" style={{ "--d": 3 }}>
+          <span className="ct-card-shine" aria-hidden="true" />
+
+          {status === "sent" ? (
+            <div className="ct-sent" role="status">
+              <svg className="ct-check" viewBox="0 0 52 52" aria-hidden="true">
+                <circle cx="26" cy="26" r="24" />
+                <path d="M15 27l8 8 15-17" />
+              </svg>
+              <h2>Message sent</h2>
+              <p>Thank you. We&rsquo;ll get back to you within 24 hours.</p>
+              <button type="button" className="ct-again" onClick={() => setStatus(null)}>
+                Send another message
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="ct-card-head">
+                <span className="ct-card-logo">
+                  <img src="/GHStudios-logo-preview.png" alt="" />
+                </span>
+                <div>
+                  <h2>Tell us about your project</h2>
+                  <p>We read every message and reply within 24 hours.</p>
+                </div>
               </div>
 
-              <form className="contact-form" onSubmit={handleSubmit}>
-                <div className="contact-form-row">
-                  <input
-                    className="contact-input"
-                    placeholder="Your name"
-                    value={form.name}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, name: e.target.value }))
-                    }
-                    required
-                  />
-
-                  <input
-                    className="contact-input"
-                    type="email"
-                    placeholder="Your email"
-                    value={form.email}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, email: e.target.value }))
-                    }
-                    required
-                  />
+              <form className="ct-form" onSubmit={handleSubmit}>
+                <div className="ct-row">
+                  <Field id="ct-name" label="Your name" value={form.name} onChange={setField("name")} required autoComplete="name" />
+                  <Field id="ct-email" label="Your email" type="email" value={form.email} onChange={setField("email")} required autoComplete="email" />
                 </div>
 
-                <input
-                  className="contact-input"
-                  placeholder="Subject"
-                  value={form.subject}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, subject: e.target.value }))
-                  }
-                />
+                <Field id="ct-subject" label="Subject" value={form.subject} onChange={setField("subject")} />
 
-                <textarea
-                  className="contact-input contact-textarea"
-                  placeholder="Your message..."
-                  value={form.message}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, message: e.target.value }))
-                  }
-                  required
-                />
+                <Field id="ct-message" label="Your message" textarea rows={5} value={form.message} onChange={setField("message")} required />
 
-                <p className="form-section-label">Optional</p>
-
-                <select
-                  className="contact-input contact-select"
-                  value={form.howFound}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, howFound: e.target.value }))
-                  }
-                >
-                  <option value="">How did you find us?</option>
-
-                  {HOW_FOUND_OPTIONS.map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-
-                <div className="contact-form-row">
-                  <input
-                    className="contact-input"
-                    placeholder="Referral code (optional)"
-                    value={form.referralCode}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, referralCode: e.target.value }))
-                    }
-                  />
-
-                  <input
-                    className="contact-input"
-                    placeholder="Referred by (optional)"
-                    value={form.referredBy}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, referredBy: e.target.value }))
-                    }
-                  />
-                </div>
-
-                <div className="captcha-wrap">
-                  <div className="captcha-box">
-                    <div className="captcha-code" aria-hidden="true">
+                {/* human check */}
+                <div className="ct-captcha">
+                  <div className="ct-captcha-box">
+                    <div className="ct-captcha-code" aria-hidden="true">
                       {captcha.split("").map((ch, i) => (
                         <span
                           key={i}
@@ -223,97 +291,52 @@ export default function Contact({ profile = {} }) {
                         </span>
                       ))}
                     </div>
-
-                    <button
-                      type="button"
-                      className="captcha-refresh"
-                      onClick={refreshCaptcha}
-                      aria-label="Get a new code"
-                      title="Get a new code"
-                    >
+                    <button type="button" className="ct-captcha-refresh" onClick={refreshCaptcha} aria-label="Get a new code" title="Get a new code">
                       ⟳
                     </button>
                   </div>
 
-                  <input
-                    className="contact-input"
-                    placeholder="Enter the code above"
+                  <Field
+                    id="ct-captcha"
+                    label="Enter the code above"
                     value={captchaInput}
                     onChange={(e) => {
                       setCaptchaInput(e.target.value);
                       setCaptchaError(false);
                     }}
                     required
+                    autoComplete="off"
                   />
-
-                  {captchaError && (
-                    <p className="form-error">
-                      That code didn't match — try the new one.
-                    </p>
-                  )}
+                  {captchaError && <p className="ct-error">That code didn&rsquo;t match. Try the new one.</p>}
                 </div>
 
-                <button
-                  type="submit"
-                  className="btn btn-primary contact-btn"
-                  disabled={status === "sending"}
-                >
-                  {status === "sending" ? "Sending…" : "Send Message →"}
+                <button type="submit" className={`ct-submit${status === "sending" ? " is-sending" : ""}`} disabled={status === "sending"}>
+                  {status === "sending" ? (
+                    <>
+                      <span className="ct-spinner" aria-hidden="true" /> Sending…
+                    </>
+                  ) : (
+                    <>
+                      Send message <span className="ct-submit-arrow" aria-hidden="true">→</span>
+                    </>
+                  )}
                 </button>
 
-                {status === "sent" && (
-                  <p className="form-success">
-                    ✓ Message sent! I'll get back to you soon.
-                  </p>
-                )}
-
                 {status === "error" && (
-                  <p className="form-error">
-                    Something went wrong. Try emailing directly.
+                  <p className="ct-error" role="alert">
+                    Something went wrong.{" "}
+                    {profile.email ? (
+                      <>
+                        Try emailing <a href={`mailto:${profile.email}`}>{profile.email}</a> directly.
+                      </>
+                    ) : (
+                      "Please try again."
+                    )}
                   </p>
                 )}
               </form>
-            </div>
-
-            <div className="social-links">
-              {socials.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="social-link"
-                >
-                  {s.label} ↗
-                </a>
-              ))}
-            </div>
-          </div>
-
-          <div className="contact-card">
-            <p className="contact-card-label">Current availability</p>
-
-            <div
-              className={`availability-badge ${
-                profile.availableForWork === false ? "unavailable" : ""
-              }`}
-            >
-              <span className="pulse-dot" />
-
-              {profile.availableForWork === false
-                ? "Not available right now"
-                : "Open to opportunities"}
-            </div>
-
-            <div className="contact-details">
-              {contactDetails.map(({ key, val }) => (
-                <div className="contact-detail" key={key}>
-                  <span className="detail-key">{key}</span>
-                  <span className="detail-val">{val}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+            </>
+          )}
         </div>
       </div>
     </section>

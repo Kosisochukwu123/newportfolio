@@ -97,3 +97,40 @@ for (const page of PAGES) {
 
   console.log(`Generated ${outputFile}`);
 }
+
+
+// Generate a list of files for the service worker to cache offline.
+function getBuildFiles(directory, base = "") {
+  return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const relativePath = path.posix.join(base, entry.name);
+    const fullPath = path.join(directory, entry.name);
+
+    if (entry.isDirectory()) {
+      return getBuildFiles(fullPath, relativePath);
+    }
+
+    // Don't precache the large hero video.
+    if (relativePath === "hero-video.mp4") {
+      return [];
+    }
+
+    // The service worker and manifest don't need to cache themselves.
+    if (
+      relativePath === "sw.js" ||
+      relativePath === "precache-manifest.json"
+    ) {
+      return [];
+    }
+
+    return [`/${relativePath}`];
+  });
+}
+
+const precacheFiles = getBuildFiles(DIST_DIR);
+
+fs.writeFileSync(
+  path.join(DIST_DIR, "precache-manifest.json"),
+  JSON.stringify(precacheFiles, null, 2),
+);
+
+console.log(`Generated offline manifest with ${precacheFiles.length} files.`);
