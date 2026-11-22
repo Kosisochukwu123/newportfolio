@@ -189,3 +189,82 @@
 
     pointer-events:none;
 }
+
+
+
+
+/* TEAM SKELETON LOADER */
+
+.team-grid-skeleton {
+  pointer-events: none;
+}
+
+.team-skeleton-card {
+  transform: none !important;
+}
+
+.team-skeleton-image {
+  background: var(--bg-elevated);
+  overflow: hidden;
+}
+
+.skeleton-shimmer {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    var(--bg-elevated) 20%,
+    rgba(255, 255, 255, 0.09) 40%,
+    rgba(255, 255, 255, 0.09) 50%,
+    var(--bg-elevated) 65%
+  );
+  background-size: 200% 100%;
+  animation: teamSkeletonShimmer 1.5s ease-in-out infinite;
+}
+
+.team-skeleton-name {
+  height: 24px;
+  width: 70%;
+  overflow: hidden;
+  background: var(--bg-elevated);
+  border-radius: 3px;
+  margin-bottom: 12px;
+}
+
+.team-skeleton-role {
+  height: 11px;
+  width: 45%;
+  overflow: hidden;
+  background: var(--bg-elevated);
+  border-radius: 3px;
+  margin-bottom: 18px;
+}
+
+.team-skeleton-bio {
+  height: 10px;
+  width: 90%;
+  overflow: hidden;
+  background: var(--bg-elevated);
+  border-radius: 3px;
+  margin-bottom: 9px;
+}
+
+.team-skeleton-bio.short {
+  width: 60%;
+}
+
+@keyframes teamSkeletonShimmer {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer {
+    animation: none;
+  }
+}

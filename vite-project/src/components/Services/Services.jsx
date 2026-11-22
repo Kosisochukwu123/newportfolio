@@ -181,7 +181,7 @@ export default function Services() {
   }, []);
 
   return (
-    <section id="services" className="sv" aria-labelledby="services-title">
+    <section id="skills" className="sv" aria-labelledby="services-title">
       {/* pinned headline: the words come in as you scroll */}
       <div className="sv-intro" ref={introRef}>
         <div className="sv-stage">

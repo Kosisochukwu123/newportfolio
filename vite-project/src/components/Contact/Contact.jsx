@@ -8,7 +8,7 @@ import {
   FaCopy,
 } from "react-icons/fa6";
 import { usePageReady } from "../../utils/pageReady";
-import SocialIcon from "./SocialIcon"; // fix the path to where you put SocialIcon.jsx
+import SocialIcon from "./SocialIcon.jsx"; // fix the path to where you put SocialIcon.jsx
 import "./Contact.css";
 
 const API = import.meta.env.VITE_API_URL || "/api";
