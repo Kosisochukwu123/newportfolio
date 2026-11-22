@@ -1,6 +1,5 @@
-/* Navbar.css — GH Studios floating glass navbar */
+/* Navbar.css — GH Studios floating glass navbar (Light version) */
 
-/* These let the glare follow the cursor with a slight lag (see .nb-links). */
 @property --mx {
   syntax: "<length>";
   inherits: true;
@@ -13,15 +12,15 @@
 }
 
 .nb {
-  --nb-fg: #f4f4f2;
-  --nb-dim: rgba(244, 244, 242, 0.62);
-  --nb-line: rgba(244, 244, 242, 0.32);
-  --nb-bg: #000;
-  --nb-accent: #f4f4f2;
+  --nb-fg: #111111;
+  --nb-dim: rgba(17, 17, 17, 0.55);
+  --nb-line: rgba(17, 17, 17, 0.12);
+  --nb-bg: #ffffff;
+  --nb-accent: #111111;
   --nb-ease: cubic-bezier(0.76, 0, 0.24, 1);
   --nb-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --nb-spring: cubic-bezier(0.34, 1.2, 0.64, 1); /* a touch of overshoot */
-  --nb-logo-h: 50px; /* LOGO SIZE on laptop (it eases down a little on scroll) */
+  --nb-spring: cubic-bezier(0.34, 1.2, 0.64, 1);
+  --nb-logo-h: 50px;
 
   position: fixed;
   top: 0;
@@ -29,8 +28,7 @@
   right: 0;
   z-index: 900;
   box-sizing: border-box;
-  padding: calc(26px - 12px * var(--scroll-progress, 0))
-    clamp(16px, 3vw, 40px);
+  padding: calc(26px - 12px * var(--scroll-progress, 0)) clamp(16px, 3vw, 40px);
   background: transparent;
   color: var(--nb-fg);
   font-size: 0.7rem;
@@ -75,7 +73,6 @@
 }
 
 .nb-links {
-  /* set by the script: where the sliding pill is, and where the glare is */
   --hl-x: 0px;
   --hl-w: 0px;
   --hl-o: 0;
@@ -89,22 +86,21 @@
   align-items: center;
   gap: calc(26px - 6px * var(--scroll-progress, 0));
   margin: 0;
-  /* the pill tightens a little as you scroll */
   padding: calc(9px - 2px * var(--scroll-progress, 0))
     calc(28px - 6px * var(--scroll-progress, 0));
   list-style: none;
 
-  background: rgba(255, 255, 255, 0.07);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  backdrop-filter: blur(18px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 999px;
 
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    0 8px 32px rgba(0, 0, 0, 0.28);
+    0 4px 24px rgba(0, 0, 0, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
 
-  /* the glare trails the cursor a fraction late: that lag is what reads as glass */
   transition:
     --mx 0.22s ease-out,
     --my 0.22s ease-out;
@@ -120,7 +116,7 @@
   pointer-events: none;
   background: radial-gradient(
     140px circle at var(--mx) var(--my),
-    rgba(255, 255, 255, 0.18),
+    rgba(255, 255, 255, 0.55),
     transparent 70%
   );
   opacity: 0;
@@ -144,10 +140,10 @@
   left: 0;
   width: var(--hl-w);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.13);
+  background: rgba(0, 0, 0, 0.06);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    0 4px 14px rgba(0, 0, 0, 0.18);
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 2px 8px rgba(0, 0, 0, 0.06);
   opacity: var(--hl-o);
   transform: translate3d(var(--hl-x), 0, 0);
   pointer-events: none;
@@ -180,7 +176,6 @@
   color: var(--nb-fg);
 }
 
-/* a small press-in when you click */
 .nb-link:active {
   transform: scale(0.94);
 }
@@ -197,7 +192,7 @@
 .nb-num {
   margin-right: 0.55em;
   font-size: 0.85em;
-  opacity: 0.45;
+  opacity: 0.4;
 }
 
 /* Connect dropdown */
@@ -217,7 +212,7 @@
   transform: translateY(1px) rotate(225deg);
 }
 
-/* Desktop dropdown panel (one link) */
+/* Desktop dropdown panel */
 
 .nb-dd-menu {
   position: absolute;
@@ -229,16 +224,17 @@
   padding: 10px;
   list-style: none;
 
-  background: rgba(14, 14, 14, 0.88);
-  -webkit-backdrop-filter: blur(22px) saturate(160%);
-  backdrop-filter: blur(22px) saturate(160%);
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
 
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 18px;
 
   box-shadow:
-    0 18px 45px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 18px 40px rgba(0, 0, 0, 0.08),
+    0 4px 12px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 
   opacity: 0;
   visibility: hidden;
@@ -279,7 +275,7 @@
   font-weight: 400;
   letter-spacing: 0;
   text-transform: none;
-  color: rgba(244, 244, 242, 0.78);
+  color: rgba(17, 17, 17, 0.7);
 
   transition:
     background 0.25s,
@@ -288,13 +284,13 @@
 }
 
 .nb-dd-menu .nb-link:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: #fff;
+  background: rgba(0, 0, 0, 0.04);
+  color: #111;
   padding-left: 18px;
 }
 
 .nb-dd-menu .nb-link.is-active {
-  color: #fff;
+  color: #111;
 }
 
 .nb-dd-menu .nb-num {
@@ -303,7 +299,7 @@
   margin-right: 10px;
   font-size: 0.7rem;
   color: var(--nb-accent);
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 /* CTA */
@@ -372,8 +368,7 @@
   display: none;
 }
 
-/* Mid-size laptops: shorter button text and a slightly tighter pill, so the
-   pill and the button never touch */
+/* Mid-size laptops */
 @media (min-width: 900px) and (max-width: 1180px) {
   .nb-btn-long {
     display: none;
@@ -388,7 +383,7 @@
   }
 }
 
-/* Page-load entrance: the logo, pill and button drop in one after another */
+/* Page-load entrance */
 @keyframes nbDrop {
   from {
     opacity: 0;
@@ -455,8 +450,6 @@
     outline-offset: 4px;
   }
 
-  /* Menu / Close label */
-
   .nb-toggle-label {
     display: inline-flex;
     flex-direction: column;
@@ -473,8 +466,6 @@
   .nb.is-open .nb-toggle-label span {
     transform: translateY(-100%);
   }
-
-  /* Hamburger to X */
 
   .nb-toggle-lines {
     position: relative;
@@ -562,14 +553,13 @@
     box-shadow: none;
   }
 
-  /* the sliding pill and the glare are laptop-only */
   .nb-links li.nb-hl,
   .nb-links::before {
     display: none;
   }
 
   .nb-links li {
-    border-bottom: 1px solid rgba(244, 244, 242, 0.1);
+    border-bottom: 1px solid rgba(17, 17, 17, 0.08);
     overflow: hidden;
   }
 
@@ -604,8 +594,6 @@
     vertical-align: middle;
   }
 
-  /* Staggered text reveal */
-
   .nb-link-text {
     display: block;
     transform: translateY(115%);
@@ -617,8 +605,6 @@
     transition: transform 0.9s var(--nb-ease-out);
     transition-delay: calc(0.35s + var(--i, 0) * 0.07s);
   }
-
-  /* Our Team appears as a normal link on mobile */
 
   .nb-dd-trigger {
     display: none;
@@ -645,7 +631,7 @@
   }
 
   .nb-dd-menu li {
-    border-top: 1px solid rgba(244, 244, 242, 0.1);
+    border-top: 1px solid rgba(17, 17, 17, 0.08);
     overflow: hidden;
     border-radius: 0;
   }
@@ -676,8 +662,6 @@
     font-size: 0.7rem;
   }
 
-  /* Mobile CTA */
-
   .nb-cta {
     position: static;
     z-index: auto;
@@ -706,7 +690,7 @@
   }
 }
 
-/* Very small phones: logo only, so the Menu button always fits */
+/* Very small phones */
 @media (max-width: 360px) {
   .nb-brand {
     display: none;

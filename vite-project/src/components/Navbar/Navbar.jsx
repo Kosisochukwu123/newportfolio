@@ -3,8 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import "./Navbar.css";
 
 const sectionLinks = [
-  { name: "Projects", id: "cases" },
   { name: "Skills", id: "skills" },
+  { name: "Projects", id: "cases" },
   { name: "Testimonials", id: "testimonials" },
   { name: "About", id: "about" },
 ];

@@ -22,7 +22,10 @@ const WORDS = HEADLINE.reduce(
       ch,
       i: acc.n + k,
     }));
-    return { n: acc.n + letters.length, list: [...acc.list, { ...w, letters }] };
+    return {
+      n: acc.n + letters.length,
+      list: [...acc.list, { ...w, letters }],
+    };
   },
   { n: 0, list: [] },
 ).list;
@@ -93,7 +96,9 @@ function TestimonialCard({ t, i }) {
 // theme: "light" (default, continues from the light transition) or "dark"
 export default function Testimonials({ testimonials = [], theme = "light" }) {
   const [page, setPage] = useState(0);
-  const [headRef, headIn] = useInView(0.35);
+  // low threshold: the header must reveal even when only its top edge has come into view
+  // (on a phone the old 35% could be missed during a fast scroll)
+  const [headRef, headIn] = useInView(0.1);
   const isMobile = useMediaQuery("(max-width: 860px)");
 
   if (testimonials.length === 0) return null;
@@ -118,7 +123,11 @@ export default function Testimonials({ testimonials = [], theme = "light" }) {
             <p className="tm-kicker">{KICKER}</p>
             <h2 className="tm-title" aria-label={HEADLINE_LABEL}>
               {WORDS.map((w) => (
-                <span className={`tm-word tm-${w.tone}`} key={w.text} aria-hidden="true">
+                <span
+                  className={`tm-word tm-${w.tone}`}
+                  key={w.text}
+                  aria-hidden="true"
+                >
                   {w.letters.map(({ ch, i }) => (
                     <span className="tm-letter" key={i} style={{ "--l": i }}>
                       {ch}

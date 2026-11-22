@@ -47,16 +47,18 @@
 /* ---------- stage: headline in the middle, cards around it ---------- */
 .tm-stage {
   position: relative;
-  min-height: 700px;
+  min-height: 660px;
   display: grid;
-  place-items: center;
+  /* the header sits at the TOP of the stage (it used to be centred, which put it
+     about 350px down the page, far from where the transition ends) */
+  place-items: start center;
 }
 
 .tm-head {
   position: relative;
   z-index: 1;
   max-width: 620px;
-  padding: 0 12px;
+  padding: clamp(0.5rem, 3vh, 2rem) 12px 0;
   text-align: center;
 }
 

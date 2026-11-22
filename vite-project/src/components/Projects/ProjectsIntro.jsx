@@ -23,8 +23,24 @@ const PANTS = "#6a2f34";
 function Teddy() {
   const limb = (x1, y1, x2, y2, color, w) => (
     <>
-      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={LINE} strokeWidth={w + 5} strokeLinecap="round" />
-      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth={w} strokeLinecap="round" />
+      <line
+        x1={x1}
+        y1={y1}
+        x2={x2}
+        y2={y2}
+        stroke={LINE}
+        strokeWidth={w + 5}
+        strokeLinecap="round"
+      />
+      <line
+        x1={x1}
+        y1={y1}
+        x2={x2}
+        y2={y2}
+        stroke={color}
+        strokeWidth={w}
+        strokeLinecap="round"
+      />
     </>
   );
 
@@ -39,12 +55,35 @@ function Teddy() {
         {/* legs and feet */}
         {limb(86, 196, 86, 228, PANTS, 19)}
         {limb(114, 196, 114, 228, PANTS, 19)}
-        <ellipse cx="80" cy="238" rx="16" ry="9" fill={FUR} stroke={LINE} strokeWidth="2.5" />
-        <ellipse cx="120" cy="238" rx="16" ry="9" fill={FUR} stroke={LINE} strokeWidth="2.5" />
+        <ellipse
+          cx="80"
+          cy="238"
+          rx="16"
+          ry="9"
+          fill={FUR}
+          stroke={LINE}
+          strokeWidth="2.5"
+        />
+        <ellipse
+          cx="120"
+          cy="238"
+          rx="16"
+          ry="9"
+          fill={FUR}
+          stroke={LINE}
+          strokeWidth="2.5"
+        />
 
         {/* resting arm */}
         {limb(72, 130, 60, 172, FUR, 15)}
-        <circle cx="59" cy="176" r="9" fill={FUR} stroke={LINE} strokeWidth="2.5" />
+        <circle
+          cx="59"
+          cy="176"
+          r="9"
+          fill={FUR}
+          stroke={LINE}
+          strokeWidth="2.5"
+        />
 
         {/* striped shirt */}
         <clipPath id="pi-teddy-clip">
@@ -57,28 +96,93 @@ function Teddy() {
           <rect x="60" y="172" width="80" height="10" fill={STRIPE} />
           <rect x="60" y="190" width="80" height="16" fill={PANTS} />
         </g>
-        <rect x="64" y="108" width="72" height="94" rx="26" fill="none" stroke={LINE} strokeWidth="2.5" />
+        <rect
+          x="64"
+          y="108"
+          width="72"
+          height="94"
+          rx="26"
+          fill="none"
+          stroke={LINE}
+          strokeWidth="2.5"
+        />
 
         {/* waving arm: swings from the shoulder */}
         <g className="tw-arm">
           {limb(130, 128, 162, 84, FUR, 15)}
-          <circle cx="164" cy="80" r="10" fill={FUR} stroke={LINE} strokeWidth="2.5" />
+          <circle
+            cx="164"
+            cy="80"
+            r="10"
+            fill={FUR}
+            stroke={LINE}
+            strokeWidth="2.5"
+          />
         </g>
 
         {/* head */}
         <g className="tw-head">
-          <circle cx="64" cy="38" r="15" fill={FUR} stroke={LINE} strokeWidth="2.5" />
-          <circle cx="136" cy="38" r="15" fill={FUR} stroke={LINE} strokeWidth="2.5" />
+          <circle
+            cx="64"
+            cy="38"
+            r="15"
+            fill={FUR}
+            stroke={LINE}
+            strokeWidth="2.5"
+          />
+          <circle
+            cx="136"
+            cy="38"
+            r="15"
+            fill={FUR}
+            stroke={LINE}
+            strokeWidth="2.5"
+          />
           <circle cx="64" cy="38" r="8" fill={SNOUT} />
           <circle cx="136" cy="38" r="8" fill={SNOUT} />
-          <circle cx="100" cy="72" r="42" fill={FUR} stroke={LINE} strokeWidth="2.5" />
+          <circle
+            cx="100"
+            cy="72"
+            r="42"
+            fill={FUR}
+            stroke={LINE}
+            strokeWidth="2.5"
+          />
           <circle cx="76" cy="84" r="6" fill="#f19a8f" opacity="0.55" />
           <circle cx="124" cy="84" r="6" fill="#f19a8f" opacity="0.55" />
-          <ellipse className="tw-eye" cx="84" cy="66" rx="4.5" ry="5.5" fill={LINE} />
-          <ellipse className="tw-eye" cx="116" cy="66" rx="4.5" ry="5.5" fill={LINE} />
-          <ellipse cx="100" cy="86" rx="19" ry="14" fill={SNOUT} stroke={LINE} strokeWidth="2.5" />
+          <ellipse
+            className="tw-eye"
+            cx="84"
+            cy="66"
+            rx="4.5"
+            ry="5.5"
+            fill={LINE}
+          />
+          <ellipse
+            className="tw-eye"
+            cx="116"
+            cy="66"
+            rx="4.5"
+            ry="5.5"
+            fill={LINE}
+          />
+          <ellipse
+            cx="100"
+            cy="86"
+            rx="19"
+            ry="14"
+            fill={SNOUT}
+            stroke={LINE}
+            strokeWidth="2.5"
+          />
           <ellipse cx="100" cy="80" rx="7" ry="5" fill={LINE} />
-          <path d="M100 85 V90 M92 90 Q100 98 108 90" fill="none" stroke={LINE} strokeWidth="2.5" strokeLinecap="round" />
+          <path
+            d="M100 85 V90 M92 90 Q100 98 108 90"
+            fill="none"
+            stroke={LINE}
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          />
         </g>
       </g>
     </svg>
@@ -108,7 +212,10 @@ export default function ProjectsIntro({ cardRef }) {
         </p>
       </div>
 
-      <h2 className="pi-title" aria-label={LINES.map((l) => l.join(" ")).join(" ")}>
+      <h2
+        className="pi-title"
+        aria-label={LINES.map((l) => l.join(" ")).join(" ")}
+      >
         {NUMBERED.map((line, li) => (
           <span className="pi-line" key={li} aria-hidden="true">
             {line.map(({ word, i }) => (
