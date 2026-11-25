@@ -501,3 +501,154 @@
     margin-top: 1rem;
   }
 }
+
+/* =========================================
+   PROJECT SKELETON LOADING
+========================================= */
+
+.ps-skeleton-card {
+  pointer-events: none;
+}
+
+.ps-skeleton-visual {
+  background: #111;
+  overflow: hidden;
+}
+
+.ps-skeleton-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    #111 8%,
+    #202020 18%,
+    #111 33%
+  );
+  background-size: 200% 100%;
+  animation: ps-skeleton-loading 1.5s linear infinite;
+}
+
+.ps-skeleton-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 12px;
+}
+
+.ps-skeleton-line,
+.ps-skeleton-button {
+  position: relative;
+  overflow: hidden;
+  background: #191919;
+  border-radius: 3px;
+}
+
+.ps-skeleton-line::after,
+.ps-skeleton-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.07),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: ps-skeleton-shine 1.5s ease-in-out infinite;
+}
+
+.ps-skeleton-eyebrow {
+  width: 90px;
+  height: 10px;
+  margin-bottom: 22px;
+}
+
+.ps-skeleton-title {
+  width: 85%;
+  height: clamp(24px, 3vw, 42px);
+  margin-bottom: 10px;
+}
+
+.ps-skeleton-title-short {
+  width: 58%;
+}
+
+.ps-skeleton-description {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.ps-skeleton-description .ps-skeleton-line {
+  width: 95%;
+  height: 10px;
+}
+
+.ps-skeleton-description .ps-skeleton-description-short {
+  width: 65%;
+}
+
+.ps-skeleton-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.ps-skeleton-button {
+  width: 120px;
+  height: 44px;
+}
+
+.ps-skeleton-button-short {
+  width: 90px;
+}
+
+@keyframes ps-skeleton-loading {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@keyframes ps-skeleton-shine {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (max-width: 760px) {
+  .ps-skeleton-info {
+    padding: 0 4px;
+    margin-top: -4rem;
+  }
+
+  .ps-skeleton-eyebrow {
+    margin-bottom: 12px;
+  }
+
+  .ps-skeleton-description {
+    margin-top: 10px;
+  }
+
+  .ps-skeleton-actions {
+    margin-top: 16px;
+  }
+
+  .ps-skeleton-button {
+    height: 38px;
+    width: 100px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ps-skeleton-shimmer,
+  .ps-skeleton-line::after,
+  .ps-skeleton-button::after {
+    animation: none;
+  }
+}

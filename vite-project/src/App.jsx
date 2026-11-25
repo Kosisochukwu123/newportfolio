@@ -53,7 +53,7 @@ const getData = async (endpoint) => {
   return result;
 };
 
-function HomeSections({ profile, projects, testimonials }) {
+function HomeSections({ profile, projects, projectsLoading, testimonials }) {
   return (
     <>
       <Hero profile={profile} />
@@ -66,7 +66,7 @@ function HomeSections({ profile, projects, testimonials }) {
 
       <LazySection>
         <Suspense fallback={null}>
-          <Projects projects={projects} />
+          <Projects projects={projects} loading={projectsLoading} />
         </Suspense>
       </LazySection>
 
@@ -146,6 +146,7 @@ export default function App() {
   });
 
   const [projects, setProjects] = useState([]);
+  const [projectsLoading, setProjectsLoading] = useState(true);
   const [skills, setSkills] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
 
@@ -178,7 +179,7 @@ export default function App() {
   useEffect(() => {
     let cancelled = false;
 
-    const loadData = async (key, endpoint, setData) => {
+    const loadData = async (key, endpoint, setData, setLoading) => {
       try {
         const result = await fetchWithCache(
           key,
@@ -192,11 +193,15 @@ export default function App() {
         }
       } catch (error) {
         console.error(`[GH Studios] Failed to load ${endpoint}:`, error);
+      } finally {
+        if (!cancelled && setLoading) {
+          setLoading(false);
+        }
       }
     };
 
     loadData("profile", "profile", setProfile);
-    loadData("projects", "projects", setProjects);
+    loadData("projects", "projects", setProjects, setProjectsLoading);
     loadData("skills", "skills", setSkills);
     loadData("testimonials", "testimonials", setTestimonials);
 
@@ -229,8 +234,10 @@ export default function App() {
               <HomeSections
                 profile={profile}
                 projects={projects}
+                projectsLoading={projectsLoading}
                 skills={skills}
                 testimonials={testimonials}
+                
               />
             }
           />

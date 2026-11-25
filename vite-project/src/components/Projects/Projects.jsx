@@ -23,8 +23,8 @@ const withHold = (p, total, edge) => {
   return i + smooth(clamp((p - i - edge) / (1 - edge * 2), 0, 1));
 };
 
-export default function Projects({ projects = [] }) {
-  const total = projects.length;
+export default function Projects({ projects = [], loading = false }) {
+  const total = projects.length || (loading ? 1 : 0);
 
   const rootRef = useRef(null);
   const stageRef = useRef(null);
@@ -198,7 +198,7 @@ export default function Projects({ projects = [] }) {
     };
   }, [total]);
 
-  if (total === 0) {
+  if (!projects.length && !loading) {
     return <section className="pj-loading">No projects to show yet.</section>;
   }
 
@@ -214,6 +214,37 @@ export default function Projects({ projects = [] }) {
       <div ref={stageRef} className="ps-stage">
         {/* NEW: big header block, the first thing in the stack */}
         <ProjectsIntro cardRef={(n) => (cardRefs.current[0] = n)} />
+
+        {loading && projects.length === 0 && (
+          <article
+            ref={(n) => (cardRefs.current[1] = n)}
+            className="ps-card ps-skeleton-card"
+            style={{ zIndex: 2 }}
+            role="status"
+            aria-label="Loading projects"
+          >
+            <div className="ps-visual ps-skeleton-visual">
+              <div className="ps-skeleton-shimmer" />
+            </div>
+
+            <div className="ps-info ps-skeleton-info">
+              <div className="ps-skeleton-line ps-skeleton-eyebrow" />
+              <div className="ps-skeleton-line ps-skeleton-title" />
+              <div className="ps-skeleton-line ps-skeleton-title ps-skeleton-title-short" />
+
+              <div className="ps-skeleton-description">
+                <div className="ps-skeleton-line" />
+                <div className="ps-skeleton-line" />
+                <div className="ps-skeleton-line ps-skeleton-description-short" />
+              </div>
+
+              <div className="ps-skeleton-actions">
+                <div className="ps-skeleton-button" />
+                <div className="ps-skeleton-button ps-skeleton-button-short" />
+              </div>
+            </div>
+          </article>
+        )}
 
         {projects.map((item, idx) => (
           <article
