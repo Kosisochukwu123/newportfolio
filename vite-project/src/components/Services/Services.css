@@ -1,7 +1,9 @@
 /* Services.css — replaces Services.css and takes over from Skills.
-   Black section: a pinned headline that reveals word by word, then a light
-   rounded panel with the service cards rises over it while the headline fades.
-   Each card has its own animated mini-scene (built in CSS, see ServiceArt.jsx). */
+   Black section: a pinned headline that reveals word by word, then a dark rounded
+   panel with the service cards rises over it while the headline fades.
+   The cards are dark; the only light areas are the small animated "screens" at the top
+   of each card, and the lime call-to-action card. (Balanced: it used to be a big pale panel
+   with six white cards.) Each scene is built in CSS, see ServiceArt.jsx. */
 
 .sv {
   --sv-ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -9,6 +11,11 @@
   --sv-ink: #111111;
   --sv-lime: var(--accent, #e8ff47);
   --sv-overlap: 42vh; /* how far the cards rise over the headline */
+  --sv-panel: #0b0b0c; /* the panel the cards sit on: a hair lighter than the black page */
+  --sv-card: #141415;
+  --sv-line: rgba(255, 255, 255, 0.09);
+  --sv-text: #f4f4f2;
+  --sv-muted: #9a978d;
 
   position: relative;
   z-index: 2; /* sits above the hero, so it can cover it */
@@ -61,7 +68,6 @@
   line-height: 1.02;
   letter-spacing: -0.035em;
   color: #fff;
-  
 }
 .sv-word {
   display: inline-block;
@@ -93,11 +99,18 @@
   padding-bottom: clamp(16px, 3vw, 40px);
 }
 .sv-panel {
+  position: relative;
   margin-inline: clamp(10px, 2.5vw, 36px);
   padding: clamp(18px, 3vw, 44px);
-  background: #efefee;
+  background: var(
+    --sv-panel
+  ); /* opaque, so it still covers the headline as it rises */
+  border: 1px solid var(--sv-line);
   border-radius: clamp(26px, 3.4vw, 44px);
-  box-shadow: 0 -24px 70px rgba(0, 0, 0, 0.5);
+  /* a faint lime glow along the top edge shows where the panel starts */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 -26px 80px -30px rgba(232, 255, 71, 0.1);
 }
 .sv-grid {
   display: grid;
@@ -112,20 +125,21 @@
   display: flex;
   flex-direction: column;
   padding: 12px 12px 18px;
-  background: #ffffff;
+  background: var(--sv-card);
+  border: 1px solid var(--sv-line);
   border-radius: 24px;
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.04),
-    0 14px 34px -18px rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   transition:
     transform 0.45s var(--sv-ease),
+    border-color 0.35s ease,
     box-shadow 0.45s ease;
 }
 .sv-card:hover {
   transform: translateY(-6px);
+  border-color: rgba(232, 255, 71, 0.32);
   box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.04),
-    0 26px 50px -20px rgba(0, 0, 0, 0.35);
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 26px 50px -24px rgba(232, 255, 71, 0.18);
 }
 
 /* waiting to scroll into view */
@@ -152,7 +166,8 @@
   position: relative;
   overflow: hidden;
   border-radius: 16px;
-  background: linear-gradient(180deg, #fbfaf6, #f1efe8);
+  background: linear-gradient(180deg, #f6f4ee, #ebe8de);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 }
 
 .sv-text {
@@ -164,13 +179,13 @@
   font-size: clamp(1.15rem, 1.55vw, 1.4rem);
   font-weight: 700;
   letter-spacing: -0.03em;
-  color: var(--sv-ink);
+  color: var(--sv-text);
 }
 .sv-text p {
   margin: 0;
   font-size: 0.86rem;
   line-height: 1.7;
-  color: #6b685e;
+  color: var(--sv-muted);
 }
 
 .sv-foot {
@@ -186,14 +201,14 @@
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 0.64rem;
   letter-spacing: 0.03em;
-  color: #6b685e;
-  background: #f3f1ea;
+  color: #b9b6aa;
+  background: rgba(255, 255, 255, 0.07);
   border-radius: 999px;
 }
 .sv-num {
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 0.7rem;
-  color: #aaa69b;
+  color: #6f6c62;
 }
 .sv-arrow {
   display: grid;
@@ -204,25 +219,35 @@
   background: var(--sv-lime);
   color: var(--sv-ink);
   font-size: 1rem;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
   transition: transform 0.35s var(--sv-spring);
 }
 .sv-card:hover .sv-arrow {
   transform: rotate(45deg) scale(1.08);
 }
 
-/* the call-to-action card is dark */
+/* the call-to-action card is the one bright lime card, so the white stays in small doses */
 .sv-card.is-cta {
-  background: #111111;
+  background: var(--sv-lime);
+  border-color: transparent;
+  box-shadow: 0 24px 60px -28px rgba(232, 255, 71, 0.45);
+}
+.sv-card.is-cta:hover {
+  border-color: transparent;
+  box-shadow: 0 30px 70px -26px rgba(232, 255, 71, 0.6);
 }
 .sv-card.is-cta .sv-art {
-  background: linear-gradient(180deg, #1b1b1b, #141414);
+  background: linear-gradient(
+    180deg,
+    #1b1b1b,
+    #121212
+  ); /* a dark prompt box inside the lime card */
+  box-shadow: none;
 }
 .sv-card.is-cta h3 {
-  color: #ffffff;
+  color: #111111;
 }
 .sv-card.is-cta p {
-  color: #a9a69b;
+  color: rgba(17, 17, 17, 0.7);
 }
 
 /* =====================================================================
