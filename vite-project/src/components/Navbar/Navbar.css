@@ -1,10 +1,11 @@
-/* Navbar.css — GH Studios floating glass navbar (Light version) */
+/* Navbar.css — GH Studios floating glass navbar */
 
 @property --mx {
   syntax: "<length>";
   inherits: true;
   initial-value: 0px;
 }
+
 @property --my {
   syntax: "<length>";
   inherits: true;
@@ -34,6 +35,8 @@
   font-size: 0.7rem;
 }
 
+/* ---------- inner layout ---------- */
+
 .nb-inner {
   position: relative;
   z-index: 2;
@@ -44,6 +47,7 @@
 }
 
 /* ---------- logo + name ---------- */
+
 .nb-logo {
   display: inline-flex;
   align-items: center;
@@ -51,11 +55,13 @@
   line-height: 0;
   text-decoration: none;
 }
+
 .nb-logo img {
   display: block;
   width: auto;
   height: calc(var(--nb-logo-h) - 10px * var(--scroll-progress, 0));
 }
+
 .nb-brand {
   font-family: var(--font-display, inherit);
   font-size: calc(1.2rem - 0.12rem * var(--scroll-progress, 0));
@@ -64,9 +70,10 @@
   letter-spacing: -0.02em;
   white-space: nowrap;
   color: var(--nb-fg);
+  transition: color 0.25s ease;
 }
 
-/* Desktop navigation */
+/* ---------- desktop navigation ---------- */
 
 .nb-panel {
   display: contents;
@@ -106,7 +113,8 @@
     --my 0.22s ease-out;
 }
 
-/* glare that follows the cursor across the glass */
+/* Cursor-following glass glare */
+
 .nb-links::before {
   content: "";
   position: absolute;
@@ -122,6 +130,7 @@
   opacity: 0;
   transition: opacity 0.3s ease;
 }
+
 .nb-links:hover::before {
   opacity: 1;
 }
@@ -131,7 +140,8 @@
   z-index: 1;
 }
 
-/* the sliding pill behind the links */
+/* Sliding active-link highlight */
+
 .nb-links li.nb-hl {
   position: absolute;
   z-index: 0;
@@ -195,7 +205,7 @@
   opacity: 0.4;
 }
 
-/* Connect dropdown */
+/* ---------- connect dropdown ---------- */
 
 .nb-caret {
   display: inline-block;
@@ -302,7 +312,7 @@
   opacity: 0.5;
 }
 
-/* CTA */
+/* ---------- CTA ---------- */
 
 .nb-cta {
   position: absolute;
@@ -368,14 +378,17 @@
   display: none;
 }
 
-/* Mid-size laptops */
+/* ---------- mid-size laptops ---------- */
+
 @media (min-width: 900px) and (max-width: 1180px) {
   .nb-btn-long {
     display: none;
   }
+
   .nb-btn-short {
     display: inline;
   }
+
   .nb-links {
     gap: 18px;
     padding-left: 20px;
@@ -383,13 +396,15 @@
   }
 }
 
-/* Page-load entrance */
+/* ---------- page-load entrance ---------- */
+
 @keyframes nbDrop {
   from {
     opacity: 0;
     translate: 0 -14px;
   }
 }
+
 @keyframes nbPill {
   from {
     opacity: 0;
@@ -397,27 +412,30 @@
     scale: 0.94;
   }
 }
+
 @media (prefers-reduced-motion: no-preference) {
   .nb-logo {
     animation: nbDrop 0.8s var(--nb-ease-out) 0.05s backwards;
   }
 }
+
 @media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
   .nb-links {
     animation: nbPill 0.9s var(--nb-ease-out) 0.15s backwards;
   }
+
   .nb-cta {
     animation: nbDrop 0.8s var(--nb-ease-out) 0.3s backwards;
   }
 }
 
-/* Mobile toggle */
+/* ---------- mobile toggle ---------- */
 
 .nb-toggle {
   display: none;
 }
 
-/* Mobile / tablet navigation */
+/* ---------- mobile / tablet navigation ---------- */
 
 @media (max-width: 899px) {
   .nb {
@@ -443,10 +461,11 @@
     background: none;
     border: 0;
     cursor: pointer;
+    transition: color 0.25s ease;
   }
 
   .nb-toggle:focus-visible {
-    outline: 1px solid var(--nb-fg);
+    outline: 1px solid currentColor;
     outline-offset: 4px;
   }
 
@@ -589,7 +608,7 @@
 
   .nb-num {
     margin-right: 14px;
-    font-size: 0.7rem;
+    font-size: 0.7em;
     letter-spacing: 0.09em;
     vertical-align: middle;
   }
@@ -659,7 +678,7 @@
     display: inline;
     min-width: 0;
     margin-right: 14px;
-    font-size: 0.7rem;
+    font-size: 0.7em;
   }
 
   .nb-cta {
@@ -690,19 +709,57 @@
   }
 }
 
-/* Very small phones */
+/* ---------- very small phones ---------- */
+
 @media (max-width: 360px) {
   .nb-brand {
     display: none;
   }
 }
 
-/* Reduced motion */
+/* ---------- dynamic surface contrast ---------- */
+
+/*
+  Navbar.jsx adds one of these classes to .nb on the homepage:
+  .is-dark-surface  -> white brand and mobile toggle
+  .is-light-surface -> dark brand and mobile toggle
+
+  The logo image, desktop links, glass pill and CTA are unaffected.
+*/
+
+.nb.is-dark-surface .nb-brand,
+.nb.is-dark-surface .nb-toggle {
+  color: #ffffff;
+}
+
+.nb.is-light-surface .nb-brand,
+.nb.is-light-surface .nb-toggle {
+  color: #111111;
+}
+
+/* Hamburger lines inherit the toggle's currentColor. */
+.nb-toggle-lines i {
+  background: currentColor;
+}
+
+/* Keep keyboard focus visible in either colour mode. */
+.nb.is-light-surface .nb-toggle:focus-visible,
+.nb.is-dark-surface .nb-toggle:focus-visible {
+  outline-color: currentColor;
+}
+
+/* ---------- reduced motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {
   .nb *,
   .nb-panel {
     transition-duration: 0.01s !important;
     transition-delay: 0s !important;
+  }
+
+  .nb-logo,
+  .nb-links,
+  .nb-cta {
+    animation: none !important;
   }
 }
