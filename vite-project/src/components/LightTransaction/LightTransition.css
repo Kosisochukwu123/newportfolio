@@ -16,7 +16,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0b0b0c;
+  background: black;
   isolation: isolate;
 }
 /* The core expanding orb. Uses transform:scale — GPU-cheap. */

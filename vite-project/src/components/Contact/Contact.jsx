@@ -162,7 +162,7 @@ export default function Contact({ profile = {} }) {
   ].filter(Boolean);
 
   return (
-    <section id="contact" className="contact-section ct" ref={sectionRef} onMouseMove={onMove}>
+    <section id="contact" className="contact-section ct" ref={sectionRef}>
       {/* background: drifting glows, a dot grid and a light that follows the cursor */}
       <div className="ct-bg" aria-hidden="true">
         <span className="ct-blob ct-blob1" />
@@ -342,3 +342,5 @@ export default function Contact({ profile = {} }) {
     </section>
   );
 }
+
+

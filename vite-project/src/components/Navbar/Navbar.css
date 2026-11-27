@@ -16,7 +16,8 @@
   --nb-fg: #111111;
   --nb-dim: rgba(17, 17, 17, 0.55);
   --nb-line: rgba(17, 17, 17, 0.12);
-  --nb-bg: #ffffff;
+ 
+  --nb-bg: black;
   --nb-accent: #111111;
   --nb-ease: cubic-bezier(0.76, 0, 0.24, 1);
   --nb-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -150,7 +151,7 @@
   left: 0;
   width: var(--hl-w);
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.06);
+  background: rgba(0, 0, 0, 0.959);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.6),
     0 2px 8px rgba(0, 0, 0, 0.06);
@@ -572,6 +573,25 @@
     box-shadow: none;
   }
 
+
+  /* Force white text on the open mobile menu */
+.nb.is-open .nb-link {
+  color: #ffffff;
+}
+
+.nb.is-open .nb-link:hover,
+.nb.is-open .nb-link.is-active {
+  color: #ffffff;
+}
+
+.nb.is-open .nb-num {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Optional: make the separators lighter too */
+.nb.is-open .nb-links li {
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
   .nb-links li.nb-hl,
   .nb-links::before {
     display: none;
