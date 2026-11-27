@@ -796,3 +796,10 @@
     transition: none;
   }
 }
+
+/* Diagnostic: bypass the form entrance animation */
+.ct-card.ct-rise {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
